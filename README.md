@@ -1,6 +1,6 @@
 ## Overview
 
-JavaScript library for thenewboston.
+REST API for thenewboston.com.
 
 ## Project Setup
 
