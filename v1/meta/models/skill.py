@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from thenewboston.models.created_modified import CreatedModified
 
 
-class Skill(models.Model):
+class Skill(CreatedModified):
     title = models.CharField(max_length=250)
 
     def __str__(self):

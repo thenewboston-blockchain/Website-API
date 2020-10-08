@@ -7,5 +7,6 @@ from ..models import Skill
 class SkillSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = 'pk', 'title'
+        fields = 'pk', 'title', 'created_date', 'modified_date'
         model = Skill
+        read_only_fields = 'created_date', 'modified_date'

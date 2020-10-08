@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-from rest_framework import mixins, viewsets
+from rest_framework import viewsets
 
 from ..models import Skill
 from ..serializers import SkillSerializer
+from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 
-class SkillViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
     pagination_class = None
+    permission_classes = [IsStaffOrReadOnly]

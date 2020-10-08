@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from thenewboston.models.created_modified import CreatedModified
 
 
-class Responsibility(models.Model):
+class Responsibility(CreatedModified):
     title = models.CharField(max_length=250)
 
     def __str__(self):
