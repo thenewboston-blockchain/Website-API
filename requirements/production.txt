@@ -5,9 +5,32 @@
 #    pip-compile --output-file=requirements/production.txt requirements/production.in
 #
 asgiref==3.2.10           # via django
+attrs==20.2.0             # via pytest
+certifi==2020.6.20        # via sentry-sdk
+coverage==5.3             # via pytest-cov
 django-cors-headers==3.5.0  # via -r requirements/base.in
 django-debug-toolbar==3.1.1  # via -r requirements/base.in
-django==3.1.2             # via -r requirements/base.in, django-cors-headers, django-debug-toolbar, djangorestframework
+django-redis==4.12.1      # via -r requirements/base.in
+django==3.1.2             # via -r requirements/base.in, django-cors-headers, django-debug-toolbar, django-redis, djangorestframework
 djangorestframework==3.12.1  # via -r requirements/base.in
+factory-boy==3.0.1        # via -r requirements/base.in
+faker==4.8.0              # via factory-boy
+iniconfig==1.0.1          # via pytest
+more-itertools==8.5.0     # via pytest
+packaging==20.4           # via pytest
+pluggy==0.13.1            # via pytest
+psycopg2==2.8.6           # via -r requirements/base.in
+py==1.9.0                 # via pytest
+pyparsing==2.4.7          # via packaging
+pytest-cov==2.10.1        # via -r requirements/base.in
+pytest-django==3.10.0     # via -r requirements/base.in
+pytest==6.0.2             # via -r requirements/base.in, pytest-cov, pytest-django
+python-dateutil==2.8.1    # via faker
 pytz==2020.1              # via django
-sqlparse==0.3.1           # via django, django-debug-toolbar
+redis==3.5.3              # via django-redis
+sentry-sdk==0.18.0        # via -r requirements/base.in
+six==1.15.0               # via packaging, python-dateutil
+sqlparse==0.4.1           # via django, django-debug-toolbar
+text-unidecode==1.3       # via faker
+toml==0.10.1              # via pytest
+urllib3==1.25.10          # via sentry-sdk

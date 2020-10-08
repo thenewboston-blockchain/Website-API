@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -18,6 +19,8 @@ INSTALLED_APPS = [
     # Requirements
     'corsheaders',
     'rest_framework',
+
+    'v1.meta.apps.MetaConfig'
 
 ]
 
@@ -89,7 +92,6 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'rest_framework.filters.OrderingFilter',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'v1.third_party.rest_framework.pagination.LimitOffsetPagination',
 }
 
 PAGINATION_DEFAULT_LIMIT = 50

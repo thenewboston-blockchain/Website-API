@@ -1,0 +1,42 @@
+version: '3.2'
+
+services:
+  redis:
+    image: redis:alpine
+
+  db:
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_DB=thenewboston
+      - POSTGRES_USER=thenewboston
+      - POSTGRES_PASSWORD=thenewboston
+      - C_FORCE_ROOT=true
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    environment:
+      - DJANGO_APPLICATION_ENVIRONMENT=local
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=thenewboston
+      - POSTGRES_USER=thenewboston
+      - POSTGRES_PASSWORD=thenewboston
+    command: python3 -u /opt/project/manage.py runserver
+    volumes:
+      - .:/opt/project
+    ports:
+      - '8000:8000'
+    links:
+      - redis
+      - db
+    depends_on:
+      - redis
+      - db
+
+volumes:
+  postgresql-data:
+    driver: local
