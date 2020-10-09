@@ -20,7 +20,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
 
-    'v1.meta.apps.MetaConfig'
+    'v1.meta.apps.MetaConfig',
+    'v1.opening.apps.OpeningConfig'
 
 ]
 

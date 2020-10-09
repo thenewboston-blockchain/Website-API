@@ -6,6 +6,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from v1.meta.urls import router as meta_router
+from v1.opening.urls import router as opening_router
 
 
 admin.site.index_title = 'Admin'
@@ -23,6 +24,7 @@ urlpatterns = [
 router = DefaultRouter(trailing_slash=False)
 
 router.registry.extend(meta_router.registry)
+router.registry.extend(opening_router.registry)
 
 urlpatterns += router.urls
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
