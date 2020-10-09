@@ -7,6 +7,7 @@ from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
 from ..factories import CategoryFactory, ResponsibilityFactory, SkillFactory
+from ..models import Category, Responsibility, Skill
 
 
 @pytest.mark.parametrize('url_factory', [('category', CategoryFactory),
@@ -29,8 +30,11 @@ def test_category_list(api_client, django_assert_max_num_queries, url_factory):
     }
 
 
-@pytest.mark.parametrize('url', ['category', 'responsibility', 'skill'])
-def test_category_staff_post(api_client, staff_user, url):
+@pytest.mark.parametrize('url_model', [('category', Category),
+                                       ('responsibility', Responsibility),
+                                       ('skill', Skill)])
+def test_category_staff_post(api_client, staff_user, url_model):
+    url, model = url_model
     api_client.force_authenticate(staff_user)
 
     with freeze_time() as frozen_time:
@@ -43,13 +47,14 @@ def test_category_staff_post(api_client, staff_user, url):
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
     }
+    assert model.objects.get(pk=r.data['pk']).title == 'sometitle'
 
 
-@pytest.mark.parametrize('url_factory', [('category', CategoryFactory),
-                                         ('responsibility', ResponsibilityFactory),
-                                         ('skill', SkillFactory)])
-def test_category_staff_patch(api_client, staff_user, url_factory):
-    url, factory = url_factory
+@pytest.mark.parametrize('url_factory_model', [('category', CategoryFactory, Category),
+                                               ('responsibility', ResponsibilityFactory, Responsibility),
+                                               ('skill', SkillFactory, Skill)])
+def test_category_staff_patch(api_client, staff_user, url_factory_model):
+    url, factory, model = url_factory_model
     api_client.force_authenticate(staff_user)
 
     obj = factory()
@@ -64,13 +69,14 @@ def test_category_staff_patch(api_client, staff_user, url_factory):
         'created_date': serializers.DateTimeField().to_representation(obj.created_date),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
     }
+    assert model.objects.get(pk=r.data['pk']).title == 'sometitle'
 
 
-@pytest.mark.parametrize('url_factory', [('category', CategoryFactory),
-                                         ('responsibility', ResponsibilityFactory),
-                                         ('skill', SkillFactory)])
-def test_category_staff_delete(api_client, staff_user, url_factory):
-    url, factory = url_factory
+@pytest.mark.parametrize('url_factory_model', [('category', CategoryFactory, Category),
+                                               ('responsibility', ResponsibilityFactory, Responsibility),
+                                               ('skill', SkillFactory, Skill)])
+def test_category_staff_delete(api_client, staff_user, url_factory_model):
+    url, factory, model = url_factory_model
     api_client.force_authenticate(staff_user)
 
     obj = factory()
@@ -79,6 +85,7 @@ def test_category_staff_delete(api_client, staff_user, url_factory):
 
     assert r.status_code == status.HTTP_204_NO_CONTENT
     assert r.data is None
+    assert model.objects.filter(pk=obj.pk).first() is None
 
 
 @pytest.mark.parametrize('url', ['category', 'responsibility', 'skill'])
