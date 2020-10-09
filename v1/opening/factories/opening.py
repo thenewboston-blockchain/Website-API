@@ -19,7 +19,7 @@ class OpeningFactory(DjangoModelFactory):
             return
 
         if extracted:
-            if not isinstance(extracted, (int, set, tuple)):
+            if not isinstance(extracted, (int, list, set, tuple)):
                 return
             if isinstance(extracted, int):
                 for c in range(extracted):
@@ -34,7 +34,7 @@ class OpeningFactory(DjangoModelFactory):
             return
 
         if extracted:
-            if not isinstance(extracted, (int, set, tuple)):
+            if not isinstance(extracted, (int, list, set, tuple)):
                 return
             if isinstance(extracted, int):
                 for r in range(extracted):
@@ -49,7 +49,7 @@ class OpeningFactory(DjangoModelFactory):
             return
 
         if extracted:
-            if not isinstance(extracted, (int, set, tuple)):
+            if not isinstance(extracted, (int, list, set, tuple)):
                 return
             if isinstance(extracted, int):
                 for s in range(extracted):
