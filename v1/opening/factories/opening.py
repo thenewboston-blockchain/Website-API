@@ -2,7 +2,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from ..models.opening import Opening
+from ..models import Opening
 from ...meta.factories import CategoryFactory, ResponsibilityFactory, SkillFactory
 
 
