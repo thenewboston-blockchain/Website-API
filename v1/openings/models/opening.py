@@ -4,12 +4,13 @@ import uuid
 from django.db import models
 from thenewboston.models.created_modified import CreatedModified
 
+from v1.contributors.models import Contributor
 from v1.teams.models import Team
 
 
 class Opening(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    reports_to = models.ManyToManyField('contributors.Contributor')
+    reports_to = models.ManyToManyField(Contributor)
     responsibilities = models.ManyToManyField('meta.Responsibility')
     skills = models.ManyToManyField('meta.Skill')
     team = models.ForeignKey(Team, on_delete=models.CASCADE)

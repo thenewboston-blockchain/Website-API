@@ -14,7 +14,7 @@ from ..models import Responsibility, Skill
     ('responsibility', ResponsibilityFactory),
     ('skill', SkillFactory)
 ])
-def test_category_list(api_client, django_assert_max_num_queries, url_factory):
+def test_object_list(api_client, django_assert_max_num_queries, url_factory):
     url, factory = url_factory
     obj = factory.create_batch(5)
 
@@ -35,7 +35,7 @@ def test_category_list(api_client, django_assert_max_num_queries, url_factory):
     ('responsibility', Responsibility),
     ('skill', Skill)
 ])
-def test_category_staff_post(api_client, staff_user, url_model):
+def test_object_staff_post(api_client, staff_user, url_model):
     url, model = url_model
     api_client.force_authenticate(staff_user)
 
@@ -56,7 +56,7 @@ def test_category_staff_post(api_client, staff_user, url_model):
     ('responsibility', ResponsibilityFactory, Responsibility),
     ('skill', SkillFactory, Skill)
 ])
-def test_category_staff_patch(api_client, staff_user, url_factory_model):
+def test_object_staff_patch(api_client, staff_user, url_factory_model):
     url, factory, model = url_factory_model
     api_client.force_authenticate(staff_user)
 
@@ -79,7 +79,7 @@ def test_category_staff_patch(api_client, staff_user, url_factory_model):
     ('responsibility', ResponsibilityFactory, Responsibility),
     ('skill', SkillFactory, Skill)
 ])
-def test_category_staff_delete(api_client, staff_user, url_factory_model):
+def test_object_staff_delete(api_client, staff_user, url_factory_model):
     url, factory, model = url_factory_model
     api_client.force_authenticate(staff_user)
 
@@ -93,7 +93,7 @@ def test_category_staff_delete(api_client, staff_user, url_factory_model):
 
 
 @pytest.mark.parametrize('url', ['responsibility', 'skill'])
-def test_category_anon_post(api_client, url):
+def test_object_anon_post(api_client, url):
     r = api_client.post(reverse(f'{url}-list'), data={'title': 'sometitle'}, format='json')
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
@@ -103,7 +103,7 @@ def test_category_anon_post(api_client, url):
     ('responsibility', ResponsibilityFactory),
     ('skill', SkillFactory)
 ])
-def test_category_anon_patch(api_client, url_factory):
+def test_object_anon_patch(api_client, url_factory):
     url, factory = url_factory
     obj = factory()
 
@@ -116,7 +116,7 @@ def test_category_anon_patch(api_client, url_factory):
     ('responsibility', ResponsibilityFactory),
     ('skill', SkillFactory)
 ])
-def test_category_anon_delete(api_client, url_factory):
+def test_object_anon_delete(api_client, url_factory):
     url, factory = url_factory
     obj = factory()
 
