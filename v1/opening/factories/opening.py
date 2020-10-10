@@ -4,6 +4,7 @@ from factory.django import DjangoModelFactory
 
 from ..models import Opening
 from ...meta.factories import CategoryFactory, ResponsibilityFactory, SkillFactory
+from ...team.factories import ContributorFactory
 
 
 class OpeningFactory(DjangoModelFactory):
@@ -14,6 +15,21 @@ class OpeningFactory(DjangoModelFactory):
     active = factory.Faker('pybool')
 
     @factory.post_generation
+    def reports_to(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            if not isinstance(extracted, (int, list, set, tuple)):
+                return
+            if isinstance(extracted, int):
+                for _ in range(extracted):
+                    self.reports_to.add(ContributorFactory())
+            else:
+                for reports_to in extracted:
+                    self.reports_to.add(reports_to)
+
+    @factory.post_generation
     def categories(self, create, extracted, **kwargs):
         if not create:
             return
@@ -22,7 +38,7 @@ class OpeningFactory(DjangoModelFactory):
             if not isinstance(extracted, (int, list, set, tuple)):
                 return
             if isinstance(extracted, int):
-                for c in range(extracted):
+                for _ in range(extracted):
                     self.categories.add(CategoryFactory())
             else:
                 for category in extracted:
@@ -37,7 +53,7 @@ class OpeningFactory(DjangoModelFactory):
             if not isinstance(extracted, (int, list, set, tuple)):
                 return
             if isinstance(extracted, int):
-                for r in range(extracted):
+                for _ in range(extracted):
                     self.responsibilities.add(ResponsibilityFactory())
             else:
                 for responsibility in extracted:
@@ -52,7 +68,7 @@ class OpeningFactory(DjangoModelFactory):
             if not isinstance(extracted, (int, list, set, tuple)):
                 return
             if isinstance(extracted, int):
-                for s in range(extracted):
+                for _ in range(extracted):
                     self.skills.add(SkillFactory())
             else:
                 for skill in extracted:

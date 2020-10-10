@@ -2,6 +2,7 @@
 .idea
 .vscode
 dump.rdb
+docker-compose.local.yml
 
 # Log files
 !logs/.gitkeep
