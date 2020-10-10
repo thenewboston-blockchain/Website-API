@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from unittest.mock import ANY
 
-from freezegun import freeze_time
 import pytest
+from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 

@@ -6,9 +6,9 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from v1.meta.urls import router as meta_router
-from v1.opening.urls import router as opening_router
-from v1.task.urls import router as task_router
-from v1.team.urls import router as team_router
+from v1.openings.urls import router as opening_router
+from v1.tasks.urls import router as task_router
+from v1.teams.urls import router as team_router
 
 
 admin.site.index_title = 'Admin'

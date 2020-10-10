@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
 import pytest
+from django.conf import settings
 from pytest_django.migrations import DisableMigrations
 from rest_framework.test import APIClient
 
