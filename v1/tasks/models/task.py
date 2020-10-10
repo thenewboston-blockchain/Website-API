@@ -8,7 +8,7 @@ from thenewboston.models.created_modified import CreatedModified
 class Task(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     title = models.CharField(max_length=250)
-    contributor = models.ForeignKey('teams.Contributor', on_delete=models.CASCADE)
+    contributor = models.ForeignKey('contributors.Contributor', on_delete=models.CASCADE)
     repository = models.CharField(max_length=250)
     completed_date = models.DateTimeField(null=True)
     amount = models.PositiveIntegerField()

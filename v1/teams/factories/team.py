@@ -2,7 +2,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from v1.teams.factories import ContributorFactory
+from v1.contributors.factories import ContributorFactory
 from ..models import Team, TeamContributor
 
 

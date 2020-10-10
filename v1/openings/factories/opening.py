@@ -3,8 +3,8 @@ import factory
 from factory.django import DjangoModelFactory
 
 from ..models import Opening
+from ...contributors.factories import ContributorFactory
 from ...meta.factories import CategoryFactory, ResponsibilityFactory, SkillFactory
-from ...teams.factories import ContributorFactory
 
 
 class OpeningFactory(DjangoModelFactory):

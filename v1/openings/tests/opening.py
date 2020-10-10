@@ -7,8 +7,8 @@ from rest_framework.reverse import reverse
 
 from ..factories import OpeningFactory
 from ..models import Opening
+from ...contributors.factories import ContributorFactory
 from ...meta.factories import CategoryFactory, ResponsibilityFactory, SkillFactory
-from ...teams.factories import ContributorFactory
 
 
 def test_opening_list(api_client, django_assert_max_num_queries):

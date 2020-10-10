@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from rest_framework import viewsets
 
-from ..models import Contributor
-from ..serializers import ContributorSerializer
+from ..models.contributor import Contributor
+from ..serializers.contributor import ContributorSerializer
 from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 

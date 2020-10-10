@@ -7,7 +7,7 @@ from rest_framework.reverse import reverse
 
 from ..factories import TaskFactory
 from ..models import Task
-from ...teams.factories import ContributorFactory
+from ...contributors.factories import ContributorFactory
 
 
 def test_task_list(api_client, django_assert_max_num_queries):

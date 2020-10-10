@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 
-from .models import Contributor, Team
+from .models import Team
 
 admin.site.register(Team)
-admin.site.register(Contributor)

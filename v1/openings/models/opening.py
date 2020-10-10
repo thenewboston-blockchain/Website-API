@@ -13,7 +13,7 @@ class Opening(CreatedModified):
     eligible_for_task_points = models.BooleanField(default=False, db_index=True)
     active = models.BooleanField(default=True, db_index=True)
 
-    reports_to = models.ManyToManyField('teams.Contributor')
+    reports_to = models.ManyToManyField('contributors.Contributor')
 
     categories = models.ManyToManyField('meta.Category')
     responsibilities = models.ManyToManyField('meta.Responsibility')

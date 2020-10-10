@@ -22,6 +22,7 @@ INSTALLED_APPS = [
 
     'v1.meta.apps.MetaConfig',
     'v1.teams.apps.TeamsConfig',
+    'v1.contributors.apps.ContributorsConfig',
     'v1.openings.apps.OpeningsConfig',
     'v1.tasks.apps.TasksConfig',
 

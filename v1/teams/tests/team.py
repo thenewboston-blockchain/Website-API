@@ -5,7 +5,8 @@ from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
-from ..factories import ContributorFactory, TeamFactory
+from v1.contributors.factories import ContributorFactory
+from ..factories import TeamFactory
 from ..models import Team
 
 
