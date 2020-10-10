@@ -38,7 +38,7 @@ def test_category_staff_post(api_client, staff_user, url_model):
     api_client.force_authenticate(staff_user)
 
     with freeze_time() as frozen_time:
-        r = api_client.post(reverse(f'{url}-list'), data={'title': 'sometitle'})
+        r = api_client.post(reverse(f'{url}-list'), data={'title': 'sometitle'}, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
@@ -60,7 +60,7 @@ def test_category_staff_patch(api_client, staff_user, url_factory_model):
     obj = factory()
 
     with freeze_time() as frozen_time:
-        r = api_client.patch(reverse(f'{url}-detail', (obj.pk,)), data={'title': 'sometitle'})
+        r = api_client.patch(reverse(f'{url}-detail', (obj.pk,)), data={'title': 'sometitle'}, format='json')
 
     assert r.status_code == status.HTTP_200_OK
     assert r.data == {
@@ -90,7 +90,7 @@ def test_category_staff_delete(api_client, staff_user, url_factory_model):
 
 @pytest.mark.parametrize('url', ['category', 'responsibility', 'skill'])
 def test_category_anon_post(api_client, url):
-    r = api_client.post(reverse(f'{url}-list'), data={'title': 'sometitle'})
+    r = api_client.post(reverse(f'{url}-list'), data={'title': 'sometitle'}, format='json')
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
@@ -102,7 +102,7 @@ def test_category_anon_patch(api_client, url_factory):
     url, factory = url_factory
     obj = factory()
 
-    r = api_client.patch(reverse(f'{url}-detail', (obj.pk,)), data={'title': 'sometitle'})
+    r = api_client.patch(reverse(f'{url}-detail', (obj.pk,)), data={'title': 'sometitle'}, format='json')
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
