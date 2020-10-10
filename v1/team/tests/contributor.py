@@ -35,7 +35,7 @@ def test_contributor_post(api_client, staff_user):
             'display_name': 'Super Dev',
             'github_username': 'super_githuber',
             'slack_username': 'super_slacker',
-        })
+        }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
@@ -60,7 +60,7 @@ def test_contributor_patch(api_client, staff_user):
             'display_name': 'Senior Super Dev',
             'github_username': 'senior_super_githuber',
             'slack_username': 'senior_super_slacker',
-        })
+        }, format='json')
 
     assert r.status_code == status.HTTP_200_OK
     assert r.data == {
@@ -89,7 +89,7 @@ def test_contributor_delete(api_client, staff_user):
 
 
 def test_contributor_anon_post(api_client):
-    r = api_client.post(reverse('contributor-list'), data={'title': 'sometitle'})
+    r = api_client.post(reverse('contributor-list'), data={'title': 'sometitle'}, format='json')
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
@@ -97,7 +97,8 @@ def test_contributor_anon_post(api_client):
 def test_contributor_anon_patch(api_client):
     contributor = ContributorFactory()
 
-    r = api_client.post(reverse('contributor-detail', (contributor.pk,)), data={'display_name': 'display_name'})
+    r = api_client.post(reverse('contributor-detail', (contributor.pk,)), data={'display_name': 'display_name'},
+                        format='json')
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 

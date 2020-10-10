@@ -165,7 +165,7 @@ def test_team_delete(api_client, staff_user):
 
 
 def test_opening_anon_post(api_client):
-    r = api_client.post(reverse('team-list'), data={'title': 'sometitle'})
+    r = api_client.post(reverse('team-list'), data={'title': 'sometitle'}, format='json')
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
@@ -173,7 +173,7 @@ def test_opening_anon_post(api_client):
 def test_team_anon_patch(api_client):
     team = TeamFactory()
 
-    r = api_client.post(reverse('team-detail', (team.pk,)), data={'title': 'sometitle'})
+    r = api_client.post(reverse('team-detail', (team.pk,)), data={'title': 'sometitle'}, format='json')
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
