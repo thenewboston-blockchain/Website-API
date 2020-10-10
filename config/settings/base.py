@@ -21,7 +21,9 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'v1.meta.apps.MetaConfig',
-    'v1.opening.apps.OpeningConfig'
+    'v1.opening.apps.OpeningConfig',
+    'v1.task.apps.TaskConfig',
+    'v1.team.apps.TeamConfig'
 
 ]
 

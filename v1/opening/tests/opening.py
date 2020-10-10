@@ -8,10 +8,11 @@ from rest_framework.reverse import reverse
 from ..factories import OpeningFactory
 from ..models import Opening
 from ...meta.factories import CategoryFactory, ResponsibilityFactory, SkillFactory
+from ...team.factories import ContributorFactory
 
 
 def test_opening_list(api_client, django_assert_max_num_queries):
-    openings = OpeningFactory.create_batch(10, categories=2, skills=5, responsibilities=3)
+    openings = OpeningFactory.create_batch(10, categories=2, skills=5, responsibilities=3, reports_to=1)
 
     with django_assert_max_num_queries(5):
         r = api_client.get(reverse('opening-list'))
@@ -25,6 +26,7 @@ def test_opening_list(api_client, django_assert_max_num_queries):
         'pay_per_day': openings[0].pay_per_day,
         'eligible_for_task_points': openings[0].eligible_for_task_points,
         'active': openings[0].active,
+        'reports_to': [r.pk for r in openings[0].reports_to.all()],
         'categories': [c.pk for c in openings[0].categories.all()],
         'responsibilities': [r.pk for r in openings[0].responsibilities.all()],
         'skills': [s.pk for s in openings[0].skills.all()],
@@ -39,6 +41,7 @@ def test_opening_post(api_client, staff_user):
     categories = CategoryFactory.create_batch(5)
     skills = SkillFactory.create_batch(5)
     responsibilities = ResponsibilityFactory.create_batch(5)
+    contributors = ContributorFactory.create_batch(5)
 
     with freeze_time() as frozen_time:
         r = api_client.post(reverse('opening-list'), data={
@@ -47,10 +50,11 @@ def test_opening_post(api_client, staff_user):
             'pay_per_day': 9001,
             'eligible_for_task_points': True,
             'active': True,
+            'reports_to': [contributors[1].pk, contributors[3].pk],
             'categories': [categories[1].pk, categories[4].pk],
             'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
             'skills': [skills[2].pk, skills[4].pk]
-        })
+        }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
@@ -60,6 +64,7 @@ def test_opening_post(api_client, staff_user):
         'pay_per_day': 9001,
         'eligible_for_task_points': True,
         'active': True,
+        'reports_to': [contributors[1].pk, contributors[3].pk],
         'categories': [categories[1].pk, categories[4].pk],
         'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
         'skills': [skills[2].pk, skills[4].pk],
@@ -73,8 +78,10 @@ def test_opening_post(api_client, staff_user):
 def test_opening_patch(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
-    opening = OpeningFactory(categories=2, skills=5, responsibilities=3)
     skills = SkillFactory.create_batch(5)
+    contributor1 = ContributorFactory()
+    contributor2 = ContributorFactory()
+    opening = OpeningFactory(categories=2, skills=5, responsibilities=3, reports_to=[contributor1, contributor2])
 
     with freeze_time() as frozen_time:
         r = api_client.patch(reverse('opening-detail', (opening.pk,)), data={
@@ -83,12 +90,13 @@ def test_opening_patch(api_client, staff_user):
             'pay_per_day': 10001,
             'eligible_for_task_points': True,
             'active': True,
+            'reports_to': [contributor1.pk],
             'categories': [opening.categories.all()[0].pk, opening.categories.all()[1].pk],
             'responsibilities': [opening.responsibilities.all()[0].pk,
                                  opening.responsibilities.all()[1].pk,
                                  opening.responsibilities.all()[2].pk],
             'skills': [skills[0].pk, skills[2].pk, skills[4].pk]
-        })
+        }, format='json')
 
     assert r.status_code == status.HTTP_200_OK
     assert r.data == {
@@ -98,6 +106,7 @@ def test_opening_patch(api_client, staff_user):
         'pay_per_day': 10001,
         'eligible_for_task_points': True,
         'active': True,
+        'reports_to': [contributor1.pk],
         'categories': [opening.categories.all()[0].pk, opening.categories.all()[1].pk],
         'responsibilities': [opening.responsibilities.all()[0].pk,
                              opening.responsibilities.all()[1].pk,
@@ -124,7 +133,7 @@ def test_opening_delete(api_client, staff_user):
 
 
 def test_opening_anon_post(api_client):
-    r = api_client.post(reverse('opening-list'), data={'title': 'sometitle'})
+    r = api_client.post(reverse('opening-list'), data={'title': 'sometitle'}, format='json')
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
@@ -132,7 +141,7 @@ def test_opening_anon_post(api_client):
 def test_opening_anon_patch(api_client):
     opening = OpeningFactory(categories=1, skills=1, responsibilities=1)
 
-    r = api_client.post(reverse('opening-detail', (opening.pk,)), data={'title': 'sometitle'})
+    r = api_client.post(reverse('opening-detail', (opening.pk,)), data={'title': 'sometitle'}, format='json')
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 

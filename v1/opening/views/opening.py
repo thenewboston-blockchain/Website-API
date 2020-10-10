@@ -8,7 +8,7 @@ from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 class OpeningViewSet(viewsets.ModelViewSet):
     queryset = Opening.objects \
-        .prefetch_related('categories', 'responsibilities', 'skills') \
+        .prefetch_related('categories', 'responsibilities', 'skills', 'reports_to') \
         .order_by('created_date') \
         .all()
     serializer_class = OpeningSerializer

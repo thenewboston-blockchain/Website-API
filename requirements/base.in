@@ -1,5 +1,5 @@
 django-debug-toolbar==3.1.1
 django-redis==4.12.1
 freezegun==1.0.0
-psycopg2==2.8.6
+psycopg2-binary==2.8.6
 thenewboston==0.0.22
