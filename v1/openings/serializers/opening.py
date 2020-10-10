@@ -3,20 +3,28 @@ from rest_framework import serializers
 
 from ..models.opening import Opening
 from ...contributors.models import Contributor
-from ...meta.models import Category, Responsibility, Skill
+from ...meta.models import Responsibility, Skill
 
 
 class OpeningSerializer(serializers.ModelSerializer):
-    categories = serializers.PrimaryKeyRelatedField(many=True, queryset=Category.objects.all())
+    reports_to = serializers.PrimaryKeyRelatedField(many=True, queryset=Contributor.objects.all())
     responsibilities = serializers.PrimaryKeyRelatedField(many=True, queryset=Responsibility.objects.all())
     skills = serializers.PrimaryKeyRelatedField(many=True, queryset=Skill.objects.all())
 
-    reports_to = serializers.PrimaryKeyRelatedField(many=True, queryset=Contributor.objects.all())
-
     class Meta:
-        fields = 'pk', 'title', 'description', 'pay_per_day', 'eligible_for_task_points', 'active', \
-                 'reports_to', \
-                 'categories', 'responsibilities', 'skills', \
-                 'created_date', 'modified_date'
+        fields = (
+            'active',
+            'categories',
+            'created_date',
+            'description',
+            'eligible_for_task_points',
+            'modified_date',
+            'pay_per_day',
+            'pk',
+            'reports_to',
+            'responsibilities',
+            'skills',
+            'title',
+        )
         model = Opening
         read_only_fields = 'created_date', 'modified_date'

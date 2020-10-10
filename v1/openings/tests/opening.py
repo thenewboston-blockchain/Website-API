@@ -12,7 +12,7 @@ from ...meta.factories import CategoryFactory, ResponsibilityFactory, SkillFacto
 
 
 def test_opening_list(api_client, django_assert_max_num_queries):
-    openings = OpeningFactory.create_batch(10, categories=2, skills=5, responsibilities=3, reports_to=1)
+    openings = OpeningFactory.create_batch(10, reports_to=1, responsibilities=3, skills=5)
 
     with django_assert_max_num_queries(5):
         r = api_client.get(reverse('opening-list'))
@@ -20,18 +20,18 @@ def test_opening_list(api_client, django_assert_max_num_queries):
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 10
     assert r.data[0] == {
-        'pk': str(openings[0].pk),
-        'title': openings[0].title,
-        'description': openings[0].description,
-        'pay_per_day': openings[0].pay_per_day,
-        'eligible_for_task_points': openings[0].eligible_for_task_points,
         'active': openings[0].active,
+        'created_date': serializers.DateTimeField().to_representation(openings[0].created_date),
+        'description': openings[0].description,
+        'eligible_for_task_points': openings[0].eligible_for_task_points,
+        'modified_date': serializers.DateTimeField().to_representation(openings[0].modified_date),
+        'pay_per_day': openings[0].pay_per_day,
+        'pk': str(openings[0].pk),
         'reports_to': [r.pk for r in openings[0].reports_to.all()],
-        'categories': [c.pk for c in openings[0].categories.all()],
         'responsibilities': [r.pk for r in openings[0].responsibilities.all()],
         'skills': [s.pk for s in openings[0].skills.all()],
-        'created_date': serializers.DateTimeField().to_representation(openings[0].created_date),
-        'modified_date': serializers.DateTimeField().to_representation(openings[0].modified_date),
+        'team': openings[0].team_id,
+        'title': openings[0].title,
     }
 
 
@@ -45,15 +45,15 @@ def test_opening_post(api_client, staff_user):
 
     with freeze_time() as frozen_time:
         r = api_client.post(reverse('opening-list'), data={
-            'title': 'Opening title',
-            'description': 'Cool opening',
-            'pay_per_day': 9001,
-            'eligible_for_task_points': True,
             'active': True,
-            'reports_to': [contributors[1].pk, contributors[3].pk],
             'categories': [categories[1].pk, categories[4].pk],
+            'description': 'Cool opening',
+            'eligible_for_task_points': True,
+            'pay_per_day': 9001,
+            'reports_to': [contributors[1].pk, contributors[3].pk],
             'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
-            'skills': [skills[2].pk, skills[4].pk]
+            'skills': [skills[2].pk, skills[4].pk],
+            'title': 'Opening title',
         }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED

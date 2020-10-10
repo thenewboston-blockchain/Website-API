@@ -3,6 +3,7 @@ import uuid
 
 from django.db import models
 from thenewboston.models.created_modified import CreatedModified
+
 from v1.contributors.models import Contributor
 
 
