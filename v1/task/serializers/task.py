@@ -13,4 +13,3 @@ class TaskSerializer(serializers.ModelSerializer):
                  'created_date', 'modified_date'
         model = Task
         read_only_fields = 'created_date', 'modified_date'
-
