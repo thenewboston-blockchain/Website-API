@@ -5,10 +5,11 @@ from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
+from v1.teams.factories import TeamFactory
 from ..factories import OpeningFactory
 from ..models import Opening
 from ...contributors.factories import ContributorFactory
-from ...meta.factories import CategoryFactory, ResponsibilityFactory, SkillFactory
+from ...meta.factories import ResponsibilityFactory, SkillFactory
 
 
 def test_opening_list(api_client, django_assert_max_num_queries):
@@ -38,38 +39,38 @@ def test_opening_list(api_client, django_assert_max_num_queries):
 def test_opening_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
-    categories = CategoryFactory.create_batch(5)
-    skills = SkillFactory.create_batch(5)
-    responsibilities = ResponsibilityFactory.create_batch(5)
     contributors = ContributorFactory.create_batch(5)
+    responsibilities = ResponsibilityFactory.create_batch(5)
+    skills = SkillFactory.create_batch(5)
+    team = TeamFactory()
 
     with freeze_time() as frozen_time:
         r = api_client.post(reverse('opening-list'), data={
             'active': True,
-            'categories': [categories[1].pk, categories[4].pk],
             'description': 'Cool opening',
             'eligible_for_task_points': True,
             'pay_per_day': 9001,
             'reports_to': [contributors[1].pk, contributors[3].pk],
             'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
             'skills': [skills[2].pk, skills[4].pk],
+            'team': team.pk,
             'title': 'Opening title',
         }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
-        'pk': ANY,
-        'title': 'Opening title',
-        'description': 'Cool opening',
-        'pay_per_day': 9001,
-        'eligible_for_task_points': True,
         'active': True,
+        'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'description': 'Cool opening',
+        'eligible_for_task_points': True,
+        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'pay_per_day': 9001,
+        'pk': ANY,
         'reports_to': [contributors[1].pk, contributors[3].pk],
-        'categories': [categories[1].pk, categories[4].pk],
         'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
         'skills': [skills[2].pk, skills[4].pk],
-        'created_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'team': team.pk,
+        'title': 'Opening title',
     }
 
     assert Opening.objects.get(pk=r.data['pk']).title == 'Opening title'
@@ -81,39 +82,44 @@ def test_opening_patch(api_client, staff_user):
     skills = SkillFactory.create_batch(5)
     contributor1 = ContributorFactory()
     contributor2 = ContributorFactory()
-    opening = OpeningFactory(categories=2, skills=5, responsibilities=3, reports_to=[contributor1, contributor2])
+    opening = OpeningFactory(reports_to=[contributor1, contributor2], responsibilities=3, skills=5)
+    team = TeamFactory()
 
     with freeze_time() as frozen_time:
         r = api_client.patch(reverse('opening-detail', (opening.pk,)), data={
-            'title': 'Updated title',
-            'description': 'Even Cooler opening',
-            'pay_per_day': 10001,
-            'eligible_for_task_points': True,
             'active': True,
+            'description': 'Even Cooler opening',
+            'eligible_for_task_points': True,
+            'pay_per_day': 10001,
             'reports_to': [contributor1.pk],
-            'categories': [opening.categories.all()[0].pk, opening.categories.all()[1].pk],
-            'responsibilities': [opening.responsibilities.all()[0].pk,
-                                 opening.responsibilities.all()[1].pk,
-                                 opening.responsibilities.all()[2].pk],
-            'skills': [skills[0].pk, skills[2].pk, skills[4].pk]
+            'responsibilities': [
+                opening.responsibilities.all()[0].pk,
+                opening.responsibilities.all()[1].pk,
+                opening.responsibilities.all()[2].pk
+            ],
+            'skills': [skills[0].pk, skills[2].pk, skills[4].pk],
+            'team': team.pk,
+            'title': 'Updated title',
         }, format='json')
 
     assert r.status_code == status.HTTP_200_OK
     assert r.data == {
-        'pk': str(opening.pk),
-        'title': 'Updated title',
-        'description': 'Even Cooler opening',
-        'pay_per_day': 10001,
-        'eligible_for_task_points': True,
         'active': True,
+        'description': 'Even Cooler opening',
+        'eligible_for_task_points': True,
+        'pay_per_day': 10001,
+        'pk': str(opening.pk),
         'reports_to': [contributor1.pk],
-        'categories': [opening.categories.all()[0].pk, opening.categories.all()[1].pk],
-        'responsibilities': [opening.responsibilities.all()[0].pk,
-                             opening.responsibilities.all()[1].pk,
-                             opening.responsibilities.all()[2].pk],
-        'skills': [skills[0].pk, skills[2].pk, skills[4].pk],
+        'responsibilities': [
+            opening.responsibilities.all()[0].pk,
+            opening.responsibilities.all()[1].pk,
+            opening.responsibilities.all()[2].pk
+        ],
         'created_date': serializers.DateTimeField().to_representation(opening.created_date),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'skills': [skills[0].pk, skills[2].pk, skills[4].pk],
+        'team': team.pk,
+        'title': 'Updated title',
     }
 
     assert Opening.objects.get(pk=str(opening.pk)).title == 'Updated title'
@@ -122,7 +128,7 @@ def test_opening_patch(api_client, staff_user):
 def test_opening_delete(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
-    opening = OpeningFactory(categories=1, skills=1, responsibilities=1)
+    opening = OpeningFactory(responsibilities=1, skills=1)
 
     r = api_client.delete(reverse('opening-detail', (opening.pk,)))
 
@@ -139,7 +145,7 @@ def test_opening_anon_post(api_client):
 
 
 def test_opening_anon_patch(api_client):
-    opening = OpeningFactory(categories=1, skills=1, responsibilities=1)
+    opening = OpeningFactory(responsibilities=1, skills=1)
 
     r = api_client.post(reverse('opening-detail', (opening.pk,)), data={'title': 'sometitle'}, format='json')
 
@@ -147,7 +153,7 @@ def test_opening_anon_patch(api_client):
 
 
 def test_opening_anon_delete(api_client):
-    opening = OpeningFactory(categories=1, skills=1, responsibilities=1)
+    opening = OpeningFactory(responsibilities=1, skills=1)
 
     r = api_client.delete(reverse('opening-detail', (opening.pk,)))
 

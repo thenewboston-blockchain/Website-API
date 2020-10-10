@@ -19,14 +19,14 @@ def test_task_list(api_client, django_assert_max_num_queries):
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 10
     assert r.data[0] == {
-        'pk': str(tasks[0].pk),
-        'title': tasks[0].title,
-        'contributor': tasks[0].contributor_id,
-        'repository': tasks[0].repository,
-        'completed_date': tasks[0].completed_date,
         'amount': tasks[0].amount,
+        'completed_date': tasks[0].completed_date,
+        'contributor': tasks[0].contributor_id,
         'created_date': serializers.DateTimeField().to_representation(tasks[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(tasks[0].modified_date),
+        'pk': str(tasks[0].pk),
+        'repository': tasks[0].repository,
+        'title': tasks[0].title,
     }
 
 
