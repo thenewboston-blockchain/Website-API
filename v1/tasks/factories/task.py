@@ -7,10 +7,10 @@ from ..models import Task
 
 
 class TaskFactory(DjangoModelFactory):
-    title = factory.Faker('pystr', max_chars=250)
+    amount = factory.Faker('pyint')
     contributor = factory.SubFactory(ContributorFactory)
     repository = factory.Faker('pystr', max_chars=250)
-    amount = factory.Faker('pyint')
+    title = factory.Faker('pystr', max_chars=250)
 
     class Meta:
         model = Task

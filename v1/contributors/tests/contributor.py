@@ -19,11 +19,11 @@ def test_contributor_list(api_client, django_assert_max_num_queries):
     assert len(r.data) == 10
     assert r.data[0] == {
         'pk': str(contributors[0].pk),
+        'created_date': serializers.DateTimeField().to_representation(contributors[0].created_date),
+        'modified_date': serializers.DateTimeField().to_representation(contributors[0].modified_date),
         'display_name': contributors[0].display_name,
         'github_username': contributors[0].github_username,
         'slack_username': contributors[0].slack_username,
-        'created_date': serializers.DateTimeField().to_representation(contributors[0].created_date),
-        'modified_date': serializers.DateTimeField().to_representation(contributors[0].modified_date),
     }
 
 
@@ -31,20 +31,24 @@ def test_contributor_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
     with freeze_time() as frozen_time:
-        r = api_client.post(reverse('contributor-list'), data={
-            'display_name': 'Super Dev',
-            'github_username': 'super_githuber',
-            'slack_username': 'super_slacker',
-        }, format='json')
+        r = api_client.post(
+            reverse('contributor-list'),
+            data={
+                'display_name': 'Super Dev',
+                'github_username': 'super_githuber',
+                'slack_username': 'super_slacker',
+            },
+            format='json'
+        )
 
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
         'pk': ANY,
+        'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'display_name': 'Super Dev',
         'github_username': 'super_githuber',
         'slack_username': 'super_slacker',
-        'created_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
     }
 
     assert Contributor.objects.get(pk=r.data['pk']).display_name == 'Super Dev'
@@ -65,11 +69,11 @@ def test_contributor_patch(api_client, staff_user):
     assert r.status_code == status.HTTP_200_OK
     assert r.data == {
         'pk': str(contributor.pk),
+        'created_date': serializers.DateTimeField().to_representation(contributor.created_date),
+        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'display_name': 'Senior Super Dev',
         'github_username': 'senior_super_githuber',
         'slack_username': 'senior_super_slacker',
-        'created_date': serializers.DateTimeField().to_representation(contributor.created_date),
-        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
     }
 
     assert Contributor.objects.get(pk=str(contributor.pk)).display_name == 'Senior Super Dev'
@@ -97,8 +101,11 @@ def test_contributor_anon_post(api_client):
 def test_contributor_anon_patch(api_client):
     contributor = ContributorFactory()
 
-    r = api_client.post(reverse('contributor-detail', (contributor.pk,)), data={'display_name': 'display_name'},
-                        format='json')
+    r = api_client.post(
+        reverse('contributor-detail', (contributor.pk,)),
+        data={'display_name': 'display_name'},
+        format='json'
+    )
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 

@@ -19,12 +19,12 @@ def test_task_list(api_client, django_assert_max_num_queries):
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 10
     assert r.data[0] == {
+        'pk': str(tasks[0].pk),
+        'created_date': serializers.DateTimeField().to_representation(tasks[0].created_date),
+        'modified_date': serializers.DateTimeField().to_representation(tasks[0].modified_date),
         'amount': tasks[0].amount,
         'completed_date': tasks[0].completed_date,
         'contributor': tasks[0].contributor_id,
-        'created_date': serializers.DateTimeField().to_representation(tasks[0].created_date),
-        'modified_date': serializers.DateTimeField().to_representation(tasks[0].modified_date),
-        'pk': str(tasks[0].pk),
         'repository': tasks[0].repository,
         'title': tasks[0].title,
     }
@@ -36,23 +36,27 @@ def test_task_post(api_client, staff_user):
     contributor = ContributorFactory()
 
     with freeze_time() as frozen_time:
-        r = api_client.post(reverse('task-list'), data={
-            'title': 'New task',
-            'contributor': contributor.pk,
-            'repository': 'https://github.com/thenewboston-developers/Website-API/',
-            'amount': 9001
-        }, format='json')
+        r = api_client.post(
+            reverse('task-list'),
+            data={
+                'amount': 9001,
+                'contributor': contributor.pk,
+                'repository': 'https://github.com/thenewboston-developers/Website-API/',
+                'title': 'New task',
+            },
+            format='json'
+        )
 
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
         'pk': ANY,
-        'title': 'New task',
-        'contributor': contributor.pk,
-        'repository': 'https://github.com/thenewboston-developers/Website-API/',
-        'amount': 9001,
-        'completed_date': None,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'amount': 9001,
+        'completed_date': None,
+        'contributor': contributor.pk,
+        'repository': 'https://github.com/thenewboston-developers/Website-API/',
+        'title': 'New task',
     }
     assert Task.objects.get(pk=r.data['pk']).title == 'New task'
 
@@ -64,24 +68,28 @@ def test_task_patch(api_client, staff_user):
     task = TaskFactory()
 
     with freeze_time() as frozen_time:
-        r = api_client.patch(reverse('task-detail', (task.pk,)), data={
-            'title': 'New task',
-            'contributor': contributor.pk,
-            'repository': 'https://github.com/thenewboston-developers/Website-API/',
-            'amount': 9001,
-            'completed_date': '2020-12-12T23:59:59Z',
-        }, format='json')
+        r = api_client.patch(
+            reverse('task-detail', (task.pk,)),
+            data={
+                'amount': 9001,
+                'completed_date': '2020-12-12T23:59:59Z',
+                'contributor': contributor.pk,
+                'repository': 'https://github.com/thenewboston-developers/Website-API/',
+                'title': 'New task',
+            },
+            format='json'
+        )
 
     assert r.status_code == status.HTTP_200_OK
     assert r.data == {
         'pk': str(task.pk),
-        'title': 'New task',
-        'contributor': contributor.pk,
-        'repository': 'https://github.com/thenewboston-developers/Website-API/',
-        'amount': 9001,
-        'completed_date': '2020-12-12T23:59:59Z',
         'created_date': serializers.DateTimeField().to_representation(task.created_date),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'amount': 9001,
+        'completed_date': '2020-12-12T23:59:59Z',
+        'contributor': contributor.pk,
+        'repository': 'https://github.com/thenewboston-developers/Website-API/',
+        'title': 'New task',
     }
 
     assert Task.objects.get(pk=str(task.pk)).title == 'New task'

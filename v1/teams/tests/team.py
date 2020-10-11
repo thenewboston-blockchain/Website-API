@@ -20,7 +20,8 @@ def test_team_list(api_client, django_assert_max_num_queries):
     assert len(r.data) == 10
     assert r.data[0] == {
         'pk': str(teams[0].pk),
-        'title': teams[0].title,
+        'created_date': serializers.DateTimeField().to_representation(teams[0].created_date),
+        'modified_date': serializers.DateTimeField().to_representation(teams[0].modified_date),
         'contributors_meta': [{
             'contributor': c.contributor_id,
             'is_lead': c.is_lead,
@@ -28,8 +29,7 @@ def test_team_list(api_client, django_assert_max_num_queries):
             'created_date': serializers.DateTimeField().to_representation(c.created_date),
             'modified_date': serializers.DateTimeField().to_representation(c.modified_date),
         } for c in teams[0].teamcontributor_set.all()],
-        'created_date': serializers.DateTimeField().to_representation(teams[0].created_date),
-        'modified_date': serializers.DateTimeField().to_representation(teams[0].modified_date),
+        'title': teams[0].title,
     }
 
 
@@ -44,10 +44,10 @@ def test_team_contributors_empty_post(api_client, staff_user):
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
         'pk': ANY,
-        'title': 'Star team',
-        'contributors_meta': [],
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'contributors_meta': [],
+        'title': 'Star team',
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -77,25 +77,25 @@ def test_team_post(api_client, staff_user):
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
         'pk': ANY,
-        'title': 'Star team',
+        'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'contributors_meta': [
             {
+                'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'contributor': contributors[1].pk,
                 'is_lead': True,
                 'pay_per_day': 19001,
-                'created_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
             },
             {
+                'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'contributor': contributors[3].pk,
                 'is_lead': False,
                 'pay_per_day': 9001,
-                'created_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
             }
         ],
-        'created_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'title': 'Star team',
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -107,46 +107,50 @@ def test_team_patch(api_client, staff_user):
     team = TeamFactory(contributors=2)
 
     with freeze_time() as frozen_time:
-        r = api_client.patch(reverse('team-detail', (team.pk,)), data={
-            'title': 'Star team',
-            'contributors_meta': [
-                {
-                    'contributor': contributor.pk,
-                    'is_lead': False,
-                    'pay_per_day': 9001
-                },
-                {
-                    'contributor': team.teamcontributor_set.all()[1].contributor_id,
-                    'is_lead': True,
-                    'pay_per_day': 19001
-                }
-            ]
-        }, format='json')
+        r = api_client.patch(
+            reverse('team-detail', (team.pk,)),
+            data={
+                'title': 'Star team',
+                'contributors_meta': [
+                    {
+                        'contributor': contributor.pk,
+                        'is_lead': False,
+                        'pay_per_day': 9001
+                    },
+                    {
+                        'contributor': team.teamcontributor_set.all()[1].contributor_id,
+                        'is_lead': True,
+                        'pay_per_day': 19001
+                    }
+                ]
+            },
+            format='json'
+        )
 
     assert r.status_code == status.HTTP_200_OK
     assert r.data == {
         'pk': str(team.pk),
-        'title': 'Star team',
+        'created_date': serializers.DateTimeField().to_representation(team.created_date),
+        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'contributors_meta': [
             {
+                'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'contributor': contributor.pk,
                 'is_lead': False,
                 'pay_per_day': 9001,
-                'created_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
             },
             {
+                'created_date': serializers.DateTimeField().to_representation(
+                    team.teamcontributor_set.all()[1].created_date
+                ),
+                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'contributor': team.teamcontributor_set.all()[1].contributor_id,
                 'is_lead': True,
                 'pay_per_day': 19001,
-                'created_date': serializers.DateTimeField().to_representation(
-                    team.teamcontributor_set.all()[1].created_date),
-                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
             },
         ],
-
-        'created_date': serializers.DateTimeField().to_representation(team.created_date),
-        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'title': 'Star team',
     }
 
     assert Team.objects.get(pk=str(team.pk)).title == 'Star team'

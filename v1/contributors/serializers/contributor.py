@@ -5,6 +5,7 @@ from ..models import Contributor
 
 
 class ContributorSerializer(serializers.ModelSerializer):
+
     class Meta:
         fields = (
             'created_date',

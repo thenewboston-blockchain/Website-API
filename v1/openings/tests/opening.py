@@ -20,13 +20,13 @@ def test_opening_list(api_client, django_assert_max_num_queries):
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 10
     assert r.data[0] == {
-        'active': openings[0].active,
+        'pk': str(openings[0].pk),
         'created_date': serializers.DateTimeField().to_representation(openings[0].created_date),
+        'modified_date': serializers.DateTimeField().to_representation(openings[0].modified_date),
+        'active': openings[0].active,
         'description': openings[0].description,
         'eligible_for_task_points': openings[0].eligible_for_task_points,
-        'modified_date': serializers.DateTimeField().to_representation(openings[0].modified_date),
         'pay_per_day': openings[0].pay_per_day,
-        'pk': str(openings[0].pk),
         'reports_to': [r.pk for r in openings[0].reports_to.all()],
         'responsibilities': [r.pk for r in openings[0].responsibilities.all()],
         'skills': [s.pk for s in openings[0].skills.all()],
@@ -44,27 +44,31 @@ def test_opening_post(api_client, staff_user):
     team = TeamFactory()
 
     with freeze_time() as frozen_time:
-        r = api_client.post(reverse('opening-list'), data={
-            'active': True,
-            'description': 'Cool opening',
-            'eligible_for_task_points': True,
-            'pay_per_day': 9001,
-            'reports_to': [contributors[1].pk, contributors[3].pk],
-            'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
-            'skills': [skills[2].pk, skills[4].pk],
-            'team': team.pk,
-            'title': 'Opening title',
-        }, format='json')
+        r = api_client.post(
+            reverse('opening-list'),
+            data={
+                'active': True,
+                'description': 'Cool opening',
+                'eligible_for_task_points': True,
+                'pay_per_day': 9001,
+                'reports_to': [contributors[1].pk, contributors[3].pk],
+                'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
+                'skills': [skills[2].pk, skills[4].pk],
+                'team': team.pk,
+                'title': 'Opening title',
+            },
+            format='json'
+        )
 
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
+        'pk': ANY,
         'active': True,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'description': 'Cool opening',
         'eligible_for_task_points': True,
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'pay_per_day': 9001,
-        'pk': ANY,
         'reports_to': [contributors[1].pk, contributors[3].pk],
         'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
         'skills': [skills[2].pk, skills[4].pk],
@@ -85,37 +89,41 @@ def test_opening_patch(api_client, staff_user):
     team = TeamFactory()
 
     with freeze_time() as frozen_time:
-        r = api_client.patch(reverse('opening-detail', (opening.pk,)), data={
-            'active': True,
-            'description': 'Even Cooler opening',
-            'eligible_for_task_points': True,
-            'pay_per_day': 10001,
-            'reports_to': [contributor1.pk],
-            'responsibilities': [
-                opening.responsibilities.all()[0].pk,
-                opening.responsibilities.all()[1].pk,
-                opening.responsibilities.all()[2].pk
-            ],
-            'skills': [skills[0].pk, skills[2].pk, skills[4].pk],
-            'team': team.pk,
-            'title': 'Updated title',
-        }, format='json')
+        r = api_client.patch(
+            reverse('opening-detail', (opening.pk,)),
+            data={
+                'active': True,
+                'description': 'Even Cooler opening',
+                'eligible_for_task_points': True,
+                'pay_per_day': 10001,
+                'reports_to': [contributor1.pk],
+                'responsibilities': [
+                    opening.responsibilities.all()[0].pk,
+                    opening.responsibilities.all()[1].pk,
+                    opening.responsibilities.all()[2].pk
+                ],
+                'skills': [skills[0].pk, skills[2].pk, skills[4].pk],
+                'team': team.pk,
+                'title': 'Updated title',
+            },
+            format='json'
+        )
 
     assert r.status_code == status.HTTP_200_OK
     assert r.data == {
+        'pk': str(opening.pk),
+        'created_date': serializers.DateTimeField().to_representation(opening.created_date),
+        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'active': True,
         'description': 'Even Cooler opening',
         'eligible_for_task_points': True,
         'pay_per_day': 10001,
-        'pk': str(opening.pk),
         'reports_to': [contributor1.pk],
         'responsibilities': [
             opening.responsibilities.all()[0].pk,
             opening.responsibilities.all()[1].pk,
             opening.responsibilities.all()[2].pk
         ],
-        'created_date': serializers.DateTimeField().to_representation(opening.created_date),
-        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'skills': [skills[0].pk, skills[2].pk, skills[4].pk],
         'team': team.pk,
         'title': 'Updated title',

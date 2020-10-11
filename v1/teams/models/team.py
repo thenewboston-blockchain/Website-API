@@ -9,9 +9,9 @@ from v1.contributors.models import Contributor
 
 class Team(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    title = models.CharField(max_length=250)
-
     contributors = models.ManyToManyField(Contributor, through='TeamContributor')
+
+    title = models.CharField(max_length=250)
 
     def __str__(self):
         return f'#{self.pk}: {self.title}'

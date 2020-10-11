@@ -24,9 +24,9 @@ def test_object_list(api_client, django_assert_max_num_queries, url_factory):
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 5
     assert r.data[0] == {
+        'pk': obj[0].pk,
         'created_date': serializers.DateTimeField().to_representation(obj[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(obj[0].modified_date),
-        'pk': obj[0].pk,
         'title': obj[0].title,
     }
 
@@ -44,9 +44,9 @@ def test_object_staff_post(api_client, staff_user, url_model):
 
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
+        'pk': ANY,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'pk': ANY,
         'title': 'sometitle',
     }
     assert model.objects.get(pk=r.data['pk']).title == 'sometitle'
@@ -63,14 +63,18 @@ def test_object_staff_patch(api_client, staff_user, url_factory_model):
     obj = factory()
 
     with freeze_time() as frozen_time:
-        r = api_client.patch(reverse(f'{url}-detail', (obj.pk,)), data={'title': 'sometitle'}, format='json')
+        r = api_client.patch(
+            reverse(f'{url}-detail', (obj.pk,)),
+            data={'title': 'sometitle'},
+            format='json'
+        )
 
     assert r.status_code == status.HTTP_200_OK
     assert r.data == {
         'pk': obj.pk,
-        'title': 'sometitle',
         'created_date': serializers.DateTimeField().to_representation(obj.created_date),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'title': 'sometitle',
     }
     assert model.objects.get(pk=r.data['pk']).title == 'sometitle'
 
@@ -94,7 +98,11 @@ def test_object_staff_delete(api_client, staff_user, url_factory_model):
 
 @pytest.mark.parametrize('url', ['responsibility', 'skill'])
 def test_object_anon_post(api_client, url):
-    r = api_client.post(reverse(f'{url}-list'), data={'title': 'sometitle'}, format='json')
+    r = api_client.post(
+        reverse(f'{url}-list'),
+        data={'title': 'sometitle'},
+        format='json'
+    )
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
@@ -107,7 +115,11 @@ def test_object_anon_patch(api_client, url_factory):
     url, factory = url_factory
     obj = factory()
 
-    r = api_client.patch(reverse(f'{url}-detail', (obj.pk,)), data={'title': 'sometitle'}, format='json')
+    r = api_client.patch(
+        reverse(f'{url}-detail', (obj.pk,)),
+        data={'title': 'sometitle'},
+        format='json'
+    )
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
