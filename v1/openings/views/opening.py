@@ -24,7 +24,6 @@ class OpeningViewSet(
     GenericViewSet,
 ):
     queryset = Opening.objects \
-        .select_related() \
         .prefetch_related('reports_to', 'responsibilities', 'skills') \
         .order_by('created_date') \
         .all()
