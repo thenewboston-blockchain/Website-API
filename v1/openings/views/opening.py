@@ -10,9 +10,9 @@ from rest_framework.mixins import (
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
 from ..models import Opening
 from ..serializers import OpeningSerializer, OpeningSerializerWrite
-from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 
 class OpeningViewSet(

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from rest_framework import viewsets
 
+from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
 from ..models import Task
 from ..serializers import TaskSerializer
-from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 
 class TaskViewSet(viewsets.ModelViewSet):

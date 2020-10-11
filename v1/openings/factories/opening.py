@@ -2,11 +2,11 @@
 import factory
 from factory.django import DjangoModelFactory
 
+from v1.contributors.factories import ContributorFactory
 from v1.teams.factories import TeamFactory
 from .responsibility import ResponsibilityFactory
 from .skill import SkillFactory
 from ..models import Opening
-from ...contributors.factories import ContributorFactory
 
 
 class OpeningFactory(DjangoModelFactory):

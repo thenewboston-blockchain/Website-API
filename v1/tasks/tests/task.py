@@ -5,9 +5,9 @@ from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
+from v1.contributors.factories import ContributorFactory
 from ..factories import TaskFactory
 from ..models import Task
-from ...contributors.factories import ContributorFactory
 
 
 def test_task_list(api_client, django_assert_max_num_queries):
