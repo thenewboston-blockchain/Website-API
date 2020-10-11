@@ -1,0 +1,16 @@
+# -*- coding: utf-8 -*-
+from rest_framework import viewsets
+
+from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
+from ..models import Task
+from ..serializers import TaskSerializer
+
+
+class TaskViewSet(viewsets.ModelViewSet):
+    queryset = Task.objects \
+        .select_related('contributor') \
+        .order_by('created_date') \
+        .all()
+    serializer_class = TaskSerializer
+    pagination_class = None
+    permission_classes = [IsStaffOrReadOnly]

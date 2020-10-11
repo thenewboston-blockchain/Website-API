@@ -1,8 +1,8 @@
 .DS_Store
 .idea
 .vscode
-dump.rdb
 docker-compose.local.yml
+dump.rdb
 
 # Log files
 !logs/.gitkeep
@@ -48,9 +48,9 @@ parts/
 pip-wheel-metadata/
 sdist/
 share/python-wheels/
+thenewboston.tar.gz
 var/
 wheels/
-thenewboston.tar.gz
 
 # Unit test / coverage reports
 *.cover
