@@ -6,7 +6,6 @@ from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
 from v1.contributors.factories import ContributorFactory
-from v1.contributors.serializers import ContributorSerializer
 from v1.teams.factories import TeamFactory
 from ..factories import OpeningFactory, ResponsibilityFactory, SkillFactory
 from ..models import Opening
@@ -28,7 +27,7 @@ def test_opening_list(api_client, django_assert_max_num_queries):
         'description': openings[0].description,
         'eligible_for_task_points': openings[0].eligible_for_task_points,
         'pay_per_day': openings[0].pay_per_day,
-        'reports_to': [ContributorSerializer(r).data for r in openings[0].reports_to.all()],
+        'reports_to': [r.pk for r in openings[0].reports_to.all()],
         'responsibilities': [r.pk for r in openings[0].responsibilities.all()],
         'skills': [s.pk for s in openings[0].skills.all()],
         'team': openings[0].team_id,
@@ -70,10 +69,7 @@ def test_opening_post(api_client, staff_user):
         'eligible_for_task_points': True,
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'pay_per_day': 9001,
-        'reports_to': [
-            ContributorSerializer(contributors[1]).data,
-            ContributorSerializer(contributors[3]).data
-        ],
+        'reports_to': [contributors[1].pk, contributors[3].pk],
         'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
         'skills': [skills[2].pk, skills[4].pk],
         'team': team.pk,
@@ -86,10 +82,15 @@ def test_opening_post(api_client, staff_user):
 def test_opening_patch(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
-    skills = SkillFactory.create_batch(5)
     contributor_1 = ContributorFactory()
     contributor_2 = ContributorFactory()
-    opening = OpeningFactory(reports_to=[contributor_1, contributor_2], responsibilities=3, skills=5)
+    responsibilities = ResponsibilityFactory.create_batch(3)
+    skills = SkillFactory.create_batch(5)
+    opening = OpeningFactory(
+        reports_to=[contributor_1, contributor_2],
+        responsibilities=responsibilities,
+        skills=skills
+    )
     team = TeamFactory()
 
     with freeze_time() as frozen_time:
@@ -102,11 +103,15 @@ def test_opening_patch(api_client, staff_user):
                 'pay_per_day': 10001,
                 'reports_to': [contributor_1.pk],
                 'responsibilities': [
-                    opening.responsibilities.all()[0].pk,
-                    opening.responsibilities.all()[1].pk,
-                    opening.responsibilities.all()[2].pk
+                    responsibilities[0].pk,
+                    responsibilities[1].pk,
+                    responsibilities[2].pk
                 ],
-                'skills': [skills[0].pk, skills[2].pk, skills[4].pk],
+                'skills': [
+                    skills[0].pk,
+                    skills[2].pk,
+                    skills[4].pk
+                ],
                 'team': team.pk,
                 'title': 'Updated title',
             },
@@ -122,13 +127,17 @@ def test_opening_patch(api_client, staff_user):
         'description': 'Even Cooler opening',
         'eligible_for_task_points': True,
         'pay_per_day': 10001,
-        'reports_to': [ContributorSerializer(contributor_1).data],
+        'reports_to': [contributor_1.pk],
         'responsibilities': [
-            opening.responsibilities.all()[0].pk,
-            opening.responsibilities.all()[1].pk,
-            opening.responsibilities.all()[2].pk
+            responsibilities[0].pk,
+            responsibilities[1].pk,
+            responsibilities[2].pk
         ],
-        'skills': [skills[0].pk, skills[2].pk, skills[4].pk],
+        'skills': [
+            skills[0].pk,
+            skills[2].pk,
+            skills[4].pk
+        ],
         'team': team.pk,
         'title': 'Updated title',
     }

@@ -24,7 +24,7 @@ def test_object_list(api_client, django_assert_max_num_queries, url_factory):
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 5
     assert r.data[0] == {
-        'pk': obj[0].pk,
+        'pk': str(obj[0].pk),
         'created_date': serializers.DateTimeField().to_representation(obj[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(obj[0].modified_date),
         'title': obj[0].title,
@@ -71,7 +71,7 @@ def test_object_staff_patch(api_client, staff_user, url_factory_model):
 
     assert r.status_code == status.HTTP_200_OK
     assert r.data == {
-        'pk': obj.pk,
+        'pk': str(obj.pk),
         'created_date': serializers.DateTimeField().to_representation(obj.created_date),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'title': 'sometitle',
