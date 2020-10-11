@@ -1,6 +1,7 @@
 .DS_Store
 .idea
 .vscode
+docker-compose.local.yml
 dump.rdb
 
 # Log files
@@ -47,6 +48,7 @@ parts/
 pip-wheel-metadata/
 sdist/
 share/python-wheels/
+thenewboston.tar.gz
 var/
 wheels/
 
@@ -63,6 +65,9 @@ wheels/
 coverage.xml
 htmlcov/
 nosetests.xml
+
+# pytest
+.pytest_cache
 
 # pyenv
 .python-version

@@ -14,9 +14,19 @@ pip3 install -r requirements/local.txt
 
 ## Developers
 
-When adding a package, add to `requirements/base.in` and then :
+When adding a package, add to `requirements/base.in` and then:
 ```
 bash scripts/compile_requirements.sh
+```
+
+To run tests:
+```
+pytest
+```
+
+To check styling:
+```
+flake8 --config=.flake8 config tests v1
 ```
 
 ## Community

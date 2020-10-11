@@ -4,10 +4,70 @@
 #
 #    pip-compile --output-file=requirements/production.txt requirements/production.in
 #
-asgiref==3.2.10           # via django
-django-cors-headers==3.5.0  # via -r requirements/base.in
+aioredis==1.3.1           # via channels-redis
+asgiref==3.2.10           # via channels, channels-redis, daphne, django
+async-timeout==3.0.1      # via aioredis
+attrs==20.2.0             # via automat, pytest, service-identity, twisted
+autobahn==20.7.1          # via daphne
+automat==20.2.0           # via twisted
+certifi==2020.6.20        # via requests, sentry-sdk
+cffi==1.14.3              # via cryptography, pynacl
+channels-redis==2.4.2     # via thenewboston
+channels==2.4.0           # via channels-redis, thenewboston
+chardet==3.0.4            # via requests
+constantly==15.1.0        # via twisted
+coverage==5.3             # via pytest-cov
+cryptography==3.1.1       # via autobahn, pyopenssl, service-identity
+daphne==2.5.0             # via channels
+django-cors-headers==3.4.0  # via thenewboston
 django-debug-toolbar==3.1.1  # via -r requirements/base.in
-django==3.1.2             # via -r requirements/base.in, django-cors-headers, django-debug-toolbar, djangorestframework
-djangorestframework==3.12.1  # via -r requirements/base.in
+django-redis==4.12.1      # via -r requirements/base.in
+django==3.1.1             # via channels, django-cors-headers, django-debug-toolbar, django-redis, djangorestframework, thenewboston
+djangorestframework==3.11.1  # via thenewboston
+factory-boy==3.0.1        # via thenewboston
+faker==4.9.0              # via factory-boy
+freezegun==1.0.0          # via -r requirements/base.in
+hiredis==1.1.0            # via aioredis
+hyperlink==20.0.1         # via twisted
+idna==2.10                # via hyperlink, requests, twisted
+importlib-metadata==2.0.0  # via pluggy, pytest
+incremental==17.5.0       # via twisted
+iniconfig==1.0.1          # via pytest
+more-itertools==8.5.0     # via pytest
+msgpack==0.6.2            # via channels-redis
+packaging==20.4           # via pytest
+pluggy==0.13.1            # via pytest
+psycopg2-binary==2.8.6    # via -r requirements/base.in
+ptable==0.9.2             # via thenewboston
+py==1.9.0                 # via pytest
+pyasn1-modules==0.2.8     # via service-identity
+pyasn1==0.4.8             # via pyasn1-modules, service-identity
+pycodestyle==2.6.0        # via thenewboston
+pycparser==2.20           # via cffi
+pyhamcrest==2.0.2         # via twisted
+pynacl==1.3.0             # via thenewboston
+pyopenssl==19.1.0         # via twisted
+pyparsing==2.4.7          # via packaging
+pytest-asyncio==0.14.0    # via thenewboston
+pytest-cov==2.10.1        # via thenewboston
+pytest-django==3.10.0     # via thenewboston
+pytest==6.0.2             # via pytest-asyncio, pytest-cov, pytest-django, thenewboston
+python-dateutil==2.8.1    # via faker, freezegun
 pytz==2020.1              # via django
-sqlparse==0.3.1           # via django, django-debug-toolbar
+redis==3.5.3              # via django-redis
+requests==2.24.0          # via thenewboston
+sentry-sdk==0.18.0        # via thenewboston
+service-identity==18.1.0  # via twisted
+six==1.15.0               # via automat, cryptography, packaging, pynacl, pyopenssl, python-dateutil
+sqlparse==0.4.1           # via django, django-debug-toolbar
+text-unidecode==1.3       # via faker
+thenewboston==0.0.22      # via -r requirements/base.in
+toml==0.10.1              # via pytest
+twisted[tls]==20.3.0      # via daphne
+txaio==20.4.1             # via autobahn
+urllib3==1.25.10          # via requests, sentry-sdk
+zipp==3.3.0               # via importlib-metadata
+zope.interface==5.1.2     # via twisted
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
