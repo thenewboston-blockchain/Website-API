@@ -2,8 +2,8 @@
 from rest_framework import viewsets
 
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
-from ..models.contributor import Contributor
-from ..serializers.contributor import ContributorSerializer
+from ..models import Contributor
+from ..serializers import ContributorSerializer
 
 
 class ContributorViewSet(viewsets.ModelViewSet):

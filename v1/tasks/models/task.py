@@ -4,12 +4,10 @@ import uuid
 from django.db import models
 from thenewboston.models.created_modified import CreatedModified
 
-from v1.contributors.models import Contributor
-
 
 class Task(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    contributor = models.ForeignKey(Contributor, on_delete=models.CASCADE)
+    contributor = models.ForeignKey('contributors.Contributor', on_delete=models.CASCADE)
 
     amount = models.PositiveIntegerField()
     completed_date = models.DateTimeField(null=True)

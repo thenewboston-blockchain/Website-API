@@ -1,28 +1,13 @@
 # -*- coding: utf-8 -*-
-from rest_framework import status
-from rest_framework.mixins import (
-    CreateModelMixin,
-    DestroyModelMixin,
-    ListModelMixin,
-    RetrieveModelMixin,
-    UpdateModelMixin
-)
+from rest_framework import status, viewsets
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
 from ..models import Opening
 from ..serializers import OpeningSerializer, OpeningSerializerWrite
 
 
-class OpeningViewSet(
-    CreateModelMixin,
-    DestroyModelMixin,
-    ListModelMixin,
-    RetrieveModelMixin,
-    UpdateModelMixin,
-    GenericViewSet,
-):
+class OpeningViewSet(viewsets.ModelViewSet):
     queryset = Opening.objects \
         .prefetch_related('reports_to', 'responsibilities', 'skills') \
         .order_by('created_date') \
