@@ -20,7 +20,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
 
-    'v1.meta.apps.MetaConfig',
     'v1.teams.apps.TeamsConfig',
     'v1.contributors.apps.ContributorsConfig',
     'v1.openings.apps.OpeningsConfig',

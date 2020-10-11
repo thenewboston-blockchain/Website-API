@@ -6,10 +6,9 @@ from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
 from v1.teams.factories import TeamFactory
-from ..factories import OpeningFactory
+from ..factories import OpeningFactory, ResponsibilityFactory, SkillFactory
 from ..models import Opening
 from ...contributors.factories import ContributorFactory
-from ...meta.factories import ResponsibilityFactory, SkillFactory
 
 
 def test_opening_list(api_client, django_assert_max_num_queries):

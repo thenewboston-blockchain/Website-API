@@ -2,9 +2,8 @@
 from rest_framework import serializers
 
 from v1.teams.models.team import Team
-from ..models.opening import Opening
+from ..models import Opening, Responsibility, Skill
 from ...contributors.models import Contributor
-from ...meta.models import Responsibility, Skill
 
 
 class OpeningSerializer(serializers.ModelSerializer):
