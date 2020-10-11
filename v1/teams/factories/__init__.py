@@ -2,6 +2,6 @@
 from .team import TeamContributorFactory, TeamFactory
 
 __all__ = [
-    'TeamFactory',
-    'TeamContributorFactory'
+    'TeamContributorFactory',
+    'TeamFactory'
 ]

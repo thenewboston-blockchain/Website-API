@@ -4,7 +4,7 @@ from .responsibility import ResponsibilityFactory
 from .skill import SkillFactory
 
 __all__ = [
-    OpeningFactory,
-    ResponsibilityFactory,
-    SkillFactory
+    'OpeningFactory',
+    'ResponsibilityFactory',
+    'SkillFactory'
 ]

@@ -4,7 +4,7 @@ from .responsibility import ResponsibilityViewSet
 from .skill import SkillViewSet
 
 __all__ = [
-    OpeningViewSet,
-    ResponsibilityViewSet,
-    SkillViewSet
+    'OpeningViewSet',
+    'ResponsibilityViewSet',
+    'SkillViewSet'
 ]

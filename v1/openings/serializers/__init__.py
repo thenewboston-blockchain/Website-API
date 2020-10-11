@@ -4,7 +4,7 @@ from .responsibility import ResponsibilitySerializer
 from .skill import SkillSerializer
 
 __all__ = [
-    OpeningSerializer,
-    ResponsibilitySerializer,
-    SkillSerializer,
+    'OpeningSerializer',
+    'ResponsibilitySerializer',
+    'SkillSerializer',
 ]
