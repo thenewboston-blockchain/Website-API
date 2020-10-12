@@ -23,6 +23,7 @@ def test_contributor_list(api_client, django_assert_max_num_queries):
         'modified_date': serializers.DateTimeField().to_representation(contributors[0].modified_date),
         'display_name': contributors[0].display_name,
         'github_username': contributors[0].github_username,
+        'profile_image': '',
         'slack_username': contributors[0].slack_username,
     }
 
@@ -48,6 +49,7 @@ def test_contributor_post(api_client, staff_user):
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'display_name': 'Super Dev',
         'github_username': 'super_githuber',
+        'profile_image': '',
         'slack_username': 'super_slacker',
     }
 
@@ -73,6 +75,7 @@ def test_contributor_patch(api_client, staff_user):
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'display_name': 'Senior Super Dev',
         'github_username': 'senior_super_githuber',
+        'profile_image': '',
         'slack_username': 'senior_super_slacker',
     }
 
