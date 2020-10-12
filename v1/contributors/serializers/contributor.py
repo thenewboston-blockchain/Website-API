@@ -8,6 +8,7 @@ class ContributorSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
+            'account_number',
             'created_date',
             'display_name',
             'github_username',
