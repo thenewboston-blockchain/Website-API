@@ -21,8 +21,10 @@ def test_contributor_list(api_client, django_assert_max_num_queries):
         'pk': str(contributors[0].pk),
         'created_date': serializers.DateTimeField().to_representation(contributors[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(contributors[0].modified_date),
+        'account_number': contributors[0].account_number,
         'display_name': contributors[0].display_name,
         'github_username': contributors[0].github_username,
+        'profile_image': '',
         'slack_username': contributors[0].slack_username,
     }
 
@@ -34,6 +36,7 @@ def test_contributor_post(api_client, staff_user):
         r = api_client.post(
             reverse('contributor-list'),
             data={
+                'account_number': '4ed6c42c98a9f9b521f434df41e7de87a1543940121c895f3fb383bb8585d3ec',
                 'display_name': 'Super Dev',
                 'github_username': 'super_githuber',
                 'slack_username': 'super_slacker',
@@ -46,8 +49,10 @@ def test_contributor_post(api_client, staff_user):
         'pk': ANY,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'account_number': '4ed6c42c98a9f9b521f434df41e7de87a1543940121c895f3fb383bb8585d3ec',
         'display_name': 'Super Dev',
         'github_username': 'super_githuber',
+        'profile_image': '',
         'slack_username': 'super_slacker',
     }
 
@@ -71,8 +76,10 @@ def test_contributor_patch(api_client, staff_user):
         'pk': str(contributor.pk),
         'created_date': serializers.DateTimeField().to_representation(contributor.created_date),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'account_number': contributor.account_number,
         'display_name': 'Senior Super Dev',
         'github_username': 'senior_super_githuber',
+        'profile_image': '',
         'slack_username': 'senior_super_slacker',
     }
 
