@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'v1.openings.apps.OpeningsConfig',
     'v1.tasks.apps.TasksConfig',
     'v1.teams.apps.TeamsConfig',
-
+    'v1.users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -79,6 +79,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
