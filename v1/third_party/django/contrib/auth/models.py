@@ -11,7 +11,14 @@ from .managers import UserManager
 class AbstractUser(AbstractBaseUser, PermissionsMixin):
 
     date_joined = DateTimeField(_('date joined'), default=timezone.now)
-    email = EmailField(_('email address'), blank=True)
+    email = EmailField(
+        _('email address'),
+        unique=True,
+        help_text=_('Required.'),
+        error_messages={
+            'unique': _('A user with that email address already exists.'),
+        },
+    )
     is_staff = BooleanField(
         _('staff status'),
         default=False,
