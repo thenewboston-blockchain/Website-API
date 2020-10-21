@@ -1,16 +1,13 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
-from django.db.models import BooleanField, DateTimeField, EmailField
-from django.utils import timezone
+from django.db.models import BooleanField, EmailField
 from django.utils.translation import gettext_lazy as _
 
 from .managers import UserManager
 
 
 class AbstractUser(AbstractBaseUser, PermissionsMixin):
-
-    date_joined = DateTimeField(_('date joined'), default=timezone.now)
     email = EmailField(
         _('email address'),
         unique=True,

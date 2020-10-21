@@ -36,7 +36,8 @@ class CustomUserAdmin(UserAdmin):
                 'fields':
                 (
                     'last_login',
-                    'date_joined',
+                    'created_date',
+                    'modified_date',
                 )
             },
         ),
@@ -61,7 +62,7 @@ class CustomUserAdmin(UserAdmin):
         'is_active',
         'is_staff',
         'is_superuser',
-        'date_joined',
+        'created_date',
         'last_login',
     )
     search_fields = (
