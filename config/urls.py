@@ -9,7 +9,7 @@ from v1.contributors.urls import router as contributors_router
 from v1.openings.urls import router as openings_router
 from v1.tasks.urls import router as tasks_router
 from v1.teams.urls import router as teams_router
-from v1.thirdparty.dj_rest_auth.views import GithubLogin
+from v1.third_party.dj_rest_auth.views import GithubLoginView, LogoutView
 
 admin.site.index_title = 'Admin'
 admin.site.site_header = 'thenewboston'
@@ -19,9 +19,8 @@ urlpatterns = [
 
     # Core
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('auth/', include('dj_rest_auth.urls')),
-    path('auth/github/', GithubLogin.as_view(), name='github_login')
+    path('auth/login/github/', GithubLoginView.as_view(), name='github_login'),
+    path('auth/logout/', LogoutView.as_view(), name='logout'),
 ]
 
 router = DefaultRouter(trailing_slash=False)
