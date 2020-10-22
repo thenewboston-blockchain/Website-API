@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .models.user import User
+from .models import User
 
 
 @admin.register(User)
@@ -15,6 +16,11 @@ class CustomUserAdmin(UserAdmin):
                 'fields': (
                     'email',
                     'password',
+                    'account_number',
+                    'display_name',
+                    'github_username',
+                    'profile_image',
+                    'slack_username',
                 ),
             },
         ),

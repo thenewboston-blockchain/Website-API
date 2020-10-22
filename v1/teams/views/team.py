@@ -8,7 +8,7 @@ from ..serializers import TeamSerializer
 
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects \
-        .prefetch_related('teamcontributor_set') \
+        .prefetch_related('teammember_set') \
         .order_by('created_date') \
         .all()
     serializer_class = TeamSerializer

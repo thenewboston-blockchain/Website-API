@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from .team import TeamContributorFactory, TeamFactory
+from .team import TeamMemberFactory, TeamFactory
 
 __all__ = [
-    'TeamContributorFactory',
+    'TeamMemberFactory',
     'TeamFactory'
 ]

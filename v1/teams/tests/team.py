@@ -5,13 +5,13 @@ from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
-from v1.contributors.factories import ContributorFactory
+from v1.users.factories import UserFactory
 from ..factories import TeamFactory
 from ..models import Team
 
 
 def test_team_list(api_client, django_assert_max_num_queries):
-    teams = TeamFactory.create_batch(10, contributors=5)
+    teams = TeamFactory.create_batch(10, team_members=5)
 
     with django_assert_max_num_queries(2):
         r = api_client.get(reverse('team-list'))
@@ -22,18 +22,18 @@ def test_team_list(api_client, django_assert_max_num_queries):
         'pk': str(teams[0].pk),
         'created_date': serializers.DateTimeField().to_representation(teams[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(teams[0].modified_date),
-        'contributors_meta': [{
-            'contributor': c.contributor_id,
-            'is_lead': c.is_lead,
-            'pay_per_day': c.pay_per_day,
-            'created_date': serializers.DateTimeField().to_representation(c.created_date),
-            'modified_date': serializers.DateTimeField().to_representation(c.modified_date),
-        } for c in teams[0].teamcontributor_set.all()],
+        'team_members_meta': [{
+            'user': user.user_id,
+            'is_lead': user.is_lead,
+            'pay_per_day': user.pay_per_day,
+            'created_date': serializers.DateTimeField().to_representation(user.created_date),
+            'modified_date': serializers.DateTimeField().to_representation(user.modified_date),
+        } for user in teams[0].teammember_set.all()],
         'title': teams[0].title,
     }
 
 
-def test_team_contributors_empty_post(api_client, staff_user):
+def test_team_members_empty_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
     with freeze_time() as frozen_time:
@@ -46,7 +46,7 @@ def test_team_contributors_empty_post(api_client, staff_user):
         'pk': ANY,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'contributors_meta': [],
+        'team_members_meta': [],
         'title': 'Star team',
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
@@ -55,42 +55,44 @@ def test_team_contributors_empty_post(api_client, staff_user):
 def test_team_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
-    contributors = ContributorFactory.create_batch(5)
+    users = UserFactory.create_batch(5)
 
     with freeze_time() as frozen_time:
         r = api_client.post(reverse('team-list'), data={
             'title': 'Star team',
-            'contributors_meta': [
+            'team_members_meta': [
                 {
-                    'contributor': contributors[1].pk,
+                    'user': users[1].pk,
                     'is_lead': True,
                     'pay_per_day': 19001
                 },
                 {
-                    'contributor': contributors[3].pk,
+                    'user': users[3].pk,
                     'is_lead': False,
                     'pay_per_day': 9001
                 }
             ],
         }, format='json')
 
+    print(111)
+    print(r.data)
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
         'pk': ANY,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'contributors_meta': [
+        'team_members_meta': [
             {
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'contributor': contributors[1].pk,
+                'user': users[1].pk,
                 'is_lead': True,
                 'pay_per_day': 19001,
             },
             {
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'contributor': contributors[3].pk,
+                'user': users[3].pk,
                 'is_lead': False,
                 'pay_per_day': 9001,
             }
@@ -103,22 +105,22 @@ def test_team_post(api_client, staff_user):
 def test_team_patch(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
-    contributor = ContributorFactory()
-    team = TeamFactory(contributors=2)
+    user = UserFactory()
+    team = TeamFactory(team_members=2)
 
     with freeze_time() as frozen_time:
         r = api_client.patch(
             reverse('team-detail', (team.pk,)),
             data={
                 'title': 'Star team',
-                'contributors_meta': [
+                'team_members_meta': [
                     {
-                        'contributor': contributor.pk,
+                        'user': user.pk,
                         'is_lead': False,
                         'pay_per_day': 9001
                     },
                     {
-                        'contributor': team.teamcontributor_set.all()[1].contributor_id,
+                        'user': team.teammember_set.all()[1].user_id,
                         'is_lead': True,
                         'pay_per_day': 19001
                     }
@@ -132,20 +134,20 @@ def test_team_patch(api_client, staff_user):
         'pk': str(team.pk),
         'created_date': serializers.DateTimeField().to_representation(team.created_date),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'contributors_meta': [
+        'team_members_meta': [
             {
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'contributor': contributor.pk,
+                'user': user.pk,
                 'is_lead': False,
                 'pay_per_day': 9001,
             },
             {
                 'created_date': serializers.DateTimeField().to_representation(
-                    team.teamcontributor_set.all()[1].created_date
+                    team.teammember_set.all()[1].created_date
                 ),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'contributor': team.teamcontributor_set.all()[1].contributor_id,
+                'user': team.teammember_set.all()[1].user_id,
                 'is_lead': True,
                 'pay_per_day': 19001,
             },
@@ -159,7 +161,7 @@ def test_team_patch(api_client, staff_user):
 def test_team_delete(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
-    team = TeamFactory(contributors=2)
+    team = TeamFactory(team_members=2)
 
     r = api_client.delete(reverse('team-detail', (team.pk,)))
 
