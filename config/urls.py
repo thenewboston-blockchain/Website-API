@@ -5,7 +5,6 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from v1.contributors.urls import router as contributors_router
 from v1.openings.urls import router as openings_router
 from v1.tasks.urls import router as tasks_router
 from v1.teams.urls import router as teams_router
@@ -26,7 +25,6 @@ urlpatterns = [
 
 router = DefaultRouter(trailing_slash=False)
 
-router.registry.extend(contributors_router.registry)
 router.registry.extend(openings_router.registry)
 router.registry.extend(tasks_router.registry)
 router.registry.extend(teams_router.registry)
