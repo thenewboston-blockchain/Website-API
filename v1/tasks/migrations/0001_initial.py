@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contributors', '0001_initial'),
+        ('users', '0001_initial'),
     ]
 
     operations = [
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('completed_date', models.DateTimeField(null=True)),
                 ('repository', models.CharField(max_length=250)),
                 ('title', models.CharField(max_length=250)),
-                ('contributor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contributors.contributor')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='users.user')),
             ],
             options={
                 'abstract': False,

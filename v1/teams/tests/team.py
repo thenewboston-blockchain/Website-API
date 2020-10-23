@@ -74,8 +74,6 @@ def test_team_post(api_client, staff_user):
             ],
         }, format='json')
 
-    print(111)
-    print(r.data)
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
         'pk': ANY,

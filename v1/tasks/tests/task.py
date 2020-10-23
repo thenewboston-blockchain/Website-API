@@ -5,7 +5,7 @@ from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
-from v1.contributors.factories import ContributorFactory
+from v1.users.factories import UserFactory
 from ..factories import TaskFactory
 from ..models import Task
 
@@ -24,7 +24,7 @@ def test_task_list(api_client, django_assert_max_num_queries):
         'modified_date': serializers.DateTimeField().to_representation(tasks[0].modified_date),
         'amount': tasks[0].amount,
         'completed_date': tasks[0].completed_date,
-        'contributor': tasks[0].contributor_id,
+        'user': tasks[0].user_id,
         'repository': tasks[0].repository,
         'title': tasks[0].title,
     }
@@ -33,14 +33,14 @@ def test_task_list(api_client, django_assert_max_num_queries):
 def test_task_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
-    contributor = ContributorFactory()
+    user = UserFactory()
 
     with freeze_time() as frozen_time:
         r = api_client.post(
             reverse('task-list'),
             data={
                 'amount': 9001,
-                'contributor': contributor.pk,
+                'user': user.pk,
                 'repository': 'https://github.com/thenewboston-developers/Website-API/',
                 'title': 'New task',
             },
@@ -54,7 +54,7 @@ def test_task_post(api_client, staff_user):
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'amount': 9001,
         'completed_date': None,
-        'contributor': contributor.pk,
+        'user': user.pk,
         'repository': 'https://github.com/thenewboston-developers/Website-API/',
         'title': 'New task',
     }
@@ -64,7 +64,7 @@ def test_task_post(api_client, staff_user):
 def test_task_patch(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
-    contributor = ContributorFactory()
+    user = UserFactory()
     task = TaskFactory()
 
     with freeze_time() as frozen_time:
@@ -73,7 +73,7 @@ def test_task_patch(api_client, staff_user):
             data={
                 'amount': 9001,
                 'completed_date': '2020-12-12T23:59:59Z',
-                'contributor': contributor.pk,
+                'user': user.pk,
                 'repository': 'https://github.com/thenewboston-developers/Website-API/',
                 'title': 'New task',
             },
@@ -87,7 +87,7 @@ def test_task_patch(api_client, staff_user):
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'amount': 9001,
         'completed_date': '2020-12-12T23:59:59Z',
-        'contributor': contributor.pk,
+        'user': user.pk,
         'repository': 'https://github.com/thenewboston-developers/Website-API/',
         'title': 'New task',
     }

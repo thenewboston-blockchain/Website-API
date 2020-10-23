@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .team import TeamMemberFactory, TeamFactory
+from .team import TeamFactory, TeamMemberFactory
 
 __all__ = [
     'TeamMemberFactory',
