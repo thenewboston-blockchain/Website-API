@@ -3,7 +3,7 @@ import factory
 from factory.django import DjangoModelFactory
 from thenewboston.constants.network import VERIFY_KEY_LENGTH
 
-from ..models import User
+from ..models.user import User
 
 
 class UserFactory(DjangoModelFactory):

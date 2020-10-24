@@ -2,8 +2,8 @@
 from rest_framework.viewsets import ModelViewSet
 
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
-from ..models import User
-from ..serializers import UserSerializer
+from ..models.user import User
+from ..serializers.user import UserSerializer
 
 
 class UserViewSet(ModelViewSet):

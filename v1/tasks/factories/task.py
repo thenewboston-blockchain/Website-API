@@ -2,7 +2,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from v1.users.factories import UserFactory
+from v1.users.factories.user import UserFactory
 from ..models import Task
 
 

@@ -3,7 +3,7 @@ from django.db.models import Prefetch
 from rest_framework import viewsets
 
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
-from v1.users.models import User
+from v1.users.models.user import User
 from ..models import Opening
 from ..serializers import OpeningSerializer
 
