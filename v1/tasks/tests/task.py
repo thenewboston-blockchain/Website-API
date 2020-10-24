@@ -6,8 +6,8 @@ from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
 from v1.users.factories.user import UserFactory
-from ..factories import TaskFactory
-from ..models import Task
+from ..factories.task import TaskFactory
+from ..models.task import Task
 
 
 def test_task_list(api_client, django_assert_max_num_queries):

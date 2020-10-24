@@ -2,7 +2,7 @@
 from factory import Faker
 from factory.django import DjangoModelFactory
 
-from ..models import Skill
+from ..models.skill import Skill
 
 
 class SkillFactory(DjangoModelFactory):

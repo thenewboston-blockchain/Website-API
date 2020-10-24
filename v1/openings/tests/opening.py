@@ -5,9 +5,11 @@ from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
-from v1.teams.factories import TeamFactory
-from ..factories import OpeningFactory, ResponsibilityFactory, SkillFactory
-from ..models import Opening
+from v1.teams.factories.team import TeamFactory
+from ..factories.opening import OpeningFactory
+from ..factories.responsibility import ResponsibilityFactory
+from ..factories.skill import SkillFactory
+from ..models.opening import Opening
 
 
 def test_opening_list(api_client, django_assert_max_num_queries):
@@ -26,7 +28,7 @@ def test_opening_list(api_client, django_assert_max_num_queries):
         'description': openings[0].description,
         'eligible_for_task_points': openings[0].eligible_for_task_points,
         'pay_per_day': openings[0].pay_per_day,
-        'reports_to': [r.pk for r in openings[0].team.team_members.filter(teammember__is_lead=True)],
+        'reports_to': [r.pk for r in openings[0].team.team_members.filter(is_lead=True)],
         'responsibilities': [r.pk for r in openings[0].responsibilities.all()],
         'skills': [s.pk for s in openings[0].skills.all()],
         'team': openings[0].team_id,
@@ -66,7 +68,7 @@ def test_opening_post(api_client, staff_user):
         'eligible_for_task_points': True,
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'pay_per_day': 9001,
-        'reports_to': [r.pk for r in team.team_members.filter(teammember__is_lead=True)],
+        'reports_to': [r.pk for r in team.team_members.filter(is_lead=True)],
         'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
         'skills': [skills[2].pk, skills[4].pk],
         'team': team.pk,
@@ -120,7 +122,7 @@ def test_opening_patch(api_client, staff_user):
         'description': 'Even Cooler opening',
         'eligible_for_task_points': True,
         'pay_per_day': 10001,
-        'reports_to': [r.pk for r in team.team_members.filter(teammember__is_lead=True)],
+        'reports_to': [r.pk for r in team.team_members.filter(is_lead=True)],
         'responsibilities': [
             responsibilities[0].pk,
             responsibilities[1].pk,

@@ -2,7 +2,8 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from ..models import Team, TeamMember
+from ..models.team import Team
+from ..models.team_member import TeamMember
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
@@ -21,7 +22,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
 class TeamSerializer(serializers.ModelSerializer):
     team_members_meta = TeamMemberSerializer(
-        source='teammember_set',
+        source='team_members',
         allow_null=True,
         many=True,
         required=False
@@ -40,14 +41,14 @@ class TeamSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        teammember_set = validated_data.pop('teammember_set', [])
+        team_members = validated_data.pop('team_members', [])
         instance = super(TeamSerializer, self).create(validated_data)
 
-        for teammember in teammember_set:
+        for team_member in team_members:
             TeamMember.objects.create(
-                user=teammember['user'],
-                is_lead=teammember['is_lead'],
-                pay_per_day=teammember['pay_per_day'],
+                user=team_member['user'],
+                is_lead=team_member['is_lead'],
+                pay_per_day=team_member['pay_per_day'],
                 team=instance
             )
 
@@ -55,23 +56,23 @@ class TeamSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        teammember_set = validated_data.pop('teammember_set', [])
+        team_members = validated_data.pop('team_members', [])
         instance = super(TeamSerializer, self).update(instance, validated_data)
 
         TeamMember.objects \
             .filter(team=instance) \
-            .exclude(user__in=[teammember['user'].pk for teammember in teammember_set]) \
+            .exclude(user__in=[team_member['user'].pk for team_member in team_members]) \
             .delete()
 
-        for teammember in teammember_set:
+        for team_member in team_members:
             tc, created = TeamMember.objects.get_or_create(defaults={
-                'is_lead': teammember['is_lead'],
-                'pay_per_day': teammember['pay_per_day']
-            }, team=instance, user=teammember['user'])
+                'is_lead': team_member['is_lead'],
+                'pay_per_day': team_member['pay_per_day']
+            }, team=instance, user=team_member['user'])
 
             if not created:
-                tc.is_lead = teammember['is_lead']
-                tc.pay_per_day = teammember['pay_per_day']
+                tc.is_lead = team_member['is_lead']
+                tc.pay_per_day = team_member['pay_per_day']
                 tc.save()
 
         return instance

@@ -6,8 +6,10 @@ from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
-from ..factories import ResponsibilityFactory, SkillFactory
-from ..models import Responsibility, Skill
+from ..factories.responsibility import ResponsibilityFactory
+from ..factories.skill import SkillFactory
+from ..models.responsibility import Responsibility
+from ..models.skill import Skill
 
 
 @pytest.mark.parametrize('url_factory', [

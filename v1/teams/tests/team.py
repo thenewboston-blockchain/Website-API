@@ -6,8 +6,8 @@ from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
 from v1.users.factories.user import UserFactory
-from ..factories import TeamFactory
-from ..models import Team
+from ..factories.team import TeamFactory
+from ..models.team import Team
 
 
 def test_team_list(api_client, django_assert_max_num_queries):
@@ -28,7 +28,7 @@ def test_team_list(api_client, django_assert_max_num_queries):
             'pay_per_day': user.pay_per_day,
             'created_date': serializers.DateTimeField().to_representation(user.created_date),
             'modified_date': serializers.DateTimeField().to_representation(user.modified_date),
-        } for user in teams[0].teammember_set.all()],
+        } for user in teams[0].team_members.all()],
         'title': teams[0].title,
     }
 
@@ -118,7 +118,7 @@ def test_team_patch(api_client, staff_user):
                         'pay_per_day': 9001
                     },
                     {
-                        'user': team.teammember_set.all()[1].user_id,
+                        'user': team.team_members.all()[1].user_id,
                         'is_lead': True,
                         'pay_per_day': 19001
                     }
@@ -142,10 +142,10 @@ def test_team_patch(api_client, staff_user):
             },
             {
                 'created_date': serializers.DateTimeField().to_representation(
-                    team.teammember_set.all()[1].created_date
+                    team.team_members.all()[1].created_date
                 ),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'user': team.teammember_set.all()[1].user_id,
+                'user': team.team_members.all()[1].user_id,
                 'is_lead': True,
                 'pay_per_day': 19001,
             },
