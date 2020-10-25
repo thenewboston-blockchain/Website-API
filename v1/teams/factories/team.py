@@ -2,8 +2,9 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from v1.contributors.factories import ContributorFactory
-from ..models import Team, TeamContributor
+from v1.users.factories.user import UserFactory
+from ..models.team import Team
+from ..models.team_member import TeamMember
 
 
 class TeamFactory(DjangoModelFactory):
@@ -13,20 +14,20 @@ class TeamFactory(DjangoModelFactory):
         model = Team
 
     @factory.post_generation
-    def contributors(self, create, extracted, **kwargs):
+    def team_members(self, create, extracted, **kwargs):
         if not create:
             return
 
         if extracted:
             if isinstance(extracted, int):
-                TeamContributorFactory.create_batch(extracted, team=self)
+                TeamMemberFactory.create_batch(extracted, team=self)
 
 
-class TeamContributorFactory(DjangoModelFactory):
-    contributor = factory.SubFactory(ContributorFactory)
+class TeamMemberFactory(DjangoModelFactory):
+    user = factory.SubFactory(UserFactory)
     is_lead = factory.Faker('pybool')
     pay_per_day = factory.Faker('pyint')
     team = factory.SubFactory(TeamFactory)
 
     class Meta:
-        model = TeamContributor
+        model = TeamMember

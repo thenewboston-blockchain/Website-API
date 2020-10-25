@@ -7,6 +7,7 @@ SECRET_KEY = 'g#$0(*8%8af27k7-e!ll^!-4yxomcx8ljv_o&_z*zhvi)f8&e7'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+SITE_ID = 1
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -15,16 +16,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
-    # Requirements
     'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
 
-    'v1.contributors.apps.ContributorsConfig',
     'v1.openings.apps.OpeningsConfig',
     'v1.tasks.apps.TasksConfig',
     'v1.teams.apps.TeamsConfig',
-
+    'v1.users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -79,6 +85,22 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'github': {
+        'APP': {
+            'client_id': os.getenv('SOCIALACCOUNT_GITHUB_CLIENT_ID', ''),
+            'secret': os.getenv('SOCIALACCOUNT_GITHUB_CLIENT_SECRET', ''),
+        },
+        'CALLBACK_URL': os.getenv('SOCIALACCOUNT_GITHUB_CALLBACK_URL', ''),
+    }
+}
+AUTH_USER_MODEL = 'users.User'
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

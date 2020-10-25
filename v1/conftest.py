@@ -25,21 +25,18 @@ def api_client():
 
 
 @pytest.fixture()
-def staff_user(django_user_model, django_username_field):
+def staff_user(django_user_model):
     """Creates staff user"""
     UserModel = django_user_model
-    username_field = django_username_field
-    username = 'staff@example.com' if username_field == 'email' else 'staff'
+    email = 'staff@example.com'
 
     try:
-        user = UserModel._default_manager.get(**{username_field: username})
+        user = UserModel._default_manager.get(email=email)
     except UserModel.DoesNotExist:
         extra_fields = {
             'is_staff': True
         }
-        if username_field not in ('username', 'email'):
-            extra_fields[username_field] = 'staff'
         user = UserModel._default_manager.create_user(
-            username, 'staff@example.com', 'password', **extra_fields
+            email, 'password', **extra_fields
         )
     return user

@@ -7,7 +7,7 @@ from thenewboston.models.created_modified import CreatedModified
 
 class Task(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    contributor = models.ForeignKey('contributors.Contributor', on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
 
     amount = models.PositiveIntegerField()
     completed_date = models.DateTimeField(null=True)

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 
-from ..models import Contributor
+from ..models.user import User
 
 
-class ContributorSerializer(serializers.ModelSerializer):
+class UserSerializer(ModelSerializer):
 
     class Meta:
         fields = (
@@ -17,5 +17,10 @@ class ContributorSerializer(serializers.ModelSerializer):
             'profile_image',
             'slack_username',
         )
-        model = Contributor
-        read_only_fields = 'created_date', 'modified_date', 'profile_image'
+        model = User
+
+        read_only_fields = (
+            'created_date',
+            'modified_date',
+            'profile_image'
+        )

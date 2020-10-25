@@ -7,7 +7,6 @@ from thenewboston.models.created_modified import CreatedModified
 
 class Opening(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    reports_to = models.ManyToManyField('contributors.Contributor')
     responsibilities = models.ManyToManyField('Responsibility')
     skills = models.ManyToManyField('Skill')
     team = models.ForeignKey('teams.Team', on_delete=models.CASCADE)

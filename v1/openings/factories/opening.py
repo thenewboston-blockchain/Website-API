@@ -2,11 +2,10 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from v1.contributors.factories import ContributorFactory
-from v1.teams.factories import TeamFactory
+from v1.teams.factories.team import TeamFactory
 from .responsibility import ResponsibilityFactory
 from .skill import SkillFactory
-from ..models import Opening
+from ..models.opening import Opening
 
 
 class OpeningFactory(DjangoModelFactory):
@@ -19,21 +18,6 @@ class OpeningFactory(DjangoModelFactory):
 
     class Meta:
         model = Opening
-
-    @factory.post_generation
-    def reports_to(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            if not isinstance(extracted, (int, list, set, tuple)):
-                return
-            if isinstance(extracted, int):
-                for _ in range(extracted):
-                    self.reports_to.add(ContributorFactory())
-            else:
-                for reports_to in extracted:
-                    self.reports_to.add(reports_to)
 
     @factory.post_generation
     def responsibilities(self, create, extracted, **kwargs):

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
 
-from v1.contributors.models import Contributor
-from ..models import Task
+from v1.users.models.user import User
+from ..models.task import Task
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    contributor = serializers.PrimaryKeyRelatedField(queryset=Contributor.objects.all())
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         fields = (
             'amount',
             'completed_date',
-            'contributor',
+            'user',
             'created_date',
             'modified_date',
             'pk',

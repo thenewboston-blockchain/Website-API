@@ -2,26 +2,27 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from ..models import Team, TeamContributor
+from ..models.team import Team
+from ..models.team_member import TeamMember
 
 
-class TeamContributorSerializer(serializers.ModelSerializer):
+class TeamMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'contributor',
+            'user',
             'created_date',
             'is_lead',
             'modified_date',
             'pay_per_day',
         )
-        model = TeamContributor
+        model = TeamMember
         read_only_fields = 'created_date', 'modified_date'
 
 
 class TeamSerializer(serializers.ModelSerializer):
-    contributors_meta = TeamContributorSerializer(
-        source='teamcontributor_set',
+    team_members_meta = TeamMemberSerializer(
+        source='team_members',
         allow_null=True,
         many=True,
         required=False
@@ -29,7 +30,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'contributors_meta',
+            'team_members_meta',
             'created_date',
             'modified_date',
             'pk',
@@ -40,14 +41,14 @@ class TeamSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        teamcontributor_set = validated_data.pop('teamcontributor_set', [])
+        team_members = validated_data.pop('team_members', [])
         instance = super(TeamSerializer, self).create(validated_data)
 
-        for teamcontributor in teamcontributor_set:
-            TeamContributor.objects.create(
-                contributor=teamcontributor['contributor'],
-                is_lead=teamcontributor['is_lead'],
-                pay_per_day=teamcontributor['pay_per_day'],
+        for team_member in team_members:
+            TeamMember.objects.create(
+                user=team_member['user'],
+                is_lead=team_member['is_lead'],
+                pay_per_day=team_member['pay_per_day'],
                 team=instance
             )
 
@@ -55,23 +56,23 @@ class TeamSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        teamcontributor_set = validated_data.pop('teamcontributor_set', [])
+        team_members = validated_data.pop('team_members', [])
         instance = super(TeamSerializer, self).update(instance, validated_data)
 
-        TeamContributor.objects \
+        TeamMember.objects \
             .filter(team=instance) \
-            .exclude(contributor__in=[teamcontributor['contributor'].pk for teamcontributor in teamcontributor_set]) \
+            .exclude(user__in=[team_member['user'].pk for team_member in team_members]) \
             .delete()
 
-        for teamcontributor in teamcontributor_set:
-            tc, created = TeamContributor.objects.get_or_create(defaults={
-                'is_lead': teamcontributor['is_lead'],
-                'pay_per_day': teamcontributor['pay_per_day']
-            }, team=instance, contributor=teamcontributor['contributor'])
+        for team_member in team_members:
+            tc, created = TeamMember.objects.get_or_create(defaults={
+                'is_lead': team_member['is_lead'],
+                'pay_per_day': team_member['pay_per_day']
+            }, team=instance, user=team_member['user'])
 
             if not created:
-                tc.is_lead = teamcontributor['is_lead']
-                tc.pay_per_day = teamcontributor['pay_per_day']
+                tc.is_lead = team_member['is_lead']
+                tc.pay_per_day = team_member['pay_per_day']
                 tc.save()
 
         return instance

@@ -7,8 +7,6 @@ from thenewboston.models.created_modified import CreatedModified
 
 class Team(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    contributors = models.ManyToManyField('contributors.Contributor', through='TeamContributor')
-
     title = models.CharField(max_length=250)
 
     def __str__(self):

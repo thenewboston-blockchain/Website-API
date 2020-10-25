@@ -2,8 +2,8 @@
 from rest_framework import viewsets
 
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
-from ..models import Skill
-from ..serializers import SkillSerializer
+from ..models.skill import Skill
+from ..serializers.skill import SkillSerializer
 
 
 class SkillViewSet(viewsets.ModelViewSet):
