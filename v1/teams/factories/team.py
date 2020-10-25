@@ -3,7 +3,8 @@ import factory
 from factory.django import DjangoModelFactory
 
 from v1.users.factories.user import UserFactory
-from ..models import Team, TeamMember
+from ..models.team import Team
+from ..models.team_member import TeamMember
 
 
 class TeamFactory(DjangoModelFactory):

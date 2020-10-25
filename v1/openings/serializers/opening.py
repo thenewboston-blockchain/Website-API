@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-from ..models import Opening
+from ..models.opening import Opening
 
 
 class OpeningSerializer(ModelSerializer):
@@ -25,5 +25,6 @@ class OpeningSerializer(ModelSerializer):
         model = Opening
         read_only_fields = 'created_date', 'modified_date'
 
-    def get_reports_to(self, obj):
-        return [teammember.pk for teammember in obj.team.team_members.all()]
+    @staticmethod
+    def get_reports_to(opening):
+        return [team_member.pk for team_member in opening.team.team_members.all()]

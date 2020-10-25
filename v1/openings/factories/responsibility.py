@@ -2,7 +2,7 @@
 from factory import Faker
 from factory.django import DjangoModelFactory
 
-from ..models import Responsibility
+from ..models.responsibility import Responsibility
 
 
 class ResponsibilityFactory(DjangoModelFactory):

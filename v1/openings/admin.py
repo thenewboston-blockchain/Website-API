@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 
-from .models import Opening, Responsibility, Skill
+from .models.opening import Opening
+from .models.responsibility import Responsibility
+from .models.skill import Skill
 
 admin.site.register(Opening)
 admin.site.register(Responsibility)

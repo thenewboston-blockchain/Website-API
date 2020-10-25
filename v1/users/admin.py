@@ -8,7 +8,6 @@ from .models.user import User
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-
     fieldsets = (
         (
             None,
@@ -40,11 +39,9 @@ class CustomUserAdmin(UserAdmin):
             _('Important dates'),
             {
                 'fields':
-                (
-                    'last_login',
-                    'created_date',
-                    'modified_date',
-                )
+                    (
+                        'last_login',
+                    )
             },
         ),
     )
