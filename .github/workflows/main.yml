@@ -45,7 +45,7 @@ jobs:
       - name: Test with pytest
         run: pytest .
         env:
-          DJANGO_APPLICATION_ENVIRONMENT: local
+          DJANGO_APPLICATION_ENVIRONMENT: test
           REDIS_HOST: redis
           POSTGRES_HOST: postgres
           POSTGRES_DB: thenewboston
