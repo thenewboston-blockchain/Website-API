@@ -11,3 +11,6 @@ if ENVIRONMENT == 'postgres_local':
 
 if ENVIRONMENT == 'production':
     SETTINGS_MODULE = 'config.settings.production'
+
+if ENVIRONMENT == 'test':
+    SETTINGS_MODULE = 'config.settings.test'
