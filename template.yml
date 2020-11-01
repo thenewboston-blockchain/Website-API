@@ -8,10 +8,10 @@ Parameters:
     Type: String
 
   PrivateSubnetIds:
-    Type: CommaDelimitedList
+    Type: String
 
   PublicSubnetIds:
-    Type: CommaDelimitedList
+    Type: String
 
 
 Resources:
