@@ -1,0 +1,124 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  EnvironmentName:
+    Type: String
+
+  VpcId:
+    Type: String
+
+  PrivateSubnetIds:
+    Type: CommaDelimitedList
+
+  PublicSubnetIds:
+    Type: CommaDelimitedList
+
+
+Resources:
+  WebsiteApiServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - elasticbeanstalk.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth
+        - arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService
+
+  WebsiteApiRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+  WebsiteApiPolicies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: App
+      Roles:
+      - !Ref WebsiteApiRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: "*"
+            Resource: "*"
+
+  WebsiteApiInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+      - !Ref WebsiteApiRole
+
+  WebsiteApiApp:
+    Type: AWS::ElasticBeanstalk::Application
+    Properties:
+      Description: WebSiteApi Beanstalk App
+
+  WebsiteApiAppVersion:
+    Type: AWS::ElasticBeanstalk::ApplicationVersion
+    Properties:
+      ApplicationName: !Ref WebsiteApiApp
+      Description: WebSiteApi Beanstalk App Version
+      SourceBundle:
+        S3Bucket: _ARTIFACT_BUCKET_
+        S3Key: website-api/code._COMMIT_.zip
+
+  WebsiteApiConfigurationTemplate:
+    Type: AWS::ElasticBeanstalk::ConfigurationTemplate
+    Properties:
+      ApplicationName: !Ref WebsiteApiApp
+      Description: WebSiteApi Beanstalk App Configuration Template
+      SolutionStackName: 64bit Amazon Linux 2 v3.1.2 running Python 3.7
+      OptionSettings:
+        - Namespace: aws:elasticbeanstalk:environment
+          OptionName: EnvironmentType
+          Value: LoadBalanced
+
+        - Namespace: aws:elasticbeanstalk:environment
+          OptionName: ServiceRole
+          Value: !Ref WebsiteApiServiceRole
+
+        - Namespace: aws:autoscaling:launchconfiguration
+          OptionName: IamInstanceProfile
+          Value: !Ref WebsiteApiInstanceProfile
+
+        - Namespace: aws:autoscaling:asg
+          OptionName: MinSize
+          Value: "1"
+
+        - Namespace: aws:autoscaling:asg
+          OptionName: MaxSize
+          Value: "2"
+
+        - Namespace: aws:elasticbeanstalk:cloudwatch:logs
+          OptionName: StreamLogs
+          Value: "true"
+
+        - Namespace: aws:elasticbeanstalk:cloudwatch:logs
+          OptionName: DeleteOnTerminate
+          Value: "true"
+
+  WebsiteApiEnvironment:
+    Type: AWS::ElasticBeanstalk::Environment
+    Properties:
+      ApplicationName: !Ref WebsiteApiApp
+      Description: WebSiteApi Beanstalk App Environment
+      TemplateName: !Ref WebsiteApiConfigurationTemplate
+      VersionLabel: !Ref WebsiteApiAppVersion

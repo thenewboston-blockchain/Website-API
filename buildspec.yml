@@ -1,0 +1,21 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+
+  build:
+    commands:
+      - commit=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-7)
+      - zip -r9 code.${commit}.zip . -x .git
+      - aws s3 cp code.${commit}.zip s3://${ARTIFACT_BUCKET}/website-api/code.${commit}.zip
+      - aws s3 cp code.${commit}.zip s3://${ARTIFACT_BUCKET}/website-api/code.latest.zip
+      - rm code.${commit}.zip
+      - sed -i -e "s~_ARTIFACT_BUCKET_~$ARTIFACT_BUCKET~" template.yml
+      - sed -i -e "s~_COMMIT_~$commit~" template.yml
+      - aws cloudformation package --template-file template.yml --s3-bucket thenewboston-stacks --output-template-file outputtemplate.yml
+
+artifacts:
+  type: zip
+  files:
+    - outputtemplate.yml
