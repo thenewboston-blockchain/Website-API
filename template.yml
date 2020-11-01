@@ -66,6 +66,22 @@ Resources:
       Roles:
       - !Ref WebsiteApiRole
 
+  WebsiteApiSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${EnvironmentName}-website-api-http-ingress-sg'
+      GroupDescription: !Sub '${EnvironmentName} WebsiteApi Security group to HTTP to allow connect'
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
   WebsiteApiApp:
     Type: AWS::ElasticBeanstalk::Application
     Properties:
@@ -115,10 +131,26 @@ Resources:
           OptionName: DeleteOnTerminate
           Value: "true"
 
+        - Namespace: aws:ec2:vpc
+          OptionName: VPCId
+          Value: !Ref VpcId
+
+        - Namespace: aws:ec2:vpc
+          OptionName: Subnets
+          Value: !Ref PrivateSubnetIds
+
+        - Namespace: aws:ec2:vpc
+          OptionName: ELBSubnets
+          Value: !Ref PublicSubnetIds
+
+        - Namespace: aws:autoscaling:launchconfiguration
+          OptionName: SecurityGroups
+          Value: !Ref WebsiteApiSecurityGroup
+
   WebsiteApiEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
-      ApplicationName: !Ref WebsiteApiApp
       Description: WebSiteApi Beanstalk App Environment
+      ApplicationName: !Ref WebsiteApiApp
       TemplateName: !Ref WebsiteApiConfigurationTemplate
       VersionLabel: !Ref WebsiteApiAppVersion
