@@ -19,15 +19,16 @@ chardet==3.0.4            # via requests
 colorama==0.4.4           # via pytest
 constantly==15.1.0        # via twisted
 coverage==5.3             # via pytest-cov
-cryptography==3.1.1       # via autobahn, pyjwt, pyopenssl, service-identity
+cryptography==3.2.1       # via autobahn, pyjwt, pyopenssl, service-identity
 daphne==2.5.0             # via channels
 defusedxml==0.6.0         # via python3-openid
 dj-rest-auth==1.1.2       # via -r requirements/base.in
 django-allauth==0.43.0    # via -r requirements/base.in
 django-cors-headers==3.4.0  # via thenewboston
 django-debug-toolbar==3.1.1  # via -r requirements/base.in
+django-filter==2.4.0      # via -r requirements/base.in
 django-redis==4.12.1      # via -r requirements/base.in
-django==3.1.1             # via channels, dj-rest-auth, django-allauth, django-cors-headers, django-debug-toolbar, django-redis, djangorestframework, thenewboston
+django==3.1.1             # via channels, dj-rest-auth, django-allauth, django-cors-headers, django-debug-toolbar, django-filter, django-redis, djangorestframework, thenewboston
 djangorestframework==3.11.1  # via dj-rest-auth, thenewboston
 factory-boy==3.0.1        # via thenewboston
 faker==4.14.0             # via factory-boy
@@ -48,7 +49,7 @@ incremental==17.5.0       # via twisted
 iniconfig==1.1.1          # via pytest
 iptools==0.7.0            # via -r requirements/local.in
 mccabe==0.6.1             # via flake8
-more-itertools==8.5.0     # via pytest
+more-itertools==8.6.0     # via pytest
 msgpack==0.6.2            # via channels-redis
 oauthlib==3.1.0           # via requests-oauthlib
 packaging==20.4           # via pytest
@@ -84,11 +85,11 @@ snowballstemmer==2.0.0    # via pydocstyle
 sqlparse==0.4.1           # via django, django-debug-toolbar
 text-unidecode==1.3       # via faker
 thenewboston==0.0.22      # via -r requirements/base.in
-toml==0.10.1              # via pytest
+toml==0.10.2              # via pytest
 twisted[tls]==20.3.0      # via daphne
 txaio==20.4.1             # via autobahn
 urllib3==1.25.11          # via requests, sentry-sdk
-zipp==3.3.1               # via importlib-metadata
+zipp==3.4.0               # via importlib-metadata
 zope.interface==5.1.2     # via twisted
 
 # The following packages are considered to be unsafe in a requirements file:
