@@ -2,7 +2,15 @@
 import uuid
 
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db.models import CASCADE, CharField, ForeignKey, PositiveBigIntegerField, TextChoices, UUIDField
+from django.db.models import (
+    CASCADE,
+    CharField,
+    ForeignKey,
+    PositiveBigIntegerField,
+    TextChoices,
+    UUIDField,
+    UniqueConstraint,
+)
 from django.utils.translation import gettext_lazy as _
 from thenewboston.constants.network import MAX_POINT_VALUE, MIN_POINT_VALUE
 from thenewboston.models.created_modified import CreatedModified
@@ -25,6 +33,16 @@ class UserEarnings(CreatedModified):
             MinValueValidator(MIN_POINT_VALUE),
         ]
     )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['repository', 'time_period', 'user'],
+                name='unique_repository_time_period_user'
+            )
+        ]
+        default_related_name = 'user_earnings'
+        verbose_name_plural = 'user earnings'
 
     def __str__(self):
         return f'#{self.pk}: {self.user.email}/{self.repository}/{self.time_period}'
