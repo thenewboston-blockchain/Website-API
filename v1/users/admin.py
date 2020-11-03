@@ -4,6 +4,9 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .models.user import User
+from .models.user_earnings import UserEarnings
+
+admin.site.register(UserEarnings)
 
 
 @admin.register(User)
