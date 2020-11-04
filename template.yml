@@ -36,7 +36,7 @@ Resources:
     Properties:
       Name: api.thenewboston.com
       Type: A
-      HostedZoneName: thenewboston.com
+      HostedZoneId: ZDHCZ05S94NJT # thenewboston.com
       AliasTarget:
         DNSName: !GetAtt WebsiteApiEnvironment.EndpointURL
         HostedZoneId:
