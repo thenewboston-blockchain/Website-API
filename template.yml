@@ -13,8 +13,35 @@ Parameters:
   PublicSubnetIds:
     Type: String
 
+Mappings:
+  Beanstalk2Route53HostedZoneId:
+    us-west-2:
+      HostedZoneId: Z33MTJ483KN6FU
+    us-east-1:
+      HostedZoneId: Z3DZXE0Q79N41H
+    us-west-1:
+      HostedZoneId: Z1M58G0W56PQJA
+    eu-west-1:
+      HostedZoneId: Z3NF1Z3NOM5OY2
+    ap-northeast-1:
+      HostedZoneId: Z2YN17T5R711GT
+    ap-southeast-1:
+      HostedZoneId: Z1WI8VXHPB1R38
+    sa-east-1:
+      HostedZoneId: Z2ES78Y61JGQKS
 
 Resources:
+  WebsiteApiRecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: api.thenewboston.com
+      Type: A
+      HostedZoneName: thenewboston.com
+      AliasTarget:
+        DNSName: !GetAtt WebsiteApiEnvironment.EndpointURL
+        HostedZoneId:
+          Fn::FindInMap: [ Beanstalk2Route53HostedZoneId, !Ref AWS::Region, HostedZoneId ]
+
   WebsiteApiServiceRole:
     Type: AWS::IAM::Role
     Properties:
