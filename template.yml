@@ -30,11 +30,14 @@ Mappings:
     sa-east-1:
       HostedZoneId: Z2ES78Y61JGQKS
 
+Conditions:
+  IsProd: !Equals [ !Ref EnvironmentName, "prod"]
+
 Resources:
   WebsiteApiRecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
-      Name: api.thenewboston.com
+      Name: !If [IsProd, "api.thenewboston.com", !Sub "api-${EnvironmentName}.thenewboston.com"]
       Type: A
       HostedZoneId: ZDHCZ05S94NJT # thenewboston.com
       AliasTarget:
