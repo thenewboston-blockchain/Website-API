@@ -230,7 +230,8 @@ Resources:
 
         - Namespace: aws:elb:listener:443
           OptionName: SSLCertificateId
-          Value: !ImportValue ThenewbostonComCertificateArn
+#          Value: !ImportValue ThenewbostonComCertificateArn
+          Value: arn:aws:acm:us-west-2:105852977595:certificate/8fac52d7-1cef-47cd-91a0-3abb1e17a6ab
 
         - Namespace: aws:elb:listener:443
           OptionName: ListenerProtocol
