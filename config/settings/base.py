@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
     'drf_spectacular',
 
+    'v1.emails.apps.EmailsConfig',
     'v1.openings.apps.OpeningsConfig',
     'v1.tasks.apps.TasksConfig',
     'v1.teams.apps.TeamsConfig',
