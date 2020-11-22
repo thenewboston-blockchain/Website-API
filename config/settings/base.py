@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.github',
+    'drf_spectacular',
 
     'v1.openings.apps.OpeningsConfig',
     'v1.tasks.apps.TasksConfig',
@@ -133,7 +134,14 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.backends.DjangoFilterBackend',
         'rest_framework.filters.OrderingFilter',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 PAGINATION_DEFAULT_LIMIT = 50
 PAGINATION_MAX_LIMIT = 100
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'thenewboston website API',
+    'DESCRIPTION': 'API for thenewboston.com site',
+    'VERSION': '0.0.1',
+}

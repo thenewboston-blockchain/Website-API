@@ -3,6 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
 from v1.openings.urls import router as openings_router
@@ -21,6 +22,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/login/github/', GithubLoginView.as_view(), name='github_login'),
     path('auth/logout/', LogoutView.as_view(), name='logout'),
+
+    # OpenAPI Schema UI
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 
 router = DefaultRouter(trailing_slash=False)
