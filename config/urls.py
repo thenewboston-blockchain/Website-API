@@ -7,11 +7,11 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from rest_framework.routers import DefaultRouter
 
 from v1.openings.urls import router as openings_router
+from v1.products.urls import router as products_router
 from v1.tasks.urls import router as tasks_router
 from v1.teams.urls import router as teams_router
 from v1.third_party.dj_rest_auth.views import GithubLoginView, LogoutView
 from v1.users.urls import router as users_router
-from v1.products.urls import router as products_router
 
 admin.site.index_title = 'Admin'
 admin.site.site_header = 'thenewboston'
