@@ -13,6 +13,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             'user',
             'created_date',
             'is_lead',
+            'job_title',
             'modified_date',
             'pay_per_day',
         )

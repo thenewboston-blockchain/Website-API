@@ -25,6 +25,9 @@ services:
       - POSTGRES_DB=thenewboston
       - POSTGRES_USER=thenewboston
       - POSTGRES_PASSWORD=thenewboston
+      - SOCIALACCOUNT_GITHUB_CLIENT_ID=
+      - SOCIALACCOUNT_GITHUB_CLIENT_SECRET=
+      - SOCIALACCOUNT_GITHUB_CALLBACK_URL=
     command: python3 -u /opt/project/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/opt/project

@@ -7,3 +7,4 @@ drf-spectacular==0.11.0
 freezegun==1.0.0
 psycopg2-binary==2.8.6
 thenewboston==0.0.22
+djangorestframework-simplejwt==4.6.0

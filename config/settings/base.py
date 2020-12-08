@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'v1.tasks.apps.TasksConfig',
     'v1.teams.apps.TeamsConfig',
     'v1.users.apps.UsersConfig',
+    'v1.repositories.apps.RepositoriesConfig',
 ]
 
 MIDDLEWARE = [
@@ -112,7 +113,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 AUTH_USER_MODEL = 'users.User'
-
+LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', 'https://thenewboston.com'),
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
@@ -128,8 +129,14 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 CORS_ORIGIN_ALLOW_ALL = True
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = 'tnb-auth'
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.backends.DjangoFilterBackend',
         'rest_framework.filters.OrderingFilter',

@@ -30,6 +30,7 @@ django-filter==2.4.0      # via -r requirements/base.in
 django-redis==4.12.1      # via -r requirements/base.in
 django==3.1.1             # via channels, dj-rest-auth, django-allauth, django-cors-headers, django-debug-toolbar, django-filter, django-redis, djangorestframework, drf-spectacular, thenewboston
 djangorestframework==3.11.1  # via dj-rest-auth, drf-spectacular, thenewboston
+djangorestframework-simplejwt==4.6.0 # via -r requirements/base.in
 drf-spectacular==0.11.0   # via -r requirements/base.in
 factory-boy==3.0.1        # via thenewboston
 faker==4.14.2             # via factory-boy
