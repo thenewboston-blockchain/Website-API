@@ -2,8 +2,8 @@ import uuid
 
 from django.db.models import (
     CharField,
-    UUIDField,
     URLField,
+    UUIDField,
 )
 from thenewboston.models.created_modified import CreatedModified
 

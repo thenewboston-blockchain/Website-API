@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
+
 from v1.openings.urls import router as openings_router
 from v1.repositories.urls import router as repositories_router
 from v1.tasks.urls import router as tasks_router

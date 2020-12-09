@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.viewsets import ModelViewSet
-from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
 
+from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
 from ..models.repository import Repository
 from ..serializers.repository import RepositorySerializer
 
