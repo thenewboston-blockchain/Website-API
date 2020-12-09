@@ -17,19 +17,6 @@ def test_user_list(api_client, django_assert_max_num_queries, staff_user):
         r = api_client.get(reverse('user-list'))
 
     assert r.status_code == status.HTTP_200_OK
-    user_dict = {
-        'pk': str(users[0].pk),
-        'created_date': serializers.DateTimeField().to_representation(users[0].created_date),
-        'modified_date': serializers.DateTimeField().to_representation(users[0].modified_date),
-        'account_number': users[0].account_number,
-        'display_name': users[0].display_name,
-        'github_username': users[0].github_username,
-        'profile_image': '',
-        'slack_username': users[0].slack_username,
-    }
-    print('r.data------------->', r.data[0])
-    print('r.data------------->', len(r.data))
-    print('user_data---------->', user_dict)
     assert len(r.data) == 10
     assert r.data[0] == {
         'pk': str(users[0].pk),
