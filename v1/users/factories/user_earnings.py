@@ -9,7 +9,7 @@ class UserEarningsFactory(DjangoModelFactory):
     user = SubFactory('v1.users.factories.user.UserFactory')
 
     total_amount = Faker('pyint')
-    repository = Faker('pystr', max_chars=250)
+    repository = SubFactory('v1.repositories.factories.repositories.RepositoryFactory')
     time_period = FuzzyChoice(
         UserEarnings.TimePeriod.values
     )

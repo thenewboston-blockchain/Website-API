@@ -4,8 +4,8 @@ from unittest.mock import ANY
 from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
-
 from v1.users.factories.user import UserFactory
+
 from ..factories.team import TeamFactory
 from ..models.team import Team
 
@@ -26,6 +26,7 @@ def test_team_list(api_client, django_assert_max_num_queries):
             'user': user.user_id,
             'is_lead': user.is_lead,
             'pay_per_day': user.pay_per_day,
+            'job_title': user.job_title,
             'created_date': serializers.DateTimeField().to_representation(user.created_date),
             'modified_date': serializers.DateTimeField().to_representation(user.modified_date),
         } for user in teams[0].team_members.all()],
@@ -64,12 +65,14 @@ def test_team_post(api_client, staff_user):
                 {
                     'user': users[1].pk,
                     'is_lead': True,
-                    'pay_per_day': 19001
+                    'pay_per_day': 19001,
+                    'job_title': 'Back-End Developer'
                 },
                 {
                     'user': users[3].pk,
                     'is_lead': False,
-                    'pay_per_day': 9001
+                    'pay_per_day': 9001,
+                    'job_title': 'Front-End Developer'
                 }
             ],
         }, format='json')
@@ -86,6 +89,7 @@ def test_team_post(api_client, staff_user):
                 'user': users[1].pk,
                 'is_lead': True,
                 'pay_per_day': 19001,
+                'job_title': 'Back-End Developer'
             },
             {
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
@@ -93,6 +97,7 @@ def test_team_post(api_client, staff_user):
                 'user': users[3].pk,
                 'is_lead': False,
                 'pay_per_day': 9001,
+                'job_title': 'Front-End Developer'
             }
         ],
         'title': 'Star team',
@@ -115,12 +120,14 @@ def test_team_patch(api_client, staff_user):
                     {
                         'user': user.pk,
                         'is_lead': False,
-                        'pay_per_day': 9001
+                        'pay_per_day': 9001,
+                        'job_title': 'Front-End Developer'
                     },
                     {
                         'user': team.team_members.all()[1].user_id,
                         'is_lead': True,
-                        'pay_per_day': 19001
+                        'pay_per_day': 19001,
+                        'job_title': 'Back-End Developer'
                     }
                 ]
             },
@@ -139,6 +146,7 @@ def test_team_patch(api_client, staff_user):
                 'user': user.pk,
                 'is_lead': False,
                 'pay_per_day': 9001,
+                'job_title': 'Front-End Developer'
             },
             {
                 'created_date': serializers.DateTimeField().to_representation(
@@ -148,6 +156,7 @@ def test_team_patch(api_client, staff_user):
                 'user': team.team_members.all()[1].user_id,
                 'is_lead': True,
                 'pay_per_day': 19001,
+                'job_title': 'Back-End Developer'
             },
         ],
         'title': 'Star team',
@@ -172,7 +181,7 @@ def test_team_delete(api_client, staff_user):
 def test_opening_anon_post(api_client):
     r = api_client.post(reverse('team-list'), data={'title': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_team_anon_patch(api_client):
@@ -180,7 +189,7 @@ def test_team_anon_patch(api_client):
 
     r = api_client.post(reverse('team-detail', (team.pk,)), data={'title': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_team_anon_delete(api_client):
@@ -188,4 +197,4 @@ def test_team_anon_delete(api_client):
 
     r = api_client.delete(reverse('team-detail', (team.pk,)))
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
