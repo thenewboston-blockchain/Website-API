@@ -17,8 +17,10 @@ def test_user_list(api_client, django_assert_max_num_queries, staff_user):
         r = api_client.get(reverse('user-list'))
 
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 10
-    assert r.data[0] == {
+    # Asserting users + 1 because of staff user creation
+    assert len(r.data) == 11
+    # Asserting second index user because first index user is staff user.
+    assert r.data[1] == {
         'pk': str(users[0].pk),
         'created_date': serializers.DateTimeField().to_representation(users[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(users[0].modified_date),
