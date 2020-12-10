@@ -29,7 +29,7 @@ def test_team_list(api_client, django_assert_max_num_queries):
             'job_title': user.job_title,
             'created_date': serializers.DateTimeField().to_representation(user.created_date),
             'modified_date': serializers.DateTimeField().to_representation(user.modified_date),
-        } for user in teams[0].team_members.all()],
+        } for user in teams[0].team_members.order_by('created_date').all()],
         'title': teams[0].title,
     }
 
