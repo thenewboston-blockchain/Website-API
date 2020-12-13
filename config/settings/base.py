@@ -18,11 +18,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
+    'v1.users.apps.UsersConfig',
+
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
     'dj_rest_auth',
+    'rest_framework_simplejwt',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -32,7 +35,6 @@ INSTALLED_APPS = [
     'v1.openings.apps.OpeningsConfig',
     'v1.tasks.apps.TasksConfig',
     'v1.teams.apps.TeamsConfig',
-    'v1.users.apps.UsersConfig',
     'v1.repositories.apps.RepositoriesConfig',
 ]
 
@@ -70,9 +72,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
-        'USER': os.getenv('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+        'NAME': os.getenv('POSTGRES_DB', 'thenewboston'),
+        'USER': os.getenv('POSTGRES_USER', 'thenewboston'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'thenewboston'),
         'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
         'PORT': os.getenv('POSTGRES_PORT', '5432')
     }

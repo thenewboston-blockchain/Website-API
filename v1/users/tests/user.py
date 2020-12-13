@@ -105,7 +105,7 @@ def test_user_delete(api_client, staff_user):
 def test_user_anon_post(api_client):
     r = api_client.post(reverse('user-list'), data={'title': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_user_anon_patch(api_client):
@@ -117,7 +117,7 @@ def test_user_anon_patch(api_client):
         format='json'
     )
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_user_anon_delete(api_client):
@@ -125,4 +125,4 @@ def test_user_anon_delete(api_client):
 
     r = api_client.delete(reverse('user-detail', (user.pk,)))
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED

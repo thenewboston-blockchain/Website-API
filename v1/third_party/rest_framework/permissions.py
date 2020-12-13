@@ -7,3 +7,14 @@ class IsStaffOrReadOnly(BasePermission):
 
     def has_permission(self, request, view):
         return bool(request.method in SAFE_METHODS or request.user and request.user.is_staff)
+
+
+class IsStaffOrSelfReadOnly(IsStaffOrReadOnly):
+    """The request is authenticated as a user and is staff, or is a read-only request"""
+
+    def has_permission(self, request, view):
+        return bool(request.method in SAFE_METHODS or request.user and request.user.is_staff)
+
+    def has_object_permission(self, request, view, obj):
+        print(obj)
+        pass

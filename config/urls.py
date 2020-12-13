@@ -10,6 +10,7 @@ from v1.openings.urls import router as openings_router
 from v1.repositories.urls import router as repositories_router
 from v1.tasks.urls import router as tasks_router
 from v1.teams.urls import router as teams_router
+from v1.third_party.dj_rest_auth.views import GithubLoginView
 from v1.users.urls import router as users_router
 
 admin.site.index_title = 'Admin'
@@ -20,7 +21,7 @@ urlpatterns = [
 
     # Core
     path('admin/', admin.site.urls),
-    path('auth/', include('allauth.urls')),
+    path('auth/login/github/', GithubLoginView.as_view(), name='github_login'),
 
     # OpenAPI Schema UI
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

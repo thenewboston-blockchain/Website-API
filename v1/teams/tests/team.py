@@ -10,7 +10,7 @@ from ..factories.team import TeamFactory
 from ..models.team import Team
 
 
-def test_team_list(api_client, django_assert_max_num_queries):
+def test_teams_list(api_client, django_assert_max_num_queries):
     teams = TeamFactory.create_batch(10, team_members=5)
 
     with django_assert_max_num_queries(2):
@@ -34,7 +34,7 @@ def test_team_list(api_client, django_assert_max_num_queries):
     }
 
 
-def test_team_members_empty_post(api_client, staff_user):
+def test_teams_members_empty_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
     with freeze_time() as frozen_time:
@@ -53,12 +53,12 @@ def test_team_members_empty_post(api_client, staff_user):
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
 
-def test_team_post(api_client, staff_user):
+def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
     api_client.force_authenticate(staff_user)
 
     users = UserFactory.create_batch(5)
 
-    with freeze_time() as frozen_time:
+    with freeze_time() as frozen_time, django_assert_max_num_queries(6):
         r = api_client.post(reverse('team-list'), data={
             'title': 'Star team',
             'team_members_meta': [
@@ -105,7 +105,7 @@ def test_team_post(api_client, staff_user):
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
 
-def test_team_patch(api_client, staff_user):
+def test_teams_patch(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
     user = UserFactory()
@@ -118,16 +118,16 @@ def test_team_patch(api_client, staff_user):
                 'title': 'Star team',
                 'team_members_meta': [
                     {
-                        'user': user.pk,
-                        'is_lead': False,
-                        'pay_per_day': 9001,
-                        'job_title': 'Front-End Developer'
-                    },
-                    {
                         'user': team.team_members.all()[1].user_id,
                         'is_lead': True,
                         'pay_per_day': 19001,
                         'job_title': 'Back-End Developer'
+                    },
+                    {
+                        'user': user.pk,
+                        'is_lead': False,
+                        'pay_per_day': 9001,
+                        'job_title': 'Front-End Developer'
                     }
                 ]
             },
@@ -141,14 +141,6 @@ def test_team_patch(api_client, staff_user):
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'team_members_meta': [
             {
-                'created_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'user': user.pk,
-                'is_lead': False,
-                'pay_per_day': 9001,
-                'job_title': 'Front-End Developer'
-            },
-            {
                 'created_date': serializers.DateTimeField().to_representation(
                     team.team_members.all()[1].created_date
                 ),
@@ -158,6 +150,14 @@ def test_team_patch(api_client, staff_user):
                 'pay_per_day': 19001,
                 'job_title': 'Back-End Developer'
             },
+            {
+                'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+                'user': user.pk,
+                'is_lead': False,
+                'pay_per_day': 9001,
+                'job_title': 'Front-End Developer'
+            }
         ],
         'title': 'Star team',
     }
@@ -165,7 +165,7 @@ def test_team_patch(api_client, staff_user):
     assert Team.objects.get(pk=str(team.pk)).title == 'Star team'
 
 
-def test_team_delete(api_client, staff_user):
+def test_teams_delete(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
     team = TeamFactory(team_members=2)
@@ -184,7 +184,7 @@ def test_opening_anon_post(api_client):
     assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_team_anon_patch(api_client):
+def test_teams_anon_patch(api_client):
     team = TeamFactory()
 
     r = api_client.post(reverse('team-detail', (team.pk,)), data={'title': 'sometitle'}, format='json')
@@ -192,7 +192,7 @@ def test_team_anon_patch(api_client):
     assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_team_anon_delete(api_client):
+def test_teams_anon_delete(api_client):
     team = TeamFactory()
 
     r = api_client.delete(reverse('team-detail', (team.pk,)))

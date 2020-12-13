@@ -7,3 +7,4 @@ from .views.team_member import TeamMemberViewSet
 router = SimpleRouter(trailing_slash=False)
 router.register('team_members', TeamMemberViewSet)
 router.register('teams', TeamViewSet)
+router.register('teams_members', TeamMemberViewSet)

@@ -7,15 +7,6 @@ from ..models.repository import Repository
 class RepositorySerializer(ModelSerializer):
 
     class Meta:
-        fields = (
-            'url',
-            'display_name',
-            'modified_date',
-            'pk',
-        )
+        fields = 'pk', 'url', 'display_name', 'created_date', 'modified_date'
         model = Repository
-
-        read_only_fields = (
-            'created_date',
-            'modified_date'
-        )
+        read_only_fields = 'created_date', 'modified_date'

@@ -24,3 +24,13 @@ class UserSerializer(ModelSerializer):
             'modified_date',
             'profile_image'
         )
+
+
+class UpdateSelfUserSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        read_only_fields = (
+            'created_date',
+            'github_username',
+            'modified_date',
+            'profile_image'
+        )
