@@ -111,6 +111,8 @@ def test_teams_patch(api_client, staff_user):
     user = UserFactory()
     team = TeamFactory(team_members=2)
 
+    old_team_member = team.team_members.all()[1]
+
     with freeze_time() as frozen_time:
         r = api_client.patch(
             reverse('team-detail', (team.pk,)),
@@ -118,7 +120,7 @@ def test_teams_patch(api_client, staff_user):
                 'title': 'Star team',
                 'team_members_meta': [
                     {
-                        'user': team.team_members.all()[1].user_id,
+                        'user': old_team_member.user_id,
                         'is_lead': True,
                         'pay_per_day': 19001,
                         'job_title': 'Back-End Developer'
@@ -141,11 +143,9 @@ def test_teams_patch(api_client, staff_user):
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'team_members_meta': [
             {
-                'created_date': serializers.DateTimeField().to_representation(
-                    team.team_members.all()[1].created_date
-                ),
+                'created_date': serializers.DateTimeField().to_representation(old_team_member.created_date),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'user': team.team_members.all()[1].user_id,
+                'user': old_team_member.user_id,
                 'is_lead': True,
                 'pay_per_day': 19001,
                 'job_title': 'Back-End Developer'
@@ -157,7 +157,7 @@ def test_teams_patch(api_client, staff_user):
                 'is_lead': False,
                 'pay_per_day': 9001,
                 'job_title': 'Front-End Developer'
-            }
+            },
         ],
         'title': 'Star team',
     }
