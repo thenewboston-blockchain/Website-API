@@ -8,24 +8,29 @@ Follow the steps below to set up the project on your environment. If you run int
 GitHub Issue or reach out to any of our communities above.
 
 Install required packages:
-```
+```shell
 pip3 install -r requirements/local.txt
+```
+
+Create a `.env` file from a provided example (`dotenv`)
+```shell
+cp dotenv .env
 ```
 
 ## Developers
 
 When adding a package, add to `requirements/base.in` and then:
-```
-bash scripts/compile_requirements.sh
+```shell
+./scripts/compile_requirements.sh
 ```
 
 To run tests:
-```
+```shell
 pytest
 ```
 
 To check styling:
-```
+```shell
 flake8 --config=.flake8 config tests v1
 ```
 

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -36,6 +37,8 @@ INSTALLED_APPS = [
     'v1.tasks.apps.TasksConfig',
     'v1.teams.apps.TeamsConfig',
     'v1.repositories.apps.RepositoriesConfig',
+
+    'v1.testapp'
 ]
 
 MIDDLEWARE = [
@@ -115,11 +118,13 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 AUTH_USER_MODEL = 'users.User'
-LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', 'https://thenewboston.com'),
+# LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', ''),
+
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -132,6 +137,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 CORS_ORIGIN_ALLOW_ALL = True
 REST_USE_JWT = True
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'UPDATE_LAST_LOGIN': True,
+    'USER_ID_FIELD': 'uuid',
+}
+
+REST_AUTH_SERIALIZERS = {
+    'JWT_SERIALIZER': 'v1.users.serializers.jwt.TNBJWTSerializer'
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
