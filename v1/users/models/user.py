@@ -42,4 +42,3 @@ class User(CreatedModified, AbstractUser):
     @last_name.setter
     def last_name(self, val):
         pass
-
