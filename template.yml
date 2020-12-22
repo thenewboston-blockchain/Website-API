@@ -296,6 +296,15 @@ Resources:
                 - !Sub "${EnvironmentName}GithubCallbackUrl"
                 - ':1}}'
 
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SENTRY_DSN
+          Value:
+            Fn::Join:
+              - ''
+              - - '{{resolve:ssm:'
+                - !Sub "${EnvironmentName}SentryDsn"
+                - ':1}}'
+
   WebsiteApiEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
