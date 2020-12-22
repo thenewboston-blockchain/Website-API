@@ -269,6 +269,26 @@ Resources:
           OptionName: POSTGRES_HOST
           Value: !GetAtt WebsiteApiPGInstance.Endpoint.Address
 
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SOCIALACCOUNT_GITHUB_CLIENT_ID
+          Value:
+            Fn::Join:
+              - ''
+              - - '{{resolve:ssm:'
+                - Fn::ImportValue:
+                    !Sub "${EnvironmentName}GithubClientId"
+                - ':1}}'
+
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SOCIALACCOUNT_GITHUB_CLIENT_SECRET
+          Value:
+            Fn::Join:
+              - ''
+              - - '{{resolve:ssm:'
+                - Fn::ImportValue:
+                    !Sub "${EnvironmentName}GithubSecretKey"
+                - ':1}}'
+
   WebsiteApiEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
