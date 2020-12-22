@@ -4,7 +4,7 @@
      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-<a id="login" href="https://github.com/login/oauth/authorize?client_id=a29d2eda4c2978fccb03&redirect_uri=http://192.168.100.2:8000/testapp/&scope=read:user%20user:email">SignIn</a>
+<a id="login" href="https://github.com/login/oauth/authorize?client_id=a29d2eda4c2978fccb03&redirect_uri=https://api-dev.thenewboston.com/testapp/&scope=read:user%20user:email">SignIn</a>
 <a id="logout" href="" style="display: none">LogOut</a>
 <br>
 <a id="verify" href="" style="display: none">Verify</a>
@@ -30,7 +30,7 @@ $(document).ready(function() {
     $('#verify').on('click', function(e) {
         e.preventDefault();
         $.ajax({
-            url: 'http://192.168.100.2:8000/auth/token/verify/',
+            url: 'https://api-dev.thenewboston.com/auth/token/verify/',
             method: 'POST',
             data: {token: access_token},
             dataType: 'json'
@@ -46,7 +46,7 @@ $(document).ready(function() {
     $('#refresh').on('click', function(e) {
         e.preventDefault();
         $.ajax({
-            url: 'http://192.168.100.2:8000/auth/token/refresh/',
+            url: 'https://api-dev.thenewboston.com/auth/token/refresh/',
             method: 'POST',
             data: {refresh: refresh_token},
             dataType: 'json'
@@ -65,7 +65,7 @@ $(document).ready(function() {
 
     $(document).on('tokenAcquired', function() {
         $.ajax({
-            url: 'http://192.168.100.2:8000/users/me',
+            url: 'https://api-dev.thenewboston.com/users/me',
             dataType: 'json',
             headers: {
                 Authorization: 'Bearer ' + access_token
@@ -85,7 +85,7 @@ $(document).ready(function() {
 
     if (params.has('code')) {
         $.ajax({
-            url: 'http://192.168.100.2:8000/auth/login/github/',
+            url: 'https://api-dev.thenewboston.com/auth/login/github/',
             method: 'POST',
             data: {
                 code: params.get('code')
@@ -98,6 +98,7 @@ $(document).ready(function() {
 
                 access_token = msg.access_token;
                 refresh_token = msg.refresh_token;
+
 
                 $('#log').append('<p>acquired access token ' + msg.access_token + '</p>');
                 $('#log').append('<p>acquired refresh token ' + msg.refresh_token + '</p>');
