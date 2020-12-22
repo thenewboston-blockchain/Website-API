@@ -294,7 +294,7 @@ Resources:
               - ''
               - - '{{resolve:ssm:'
                 - !Sub "${EnvironmentName}GithubCallbackUrl"
-                - ':1}}'
+                - ':2}}'
 
         - Namespace: aws:elasticbeanstalk:application:environment
           OptionName: SENTRY_DSN
