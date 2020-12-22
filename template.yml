@@ -287,6 +287,15 @@ Resources:
                 - !Sub "${EnvironmentName}GithubSecretKey"
                 - ':1}}'
 
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SOCIALACCOUNT_GITHUB_CALLBACK_URL
+          Value:
+            Fn::Join:
+              - ''
+              - - '{{resolve:ssm:'
+                - !Sub "${EnvironmentName}GithubCallbackUrl"
+                - ':1}}'
+
   WebsiteApiEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
