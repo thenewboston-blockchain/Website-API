@@ -15,6 +15,8 @@ from django.utils.translation import gettext_lazy as _
 from thenewboston.constants.network import MAX_POINT_VALUE, MIN_POINT_VALUE
 from thenewboston.models.created_modified import CreatedModified
 
+from v1.repositories.models.repository import Repository
+
 
 class UserEarnings(CreatedModified):
     class TimePeriod(TextChoices):
@@ -25,7 +27,7 @@ class UserEarnings(CreatedModified):
     uuid = UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     user = ForeignKey('users.User', on_delete=CASCADE)
 
-    repository = CharField(max_length=250)
+    repository = ForeignKey(Repository, on_delete=CASCADE)
     time_period = CharField(max_length=8, choices=TimePeriod.choices)
     total_amount = PositiveBigIntegerField(
         validators=[

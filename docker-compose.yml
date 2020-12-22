@@ -25,6 +25,8 @@ services:
       - POSTGRES_DB=thenewboston
       - POSTGRES_USER=thenewboston
       - POSTGRES_PASSWORD=thenewboston
+    env_file:
+      - .env
     command: python3 -u /opt/project/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/opt/project

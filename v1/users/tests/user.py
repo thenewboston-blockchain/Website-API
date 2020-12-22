@@ -9,7 +9,7 @@ from ..factories.user import UserFactory
 from ..models import User
 
 
-def test_user_list(api_client, django_assert_max_num_queries):
+def test_anont_list(api_client, django_assert_max_num_queries):
     users = UserFactory.create_batch(10)
 
     with django_assert_max_num_queries(5):
@@ -29,7 +29,41 @@ def test_user_list(api_client, django_assert_max_num_queries):
     }
 
 
-def test_user_post(api_client, staff_user):
+def test_anon_post(api_client):
+    r = api_client.post(
+        reverse('user-list'),
+        data={
+            'account_number': '4ed6c42c98a9f9b521f434df41e7de87a1543940121c895f3fb383bb8585d3ec',
+            'display_name': 'Super Dev',
+            'github_username': 'super_githuber',
+            'slack_username': 'super_slacker',
+        },
+        format='json')
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_anon_patch(api_client):
+    user = UserFactory()
+
+    r = api_client.patch(
+        reverse('user-detail', (user.pk,)),
+        data={'display_name': 'display_name'},
+        format='json'
+    )
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_anon_delete(api_client):
+    user = UserFactory()
+
+    r = api_client.delete(reverse('user-detail', (user.pk,)))
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_staff_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
     with freeze_time() as frozen_time:
@@ -59,7 +93,7 @@ def test_user_post(api_client, staff_user):
     assert User.objects.get(pk=r.data['pk']).display_name == 'Super Dev'
 
 
-def test_user_patch(api_client, staff_user):
+def test_staff_patch(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
     user = UserFactory()
@@ -86,7 +120,7 @@ def test_user_patch(api_client, staff_user):
     assert User.objects.get(pk=str(user.pk)).display_name == 'Senior Super Dev'
 
 
-def test_user_delete(api_client, staff_user):
+def test_staff_delete(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
     user = UserFactory()
@@ -99,27 +133,80 @@ def test_user_delete(api_client, staff_user):
     assert User.objects.filter(pk=str(user.pk)).first() is None
 
 
-def test_user_anon_post(api_client):
-    r = api_client.post(reverse('user-list'), data={'title': 'sometitle'}, format='json')
+def test_self_patch(api_client):
+    user = UserFactory()
+    api_client.force_authenticate(user)
+
+    with freeze_time() as frozen_time:
+        r = api_client.patch(reverse('user-detail', (user.pk,)), data={
+            'display_name': 'I am a Senior Super Dev',
+            'github_username': 'senior_super_githuber',
+            'slack_username': 'senior_super_slacker',
+        }, format='json')
+
+    assert r.status_code == status.HTTP_200_OK
+    assert r.data == {
+        'pk': str(user.pk),
+        'created_date': serializers.DateTimeField().to_representation(user.created_date),
+        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'account_number': user.account_number,
+        'display_name': 'I am a Senior Super Dev',
+        'github_username': 'senior_super_githuber',
+        'profile_image': '',
+        'slack_username': 'senior_super_slacker',
+    }
+
+    assert User.objects.get(pk=str(user.pk)).display_name == 'I am a Senior Super Dev'
+
+
+def test_self_delete(api_client):
+    user = UserFactory()
+    api_client.force_authenticate(user)
+
+    r = api_client.delete(reverse('user-detail', (user.pk,)))
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_user_anon_patch(api_client):
+def test_other_user_post(api_client):
     user = UserFactory()
+    api_client.force_authenticate(user)
 
     r = api_client.post(
-        reverse('user-detail', (user.pk,)),
-        data={'display_name': 'display_name'},
+        reverse('user-list'),
+        data={
+            'account_number': '4ed6c42c98a9f9b521f434df41e7de87a1543940121c895f3fb383bb8585d3ec',
+            'display_name': 'Super Dev',
+            'github_username': 'super_githuber',
+            'slack_username': 'super_slacker',
+        },
         format='json'
     )
 
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_user_anon_delete(api_client):
-    user = UserFactory()
+def test_other_user_patch(api_client):
+    user1 = UserFactory()
+    api_client.force_authenticate(user1)
 
-    r = api_client.delete(reverse('user-detail', (user.pk,)))
+    user2 = UserFactory()
+
+    r = api_client.patch(reverse('user-detail', (user2.pk,)), data={
+        'display_name': 'Senior Super Dev',
+        'github_username': 'senior_super_githuber',
+        'slack_username': 'senior_super_slacker',
+    }, format='json')
+
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_other_user_delete(api_client):
+    user1 = UserFactory()
+    api_client.force_authenticate(user1)
+
+    user2 = UserFactory()
+
+    r = api_client.delete(reverse('user-detail', (user2.pk,)))
 
     assert r.status_code == status.HTTP_403_FORBIDDEN

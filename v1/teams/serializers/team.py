@@ -10,14 +10,16 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'user',
             'created_date',
             'is_lead',
+            'job_title',
             'modified_date',
             'pay_per_day',
+            'team',
+            'user',
         )
         model = TeamMember
-        read_only_fields = 'created_date', 'modified_date'
+        read_only_fields = 'created_date', 'modified_date', 'team'
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -48,6 +50,7 @@ class TeamSerializer(serializers.ModelSerializer):
             TeamMember.objects.create(
                 user=team_member['user'],
                 is_lead=team_member['is_lead'],
+                job_title=team_member['job_title'],
                 pay_per_day=team_member['pay_per_day'],
                 team=instance
             )
@@ -67,12 +70,14 @@ class TeamSerializer(serializers.ModelSerializer):
         for team_member in team_members:
             tc, created = TeamMember.objects.get_or_create(defaults={
                 'is_lead': team_member['is_lead'],
-                'pay_per_day': team_member['pay_per_day']
+                'pay_per_day': team_member['pay_per_day'],
+                'job_title': team_member['job_title'],
             }, team=instance, user=team_member['user'])
 
             if not created:
                 tc.is_lead = team_member['is_lead']
                 tc.pay_per_day = team_member['pay_per_day']
+                tc.job_title = team_member['job_title']
                 tc.save()
 
         return instance

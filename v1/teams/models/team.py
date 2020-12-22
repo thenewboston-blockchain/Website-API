@@ -11,3 +11,6 @@ class Team(CreatedModified):
 
     def __str__(self):
         return f'#{self.pk}: {self.title}'
+
+    class Meta:
+        ordering = ('created_date', 'title')

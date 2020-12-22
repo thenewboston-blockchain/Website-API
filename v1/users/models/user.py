@@ -22,3 +22,23 @@ class User(CreatedModified, AbstractUser):
 
     def __str__(self):
         return f'#{self.pk}: {self.display_name}'
+
+    @property
+    def username(self):
+        return self.email
+
+    @property
+    def first_name(self):
+        return self.display_name
+
+    @first_name.setter
+    def first_name(self, val):
+        self.display_name = val
+
+    @property
+    def last_name(self):
+        return None
+
+    @last_name.setter
+    def last_name(self, val):
+        pass

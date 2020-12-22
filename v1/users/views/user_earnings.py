@@ -8,7 +8,7 @@ from ..serializers.user_earnings import UserEarningsSerializer
 
 
 class UserEarningsViewSet(GenericViewSet, ListModelMixin):
-    filterset_fields = ['repository', 'time_period']
+    filterset_fields = ['repository__display_name', 'time_period']
     ordering = ['-total_amount']
     ordering_fields = ['total_amount']
 
