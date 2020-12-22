@@ -10,15 +10,16 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'user',
             'created_date',
             'is_lead',
             'job_title',
             'modified_date',
             'pay_per_day',
+            'team',
+            'user',
         )
         model = TeamMember
-        read_only_fields = 'created_date', 'modified_date'
+        read_only_fields = 'created_date', 'modified_date', 'team'
 
 
 class TeamSerializer(serializers.ModelSerializer):

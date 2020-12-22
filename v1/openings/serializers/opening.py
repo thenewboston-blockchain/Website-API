@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework import serializers
 
 from ..models.opening import Opening
 
 
-class OpeningSerializer(ModelSerializer):
-    reports_to = SerializerMethodField()
+class OpeningSerializer(serializers.ModelSerializer):
+    reports_to = serializers.SerializerMethodField()
 
     class Meta:
         fields = (
@@ -20,7 +20,7 @@ class OpeningSerializer(ModelSerializer):
             'responsibilities',
             'skills',
             'team',
-            'title',
+            'title'
         )
         model = Opening
         read_only_fields = 'created_date', 'modified_date'

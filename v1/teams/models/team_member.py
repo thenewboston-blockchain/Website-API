@@ -19,4 +19,4 @@ class TeamMember(CreatedModified):
         unique_together = (
             ('team', 'user'),
         )
-        ordering = 'created_date', 'job_title'
+        ordering = ('created_date', 'job_title')

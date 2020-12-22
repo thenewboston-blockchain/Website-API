@@ -23,13 +23,14 @@ def test_teams_list(api_client, django_assert_max_num_queries):
         'created_date': serializers.DateTimeField().to_representation(teams[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(teams[0].modified_date),
         'team_members_meta': [{
-            'user': user.user_id,
-            'is_lead': user.is_lead,
-            'pay_per_day': user.pay_per_day,
-            'job_title': user.job_title,
-            'created_date': serializers.DateTimeField().to_representation(user.created_date),
-            'modified_date': serializers.DateTimeField().to_representation(user.modified_date),
-        } for user in teams[0].team_members.order_by('created_date').all()],
+            'team': team_member.team_id,
+            'user': team_member.user_id,
+            'is_lead': team_member.is_lead,
+            'pay_per_day': team_member.pay_per_day,
+            'job_title': team_member.job_title,
+            'created_date': serializers.DateTimeField().to_representation(team_member.created_date),
+            'modified_date': serializers.DateTimeField().to_representation(team_member.modified_date),
+        } for team_member in teams[0].team_members.order_by('created_date').all()],
         'title': teams[0].title,
     }
 
@@ -87,6 +88,7 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'user': users[1].pk,
+                'team': ANY,
                 'is_lead': True,
                 'pay_per_day': 19001,
                 'job_title': 'Back-End Developer'
@@ -95,6 +97,7 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'user': users[3].pk,
+                'team': ANY,
                 'is_lead': False,
                 'pay_per_day': 9001,
                 'job_title': 'Front-End Developer'
@@ -146,6 +149,7 @@ def test_teams_patch(api_client, staff_user):
                 'created_date': serializers.DateTimeField().to_representation(old_team_member.created_date),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'user': old_team_member.user_id,
+                'team': team.pk,
                 'is_lead': True,
                 'pay_per_day': 19001,
                 'job_title': 'Back-End Developer'
@@ -154,6 +158,7 @@ def test_teams_patch(api_client, staff_user):
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'user': user.pk,
+                'team': team.pk,
                 'is_lead': False,
                 'pay_per_day': 9001,
                 'job_title': 'Front-End Developer'
