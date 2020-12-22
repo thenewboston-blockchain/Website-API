@@ -275,8 +275,7 @@ Resources:
             Fn::Join:
               - ''
               - - '{{resolve:ssm:'
-                - Fn::ImportValue:
-                    !Sub "${EnvironmentName}GithubClientId"
+                - !Sub "${EnvironmentName}GithubClientId"
                 - ':1}}'
 
         - Namespace: aws:elasticbeanstalk:application:environment
@@ -285,8 +284,7 @@ Resources:
             Fn::Join:
               - ''
               - - '{{resolve:ssm:'
-                - Fn::ImportValue:
-                    !Sub "${EnvironmentName}GithubSecretKey"
+                - !Sub "${EnvironmentName}GithubSecretKey"
                 - ':1}}'
 
   WebsiteApiEnvironment:
