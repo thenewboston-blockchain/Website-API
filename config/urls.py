@@ -27,8 +27,6 @@ urlpatterns = [
     path('auth/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
-    path('testapp/', include('v1.testapp.urls')),
-
     # OpenAPI Schema UI
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

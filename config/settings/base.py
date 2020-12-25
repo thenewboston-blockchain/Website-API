@@ -37,8 +37,6 @@ INSTALLED_APPS = [
     'v1.tasks.apps.TasksConfig',
     'v1.teams.apps.TeamsConfig',
     'v1.repositories.apps.RepositoriesConfig',
-
-    'v1.testapp'
 ]
 
 MIDDLEWARE = [
@@ -118,7 +116,6 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 AUTH_USER_MODEL = 'users.User'
-# LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', ''),
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
