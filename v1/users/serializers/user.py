@@ -18,19 +18,16 @@ class UserSerializer(ModelSerializer):
             'slack_username',
         )
         model = User
-
         read_only_fields = (
             'created_date',
-            'modified_date',
-            'profile_image'
+            'modified_date'
         )
 
 
 class UpdateSelfUserSerializer(UserSerializer):
+
     class Meta(UserSerializer.Meta):
         read_only_fields = (
             'created_date',
-            'github_username',
-            'modified_date',
-            'profile_image'
+            'modified_date'
         )

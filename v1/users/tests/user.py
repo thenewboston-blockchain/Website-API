@@ -9,7 +9,7 @@ from ..factories.user import UserFactory
 from ..models import User
 
 
-def test_anont_list(api_client, django_assert_max_num_queries):
+def test_anon_list(api_client, django_assert_max_num_queries):
     users = UserFactory.create_batch(10)
 
     with django_assert_max_num_queries(5):
@@ -40,7 +40,7 @@ def test_anon_post(api_client):
         },
         format='json')
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_anon_patch(api_client):
@@ -52,7 +52,7 @@ def test_anon_patch(api_client):
         format='json'
     )
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_anon_delete(api_client):
@@ -60,7 +60,7 @@ def test_anon_delete(api_client):
 
     r = api_client.delete(reverse('user-detail', (user.pk,)))
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_staff_post(api_client, staff_user):

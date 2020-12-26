@@ -111,7 +111,7 @@ def test_task_delete(api_client, staff_user):
 def test_opening_anon_post(api_client):
     r = api_client.post(reverse('task-list'), data={'title': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_task_anon_patch(api_client):
@@ -119,7 +119,7 @@ def test_task_anon_patch(api_client):
 
     r = api_client.post(reverse('task-detail', (task.pk,)), data={'title': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_task_anon_delete(api_client):
@@ -127,4 +127,4 @@ def test_task_anon_delete(api_client):
 
     r = api_client.delete(reverse('task-detail', (task.pk,)))
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED

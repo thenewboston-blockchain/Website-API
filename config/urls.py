@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from v1.openings.urls import router as openings_router
 from v1.repositories.urls import router as repositories_router
@@ -20,6 +21,10 @@ urlpatterns = [
 
     # Core
     path('admin/', admin.site.urls),
+
+    # Auth
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # OpenAPI Schema UI
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

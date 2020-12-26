@@ -24,8 +24,9 @@ django-cors-headers==3.5.0  # via thenewboston
 django-debug-toolbar==3.1.1  # via thenewboston
 django-filter==2.4.0      # via thenewboston
 django-redis==4.12.1      # via thenewboston
-django==3.1.3             # via channels, django-cors-headers, django-debug-toolbar, django-filter, django-redis, djangorestframework, drf-spectacular, thenewboston
-djangorestframework==3.12.2  # via drf-spectacular, thenewboston
+django==3.1.3             # via channels, django-cors-headers, django-debug-toolbar, django-filter, django-redis, djangorestframework, djangorestframework-simplejwt, drf-spectacular, thenewboston
+djangorestframework-simplejwt==4.6.0  # via -r requirements/base.in
+djangorestframework==3.12.2  # via djangorestframework-simplejwt, drf-spectacular, thenewboston
 drf-spectacular==0.11.0   # via -r requirements/base.in
 execnet==1.7.1            # via pytest-xdist
 factory-boy==3.1.0        # via thenewboston
@@ -63,6 +64,7 @@ pycparser==2.20           # via cffi
 pydocstyle==5.1.1         # via flake8-docstrings
 pyflakes==2.2.0           # via flake8
 pyhamcrest==2.0.2         # via twisted
+pyjwt==2.0.0              # via djangorestframework-simplejwt
 pynacl==1.4.0             # via thenewboston
 pyopenssl==20.0.1         # via twisted
 pyparsing==2.4.7          # via packaging

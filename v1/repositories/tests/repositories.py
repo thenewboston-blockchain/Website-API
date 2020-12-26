@@ -94,7 +94,7 @@ def test_repositories_delete(api_client, staff_user):
 def test_repositories_anon_post(api_client):
     r = api_client.post(reverse('repository-list'), data={'display_name': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_repositories_anon_patch(api_client):
@@ -102,7 +102,7 @@ def test_repositories_anon_patch(api_client):
 
     r = api_client.post(reverse('repository-detail', (repository.pk,)), data={'display_name': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_repositories_anon_delete(api_client):
@@ -110,4 +110,4 @@ def test_repositories_anon_delete(api_client):
 
     r = api_client.delete(reverse('repository-detail', (repository.pk,)))
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
