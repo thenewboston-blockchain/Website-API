@@ -106,7 +106,7 @@ def test_object_anon_post(api_client, url):
         format='json'
     )
 
-    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+    assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
 @pytest.mark.parametrize('url_factory', [
@@ -123,7 +123,7 @@ def test_object_anon_patch(api_client, url_factory):
         format='json'
     )
 
-    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+    assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
 @pytest.mark.parametrize('url_factory', [
@@ -136,4 +136,4 @@ def test_object_anon_delete(api_client, url_factory):
 
     r = api_client.delete(reverse(f'{url}-detail', (obj.pk,)))
 
-    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+    assert r.status_code == status.HTTP_403_FORBIDDEN

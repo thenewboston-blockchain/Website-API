@@ -10,5 +10,8 @@ class Repository(CreatedModified):
     url = URLField(blank=True)
     display_name = CharField(max_length=80, unique=True)  # TNB-python-client
 
+    class Meta:
+        verbose_name_plural = 'repositories'
+
     def __str__(self):
         return f'#{self.pk}: {self.url} ({self.display_name})'

@@ -90,7 +90,7 @@ def test_teams_members_delete(api_client, staff_user):
 def test_teams_members_anon_post(api_client):
     r = api_client.post(reverse('teammember-list'), data={'title': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+    assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_teams_members_anon_patch(api_client):
@@ -98,7 +98,7 @@ def test_teams_members_anon_patch(api_client):
 
     r = api_client.post(reverse('teammember-detail', (team_member.pk,)), data={'title': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+    assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_teams_members_anon_delete(api_client):
@@ -106,4 +106,4 @@ def test_teams_members_anon_delete(api_client):
 
     r = api_client.delete(reverse('teammember-detail', (team_member.pk,)))
 
-    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+    assert r.status_code == status.HTTP_403_FORBIDDEN
