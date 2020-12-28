@@ -5,14 +5,14 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 class AnonWrite(BasePermission):
 
     def has_permission(self, request, view):
-        return request.method == 'POST' and request.user.is_anonymous
+        return request.user.is_anonymous and request.method == 'POST'
 
 
 class IsStaffOrReadOnly(BasePermission):
     """The request is authenticated as a user and is staff, or is a read-only request"""
 
     def has_permission(self, request, view):
-        return bool((request.user and request.user.is_staff) or request.method in SAFE_METHODS)
+        return (request.user and request.user.is_staff) or request.method in SAFE_METHODS
 
     def has_object_permission(self, request, view, obj):
         return self.has_permission(request, view)
@@ -27,7 +27,7 @@ class ReadOnly(BasePermission):
 class SelfEdit(BasePermission):
 
     def has_permission(self, request, view):
-        return request.method == 'PATCH' and request.user and request.user.is_authenticated
+        return (request.user and request.user.is_authenticated) and request.method == 'PATCH'
 
     def has_object_permission(self, request, view, obj):
         """Object level permission, allow editing self"""
@@ -37,4 +37,4 @@ class SelfEdit(BasePermission):
 class StaffDelete(BasePermission):
 
     def has_permission(self, request, view):
-        return request.method == 'DELETE' and (request.user and request.user.is_staff)
+        return (request.user and request.user.is_staff) and request.method == 'DELETE'
