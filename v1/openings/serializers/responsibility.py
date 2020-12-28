@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 from rest_framework import serializers
 
 from ..models.responsibility import Responsibility
 
 
 class ResponsibilitySerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = 'pk', 'title', 'created_date', 'modified_date'
         model = Responsibility

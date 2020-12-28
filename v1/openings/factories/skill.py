@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from factory import Faker
 from factory.django import DjangoModelFactory
 

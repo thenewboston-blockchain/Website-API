@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import uuid
 
 from django.db.models import BooleanField, CharField, URLField, UUIDField

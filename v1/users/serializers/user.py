@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
+from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.serializers import ModelSerializer
 
-from ..models.user import User
+User = get_user_model()
 
 
 class UserSerializer(ModelSerializer):
-
     class Meta:
         fields = (
             'account_number',
@@ -30,7 +29,6 @@ class UserSerializer(ModelSerializer):
 
 
 class UserSerializerCreate(ModelSerializer):
-
     class Meta:
         fields = (
             'email',
@@ -53,7 +51,6 @@ class UserSerializerCreate(ModelSerializer):
 
 
 class UserSerializerUpdate(UserSerializer):
-
     class Meta(UserSerializer.Meta):
         read_only_fields = (
             'created_date',

@@ -37,13 +37,13 @@ Mappings:
       SSLCertificateId: ApiDevThenewbostonComCertificateArn
 
 Conditions:
-  IsProd: !Equals [ !Ref EnvironmentName, "prod"]
+  IsProd: !Equals [ !Ref EnvironmentName, "prod" ]
 
 Resources:
   WebsiteApiRecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
-      Name: !If [IsProd, "api.thenewboston.com", !Sub "api-${EnvironmentName}.thenewboston.com"]
+      Name: !If [ IsProd, "api.thenewboston.com", !Sub "api-${EnvironmentName}.thenewboston.com" ]
       Type: A
       HostedZoneId: ZDHCZ05S94NJT # thenewboston.com
       AliasTarget:
@@ -87,7 +87,7 @@ Resources:
     Properties:
       PolicyName: App
       Roles:
-      - !Ref WebsiteApiRole
+        - !Ref WebsiteApiRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -100,7 +100,7 @@ Resources:
     Properties:
       Path: /
       Roles:
-      - !Ref WebsiteApiRole
+        - !Ref WebsiteApiRole
 
   WebsiteApiSecurityGroup:
     Type: AWS::EC2::SecurityGroup

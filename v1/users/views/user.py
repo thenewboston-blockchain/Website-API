@@ -1,11 +1,12 @@
-# -*- coding: utf-8 -*-
+from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from ..models.user import User
 from ..serializers.user import UserSerializer, UserSerializerCreate, UserSerializerUpdate
 from ...third_party.rest_framework.permissions import AnonWrite, ReadOnly, SelfEdit, StaffDelete
+
+User = get_user_model()
 
 
 class UserViewSet(ModelViewSet):
