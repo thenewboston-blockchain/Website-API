@@ -23,6 +23,7 @@ class CustomUserAdmin(UserAdmin):
                     'github_username',
                     'profile_image',
                     'slack_username',
+                    'is_email_verified',
                 ),
             },
         ),

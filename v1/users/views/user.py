@@ -1,31 +1,51 @@
 # -*- coding: utf-8 -*-
-from rest_framework.generics import get_object_or_404
+from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from ..models.user import User
-from ..serializers.user import UpdateSelfUserSerializer, UserSerializer
-from ...third_party.rest_framework.permissions import IsStaffOrReadOnly, SelfEdit
+from ..serializers.user import UserSerializer, UserSerializerCreate, UserSerializerUpdate
+from ...third_party.rest_framework.permissions import AnonWrite, ReadOnly, SelfEdit, StaffDelete
 
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.order_by('created_date').all()
     serializer_class = UserSerializer
-    pagination_class = None
-    permission_classes = [IsStaffOrReadOnly | SelfEdit]
 
-    def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+    def create(self, request, *args, **kwargs):
+        serializer = UserSerializerCreate(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
 
-        if self.kwargs[lookup_url_kwarg] == 'me' and self.request.user and self.request.user.is_authenticated:
-            filter_kwargs = {self.lookup_field: self.request.user.pk}
+        return Response(
+            self.get_serializer(user).data,
+            status=status.HTTP_201_CREATED
+        )
 
-        obj = get_object_or_404(queryset, **filter_kwargs)
-        self.check_object_permissions(self.request, obj)
-        return obj
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [AnonWrite]
+        elif self.action == 'destroy':
+            permission_classes = [StaffDelete]
+        elif self.action in ['partial_update', 'update']:
+            permission_classes = [SelfEdit]
+        else:
+            permission_classes = [ReadOnly]
 
-    def get_serializer_class(self):
-        if self.action == 'update' and self.request.user and not self.request.user.is_staff:
-            return UpdateSelfUserSerializer
-        return super(UserViewSet, self).get_serializer_class()
+        return [permission() for permission in permission_classes]
+
+    def update(self, request, *args, **kwargs):
+        serializer = UserSerializerUpdate(
+            self.get_object(),
+            data=request.data,
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        return Response(
+            self.get_serializer(user).data
+        )

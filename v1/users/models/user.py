@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import uuid
 
-from django.db.models import CharField, URLField, UUIDField
+from django.db.models import BooleanField, CharField, URLField, UUIDField
 from thenewboston.constants.network import VERIFY_KEY_LENGTH
 from thenewboston.models.created_modified import CreatedModified
 
@@ -16,6 +16,9 @@ class User(CreatedModified, AbstractUser):
     github_username = CharField(blank=True, max_length=250)
     profile_image = URLField(blank=True, max_length=500)
     slack_username = CharField(blank=True, max_length=250)
+
+    # Auth
+    is_email_verified = BooleanField(default=False)
 
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
