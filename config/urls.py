@@ -23,8 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Auth
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('login', LoginView.as_view(), name='login'),
+    path('refresh_token', TokenRefreshView.as_view(), name='refresh_token'),
 
     # OpenAPI Schema UI
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
