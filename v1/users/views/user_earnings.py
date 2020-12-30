@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from rest_framework.mixins import ListModelMixin
 from rest_framework.viewsets import GenericViewSet
 

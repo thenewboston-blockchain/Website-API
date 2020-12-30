@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import uuid
 
 from django.core.validators import MaxValueValidator, MinValueValidator
