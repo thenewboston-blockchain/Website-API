@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 
 ENVIRONMENT = os.environ['DJANGO_APPLICATION_ENVIRONMENT']

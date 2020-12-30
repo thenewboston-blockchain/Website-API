@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .base import *  # noqa: F401
 
 SENTRY_DSN = os.getenv('SENTRY_DSN')

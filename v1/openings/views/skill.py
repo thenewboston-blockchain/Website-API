@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from rest_framework import viewsets
 
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly

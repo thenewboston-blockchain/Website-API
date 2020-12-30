@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 from datetime import timedelta
 
@@ -19,26 +18,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'v1.users.apps.UsersConfig',
-
     'corsheaders',
+    'django_filters',
+    'drf_spectacular',
     'rest_framework',
     'rest_framework.authtoken',
-    'django_filters',
-    'dj_rest_auth',
-    'rest_framework_simplejwt',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.github',
-    'drf_spectacular',
 
+    'v1.users.apps.UsersConfig',
     'v1.openings.apps.OpeningsConfig',
     'v1.tasks.apps.TasksConfig',
     'v1.teams.apps.TeamsConfig',
     'v1.repositories.apps.RepositoriesConfig',
-
-    'v1.testapp'
 ]
 
 MIDDLEWARE = [
@@ -117,14 +107,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'CALLBACK_URL': os.getenv('SOCIALACCOUNT_GITHUB_CALLBACK_URL', ''),
     }
 }
-AUTH_USER_MODEL = 'users.User'
-# LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', ''),
 
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -136,7 +120,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 CORS_ORIGIN_ALLOW_ALL = True
-REST_USE_JWT = True
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
@@ -145,14 +128,12 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'uuid',
 }
 
-REST_AUTH_SERIALIZERS = {
-    'JWT_SERIALIZER': 'v1.users.serializers.jwt.TNBJWTSerializer'
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.backends.DjangoFilterBackend',
