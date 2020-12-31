@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 import os
+from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 SECRET_KEY = 'g#$0(*8%8af27k7-e!ll^!-4yxomcx8ljv_o&_z*zhvi)f8&e7'
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 SITE_ID = 1
@@ -19,20 +19,16 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     'corsheaders',
+    'django_filters',
+    'drf_spectacular',
     'rest_framework',
     'rest_framework.authtoken',
-    'django_filters',
-    'dj_rest_auth',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.github',
-    'drf_spectacular',
 
+    'v1.users.apps.UsersConfig',
     'v1.openings.apps.OpeningsConfig',
     'v1.tasks.apps.TasksConfig',
     'v1.teams.apps.TeamsConfig',
-    'v1.users.apps.UsersConfig',
+    'v1.repositories.apps.RepositoriesConfig',
 ]
 
 MIDDLEWARE = [
@@ -111,12 +107,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'CALLBACK_URL': os.getenv('SOCIALACCOUNT_GITHUB_CALLBACK_URL', ''),
     }
 }
-AUTH_USER_MODEL = 'users.User'
 
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -129,7 +121,20 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'UPDATE_LAST_LOGIN': True,
+    'USER_ID_FIELD': 'uuid',
+}
+
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.backends.DjangoFilterBackend',
         'rest_framework.filters.OrderingFilter',

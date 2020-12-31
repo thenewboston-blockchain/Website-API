@@ -37,13 +37,13 @@ Mappings:
       SSLCertificateId: ApiDevThenewbostonComCertificateArn
 
 Conditions:
-  IsProd: !Equals [ !Ref EnvironmentName, "prod"]
+  IsProd: !Equals [ !Ref EnvironmentName, "prod" ]
 
 Resources:
   WebsiteApiRecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
-      Name: !If [IsProd, "api.thenewboston.com", !Sub "api-${EnvironmentName}.thenewboston.com"]
+      Name: !If [ IsProd, "api.thenewboston.com", !Sub "api-${EnvironmentName}.thenewboston.com" ]
       Type: A
       HostedZoneId: ZDHCZ05S94NJT # thenewboston.com
       AliasTarget:
@@ -87,7 +87,7 @@ Resources:
     Properties:
       PolicyName: App
       Roles:
-      - !Ref WebsiteApiRole
+        - !Ref WebsiteApiRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -100,7 +100,7 @@ Resources:
     Properties:
       Path: /
       Roles:
-      - !Ref WebsiteApiRole
+        - !Ref WebsiteApiRole
 
   WebsiteApiSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -268,6 +268,42 @@ Resources:
         - Namespace: aws:elasticbeanstalk:application:environment
           OptionName: POSTGRES_HOST
           Value: !GetAtt WebsiteApiPGInstance.Endpoint.Address
+
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SOCIALACCOUNT_GITHUB_CLIENT_ID
+          Value:
+            Fn::Join:
+              - ''
+              - - '{{resolve:ssm:'
+                - !Sub "${EnvironmentName}GithubClientId"
+                - ':1}}'
+
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SOCIALACCOUNT_GITHUB_CLIENT_SECRET
+          Value:
+            Fn::Join:
+              - ''
+              - - '{{resolve:ssm:'
+                - !Sub "${EnvironmentName}GithubSecretKey"
+                - ':1}}'
+
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SOCIALACCOUNT_GITHUB_CALLBACK_URL
+          Value:
+            Fn::Join:
+              - ''
+              - - '{{resolve:ssm:'
+                - !Sub "${EnvironmentName}GithubCallbackUrl"
+                - ':2}}'
+
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SENTRY_DSN
+          Value:
+            Fn::Join:
+              - ''
+              - - '{{resolve:ssm:'
+                - !Sub "${EnvironmentName}SentryDsn"
+                - ':1}}'
 
   WebsiteApiEnvironment:
     Type: AWS::ElasticBeanstalk::Environment

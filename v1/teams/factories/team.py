@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import factory
 from factory.django import DjangoModelFactory
 
@@ -27,6 +26,7 @@ class TeamMemberFactory(DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     is_lead = factory.Faker('pybool')
     pay_per_day = factory.Faker('pyint')
+    job_title = factory.Faker('pystr', max_chars=250)
     team = factory.SubFactory(TeamFactory)
 
     class Meta:

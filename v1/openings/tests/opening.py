@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from unittest.mock import ANY
 
 from freezegun import freeze_time
@@ -156,7 +155,7 @@ def test_opening_delete(api_client, staff_user):
 def test_opening_anon_post(api_client):
     r = api_client.post(reverse('opening-list'), data={'title': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_opening_anon_patch(api_client):
@@ -164,7 +163,7 @@ def test_opening_anon_patch(api_client):
 
     r = api_client.post(reverse('opening-detail', (opening.pk,)), data={'title': 'sometitle'}, format='json')
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_opening_anon_delete(api_client):
@@ -172,4 +171,4 @@ def test_opening_anon_delete(api_client):
 
     r = api_client.delete(reverse('opening-detail', (opening.pk,)))
 
-    assert r.status_code == status.HTTP_403_FORBIDDEN
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED

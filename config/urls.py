@@ -1,15 +1,16 @@
-# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenRefreshView
 
+from v1.authentication.views.login import LoginView
 from v1.openings.urls import router as openings_router
+from v1.repositories.urls import router as repositories_router
 from v1.tasks.urls import router as tasks_router
 from v1.teams.urls import router as teams_router
-from v1.third_party.dj_rest_auth.views import GithubLoginView, LogoutView
 from v1.users.urls import router as users_router
 
 admin.site.index_title = 'Admin'
@@ -20,8 +21,10 @@ urlpatterns = [
 
     # Core
     path('admin/', admin.site.urls),
-    path('auth/login/github/', GithubLoginView.as_view(), name='github_login'),
-    path('auth/logout/', LogoutView.as_view(), name='logout'),
+
+    # Auth
+    path('login', LoginView.as_view(), name='login'),
+    path('refresh_token', TokenRefreshView.as_view(), name='refresh_token'),
 
     # OpenAPI Schema UI
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
@@ -34,6 +37,7 @@ router = DefaultRouter(trailing_slash=False)
 router.registry.extend(openings_router.registry)
 router.registry.extend(tasks_router.registry)
 router.registry.extend(teams_router.registry)
+router.registry.extend(repositories_router.registry)
 router.registry.extend(users_router.registry)
 
 urlpatterns += router.urls

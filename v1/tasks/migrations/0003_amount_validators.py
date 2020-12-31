@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('tasks', '0002_task_user'),
     ]
@@ -14,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='task',
             name='amount',
-            field=models.PositiveBigIntegerField(validators=[django.core.validators.MaxValueValidator(281474976710656), django.core.validators.MinValueValidator(1)]),
+            field=models.PositiveBigIntegerField(
+                validators=[django.core.validators.MaxValueValidator(281474976710656), django.core.validators.MinValueValidator(1)]),
         ),
     ]

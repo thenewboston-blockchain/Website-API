@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import uuid
 
 from django.db import models
@@ -12,9 +11,11 @@ class TeamMember(CreatedModified):
 
     is_lead = models.BooleanField(default=False)
     pay_per_day = models.PositiveIntegerField()
+    job_title = models.CharField(max_length=250)
 
     class Meta:
         default_related_name = 'team_members'
         unique_together = (
             ('team', 'user'),
         )
+        ordering = ('created_date', 'job_title')

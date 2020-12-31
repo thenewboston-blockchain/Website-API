@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import uuid
 
 from django.db import models
@@ -19,3 +18,6 @@ class Opening(CreatedModified):
 
     def __str__(self):
         return f'#{self.pk}: {self.title}'
+
+    class Meta:
+        ordering = ('created_date',)
