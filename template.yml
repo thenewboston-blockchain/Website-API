@@ -270,33 +270,6 @@ Resources:
           Value: !GetAtt WebsiteApiPGInstance.Endpoint.Address
 
         - Namespace: aws:elasticbeanstalk:application:environment
-          OptionName: SOCIALACCOUNT_GITHUB_CLIENT_ID
-          Value:
-            Fn::Join:
-              - ''
-              - - '{{resolve:ssm:'
-                - !Sub "${EnvironmentName}GithubClientId"
-                - ':1}}'
-
-        - Namespace: aws:elasticbeanstalk:application:environment
-          OptionName: SOCIALACCOUNT_GITHUB_CLIENT_SECRET
-          Value:
-            Fn::Join:
-              - ''
-              - - '{{resolve:ssm:'
-                - !Sub "${EnvironmentName}GithubSecretKey"
-                - ':1}}'
-
-        - Namespace: aws:elasticbeanstalk:application:environment
-          OptionName: SOCIALACCOUNT_GITHUB_CALLBACK_URL
-          Value:
-            Fn::Join:
-              - ''
-              - - '{{resolve:ssm:'
-                - !Sub "${EnvironmentName}GithubCallbackUrl"
-                - ':2}}'
-
-        - Namespace: aws:elasticbeanstalk:application:environment
           OptionName: SENTRY_DSN
           Value:
             Fn::Join:

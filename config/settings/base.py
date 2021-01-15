@@ -98,16 +98,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-SOCIALACCOUNT_PROVIDERS = {
-    'github': {
-        'APP': {
-            'client_id': os.getenv('SOCIALACCOUNT_GITHUB_CLIENT_ID', ''),
-            'secret': os.getenv('SOCIALACCOUNT_GITHUB_CLIENT_SECRET', ''),
-        },
-        'CALLBACK_URL': os.getenv('SOCIALACCOUNT_GITHUB_CALLBACK_URL', ''),
-    }
-}
-
 AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'en-us'
