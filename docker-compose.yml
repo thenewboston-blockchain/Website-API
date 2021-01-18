@@ -16,7 +16,7 @@ services:
 
   app:
     build:
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_dev
       context: .
     environment:
       - DJANGO_APPLICATION_ENVIRONMENT=local

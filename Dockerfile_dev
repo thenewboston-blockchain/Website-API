@@ -14,7 +14,6 @@ RUN set -xe \
     && pip install --upgrade pip pip-tools \
     && pip install --no-cache-dir -r /requirements.txt \
     && if [ -f thenewboston.tar.gz ]; then pip install thenewboston.tar.gz; fi \
-    && apk del build-deps \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache
 
 EXPOSE 8000
