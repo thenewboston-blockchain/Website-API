@@ -1,10 +1,9 @@
 import uuid
 
-from v1.teams.models.team import Team
-
-from django.db.models import CharField, URLField, UUIDField, ForeignKey, DO_NOTHING
+from django.db.models import CharField, DO_NOTHING, ForeignKey, URLField, UUIDField
 from thenewboston.models.created_modified import CreatedModified
 
+from v1.teams.models.team import Team
 
 class Repository(CreatedModified):
     uuid = UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
