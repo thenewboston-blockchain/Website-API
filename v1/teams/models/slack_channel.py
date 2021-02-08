@@ -1,9 +1,9 @@
 import uuid
 
 from django.db import models
-from v1.teams.models.team import Team
 from thenewboston.models.created_modified import CreatedModified
 
+from v1.teams.models.team import Team
 
 class SlackChannel(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)

@@ -1,9 +1,7 @@
 import uuid
 
 from django.db import models
-from v1.repositories.models.repository import Repository
 from thenewboston.models.created_modified import CreatedModified
-
 
 class Team(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
