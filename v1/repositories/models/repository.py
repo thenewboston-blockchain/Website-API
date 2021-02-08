@@ -5,6 +5,7 @@ from thenewboston.models.created_modified import CreatedModified
 
 from v1.teams.models.team import Team
 
+
 class Repository(CreatedModified):
     uuid = UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     url = URLField(blank=True)
