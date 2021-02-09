@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'v1.tasks.apps.TasksConfig',
     'v1.teams.apps.TeamsConfig',
     'v1.repositories.apps.RepositoriesConfig',
+    'v1.videos.apps.VideosConfig',
 ]
 
 MIDDLEWARE = [
