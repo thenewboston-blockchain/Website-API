@@ -1,6 +1,6 @@
 import uuid
 
-from django.db.models import CharField, CASCADE, ForeignKey, URLField, UUIDField
+from django.db.models import CASCADE, CharField, ForeignKey, URLField, UUIDField
 from thenewboston.models.created_modified import CreatedModified
 
 from v1.teams.models.team import Team
