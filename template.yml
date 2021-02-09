@@ -278,6 +278,15 @@ Resources:
                 - !Sub "${EnvironmentName}SentryDsn"
                 - ':1}}'
 
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SECRET_KEY
+          Value:
+            Fn::Join:
+              - ''
+              - - '{{resolve:ssm:'
+                - !Sub "${EnvironmentName}Secret"
+                - ':1}}'
+
   WebsiteApiEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
