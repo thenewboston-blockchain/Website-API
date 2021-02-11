@@ -1,4 +1,3 @@
-from rest_framework import mixins
 from rest_framework import viewsets
 
 from ..models.playlist import Playlist
@@ -10,4 +9,4 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
     pagination_class = None
-    permission_classes = [IsStaffOrReadOnly]
+    # permission_classes = [IsStaffOrReadOnly]
