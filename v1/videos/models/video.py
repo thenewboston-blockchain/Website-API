@@ -11,6 +11,7 @@ class Video(CreatedModified):
         ('vimeo', 'vimeo')
     ]
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    playlist = models.ForeignKey('videos.Playlist', blank=True, null=True, on_delete=models.CASCADE)
     video_id = models.CharField(max_length=11, blank=False)
     title = models.CharField(max_length=250)
     description = models.TextField(blank=True)
@@ -24,4 +25,5 @@ class Video(CreatedModified):
     video_type = models.CharField(max_length=15, choices=VIDEO_TYPE,)
 
     class Meta:
+        default_related_name = 'videos'
         ordering = ('published_at',)

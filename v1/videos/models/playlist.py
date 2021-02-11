@@ -1,6 +1,5 @@
 import uuid
 
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from thenewboston.models.created_modified import CreatedModified
 
@@ -12,7 +11,6 @@ class Playlist(CreatedModified):
     ]
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     playlist_id = models.CharField(max_length=50, blank=False)
-    items = ArrayField(models.CharField(max_length=11))
     title = models.CharField(max_length=250)
     description = models.TextField(blank=True)
     published_at = models.DateTimeField()
