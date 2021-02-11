@@ -5,9 +5,6 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from django.utils import dateparse
 from django.db import transaction
-<< << << < HEAD
-== == == =
->>>>>> > add models validations
 
 
 class PlaylistSerializer(ModelSerializer):
