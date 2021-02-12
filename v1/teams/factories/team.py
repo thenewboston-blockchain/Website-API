@@ -2,6 +2,7 @@ import factory
 from factory.django import DjangoModelFactory
 
 from v1.users.factories.user import UserFactory
+from ..models.slack_channel import SlackChannel
 from ..models.team import Team
 from ..models.team_member import TeamMember
 
@@ -33,3 +34,10 @@ class TeamMemberFactory(DjangoModelFactory):
 
     class Meta:
         model = TeamMember
+
+class SlackChannelFactory(DjangoModelFactory):
+    name = factory.Faker('pystr', max_chars=250)
+    team = factory.SubFactory(TeamFactory)
+
+    class Meta:
+        model = SlackChannel

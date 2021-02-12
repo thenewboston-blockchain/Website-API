@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from ..models.team import Team
 from ..models.team_member import TeamMember
+from ..models.slack_channel import SlackChannel
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
@@ -81,3 +82,14 @@ class TeamSerializer(serializers.ModelSerializer):
                 tc.save()
 
         return instance
+
+class SlackChannelSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'created_date',
+            'name',
+            'modified_date',
+            'team',
+        )
+        model = SlackChannel
+        read_only_fields = 'created_date', 'modified_date'
