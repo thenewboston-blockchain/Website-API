@@ -14,8 +14,8 @@ from ..models.opening import Opening
 def test_opening_list(api_client, django_assert_max_num_queries):
     openings = OpeningFactory.create_batch(10, responsibilities=3, skills=5, team__team_members=2)
 
-    with django_assert_max_num_queries(5):
-        r = api_client.get(reverse('opening-list'))
+    with django_assert_max_num_queries(6):
+        r = api_client.get(reverse('opening-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 10

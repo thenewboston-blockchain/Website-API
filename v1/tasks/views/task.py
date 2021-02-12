@@ -11,5 +11,4 @@ class TaskViewSet(viewsets.ModelViewSet):
         .order_by('created_date') \
         .all()
     serializer_class = TaskSerializer
-    pagination_class = None
     permission_classes = [IsStaffOrReadOnly]

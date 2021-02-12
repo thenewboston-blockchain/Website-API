@@ -22,7 +22,7 @@ def users(repositories):
 
 def test_user_list(api_client, django_assert_max_num_queries, users, repositories):
     with django_assert_max_num_queries(5):
-        result = api_client.get(reverse('userearnings-list'))
+        result = api_client.get(reverse('userearnings-list'), {'limit': 0})
 
     assert result.status_code == HTTP_200_OK
     assert len(result.data) == len(users) * len(repositories) * len(UserEarnings.TimePeriod.values)
@@ -38,12 +38,11 @@ def test_user_list_filtered(api_client, django_assert_max_num_queries, users, re
         )
 
     assert result.status_code == HTTP_200_OK
-    assert len(result.data) == len(users)
-
+    assert len(result.json()['results']) == len(users)
     previous_amount = MAX_POINT_VALUE
-    for user_earnings in result.data:
+    for user_earnings in result.json()['results']:
         assert user_earnings['user']
-        assert user_earnings['repository'] == repository.uuid
+        assert user_earnings['repository'] == str(repository.uuid)
         assert user_earnings['time_period'] == time_period
         assert user_earnings['total_amount'] <= previous_amount
         previous_amount = user_earnings['total_amount']

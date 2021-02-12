@@ -11,5 +11,4 @@ class TeamViewSet(ModelViewSet):
         .order_by('created_date') \
         .all()
     serializer_class = TeamSerializer
-    pagination_class = None
     permission_classes = [IsStaffOrReadOnly]

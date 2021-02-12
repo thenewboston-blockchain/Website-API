@@ -10,8 +10,8 @@ from ..models.playlist import Playlist
 
 def test_playlists_list(api_client, django_assert_max_num_queries):
     PlaylistFactory.create_batch(10, videos=5)
-    with django_assert_max_num_queries(2):
-        r = api_client.get(reverse('playlist-list'))
+    with django_assert_max_num_queries(3):
+        r = api_client.get(reverse('playlist-list'), {'limit': 0})
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 10
 

@@ -8,5 +8,4 @@ from ..serializers.responsibility import ResponsibilitySerializer
 class ResponsibilityViewSet(viewsets.ModelViewSet):
     queryset = Responsibility.objects.all()
     serializer_class = ResponsibilitySerializer
-    pagination_class = None
     permission_classes = [IsStaffOrReadOnly]

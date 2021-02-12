@@ -11,8 +11,8 @@ from v1.repositories.models.repository import Repository
 def test_repositories_list(api_client, django_assert_max_num_queries):
     repositories = RepositoryFactory.create_batch(10)
 
-    with django_assert_max_num_queries(1):
-        r = api_client.get(reverse('repository-list'))
+    with django_assert_max_num_queries(2):
+        r = api_client.get(reverse('repository-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 10

@@ -12,8 +12,8 @@ from ..models.team import Team
 def test_teams_list(api_client, django_assert_max_num_queries):
     teams = TeamFactory.create_batch(10, team_members=5)
 
-    with django_assert_max_num_queries(2):
-        r = api_client.get(reverse('team-list'))
+    with django_assert_max_num_queries(3):
+        r = api_client.get(reverse('team-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 10

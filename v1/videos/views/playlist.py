@@ -11,5 +11,4 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         .order_by('created_date') \
         .all()
     serializer_class = PlaylistSerializer
-    pagination_class = None
     permission_classes = [IsStaffOrReadOnly]

@@ -10,8 +10,6 @@ class UserEarningsViewSet(GenericViewSet, ListModelMixin):
     filterset_fields = ['repository__display_name', 'time_period']
     ordering = ['-total_amount']
     ordering_fields = ['total_amount']
-
-    pagination_class = None
     permission_classes = [IsStaffOrReadOnly]
 
     queryset = UserEarnings.objects.select_related('user')

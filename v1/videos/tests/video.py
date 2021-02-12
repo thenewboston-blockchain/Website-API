@@ -7,7 +7,7 @@ from ..factories.video import PlaylistFactory, VideoFactory
 def test_playlists_videos_list(api_client, django_assert_max_num_queries):
     PlaylistFactory.create_batch(10, videos=5)
     with django_assert_max_num_queries(2):
-        r = api_client.get(reverse('video-list'))
+        r = api_client.get(reverse('video-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 50

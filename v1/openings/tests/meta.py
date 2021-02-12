@@ -20,7 +20,7 @@ def test_object_list(api_client, django_assert_max_num_queries, url_factory):
     obj = factory.create_batch(5)
 
     with django_assert_max_num_queries(2):
-        r = api_client.get(reverse(f'{url}-list'))
+        r = api_client.get(reverse(f'{url}-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 5
