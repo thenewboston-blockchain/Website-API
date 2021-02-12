@@ -10,7 +10,7 @@ class Repository(CreatedModified):
     uuid = UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     url = URLField(blank=True)
     display_name = CharField(max_length=80, unique=True)  # TNB-python-client
-    team = ForeignKey(Team, on_delete=CASCADE)
+    team = ForeignKey(Team, on_delete=CASCADE, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'repositories'

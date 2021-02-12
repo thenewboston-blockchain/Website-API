@@ -35,11 +35,11 @@ class TeamSerializer(serializers.ModelSerializer):
             'modified_date',
             'pk',
             'title',
-            'responsibilities ',
+            'responsibilities',
             'about'
         )
         model = Team
-        read_only_fields = 'created_date', 'modified_date', 'responsibilities '
+        read_only_fields = 'created_date', 'modified_date', 'responsibilities'
 
     @transaction.atomic
     def create(self, validated_data):
