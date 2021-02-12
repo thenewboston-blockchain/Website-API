@@ -2,7 +2,7 @@ from rest_framework import viewsets
 
 from ..models.playlist import Playlist
 from ..serializers.playlist import PlaylistSerializer
-# from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
+from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 
 class PlaylistViewSet(viewsets.ModelViewSet):
@@ -12,4 +12,4 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         .all()
     serializer_class = PlaylistSerializer
     pagination_class = None
-    # permission_classes = [IsStaffOrReadOnly]
+    permission_classes = [IsStaffOrReadOnly]

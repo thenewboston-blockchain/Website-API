@@ -13,7 +13,8 @@ def test_playlists_videos_list(api_client, django_assert_max_num_queries):
     assert len(r.data) == 50
 
 
-def test_video_post(api_client):
+def test_video_post(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
     playlist = PlaylistFactory()
 
     r = api_client.post(reverse('video-list'), data={
@@ -33,7 +34,8 @@ def test_video_post(api_client):
     assert r.status_code == status.HTTP_201_CREATED
 
 
-def test_video_patch(api_client):
+def test_video_patch(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
     video = VideoFactory()
 
     r = api_client.patch(
@@ -49,7 +51,30 @@ def test_video_patch(api_client):
 
 
 def test_video_delete(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
     video = VideoFactory()
 
     r = api_client.delete(reverse('video-detail', (video.pk,)))
     assert r.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_video_anon_post(api_client):
+    r = api_client.post(reverse('video-list'), data={'title': 'Video title'}, format='json')
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_video_anon_patch(api_client):
+    video = VideoFactory()
+
+    r = api_client.post(reverse('video-detail', (video.pk,)), data={'title': 'Video title'}, format='json')
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_video_anon_delete(api_client):
+    video = VideoFactory()
+
+    r = api_client.delete(reverse('video-detail', (video.pk,)))
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED

@@ -16,7 +16,70 @@ def test_playlists_list(api_client, django_assert_max_num_queries):
     assert len(r.data) == 10
 
 
-def test_empty_videolist_post(api_client):
+def test_playlist_post(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+
+    with freeze_time() as frozen_time:
+        r = api_client.post(reverse('playlist-list'), data={
+            'playlist_id': 'qcYthscy9ok',
+            'title': 'Native tutorials',
+            'description': 'Episode two of our Detroit series',
+            'published_at': '2020-12-03T20:00:10Z',
+            'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
+            'language': 'en',
+            'playlist_type': 'youtube',
+            'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+            'video_list': [{
+                'video_id': 'qcYthscy9ok',
+                'title': 'Fight Groove',
+                'description': 'Episode two of our Detroit series',
+                'published_at': '2020-12-03T20:00:10Z',
+                'duration': 350,
+                'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
+                'language': 'en',
+                'video_type': 'youtube',
+                'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+                'category': ['10'],
+                'tags':[]
+            }]
+        }, format='json')
+
+    assert r.status_code == status.HTTP_201_CREATED
+    assert Playlist.objects.get(pk=r.data['uuid']).title == 'Native tutorials'
+    assert r.data == {
+        'uuid': ANY,
+        'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'playlist_id': 'qcYthscy9ok',
+        'title': 'Native tutorials',
+        'description': 'Episode two of our Detroit series',
+        'published_at': '2020-12-03T20:00:10Z',
+        'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
+        'language': 'en',
+        'playlist_type': 'youtube',
+        'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+        'video_list': [{
+            'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+            'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+            'uuid': ANY,
+            'playlist': ANY,
+            'video_id': 'qcYthscy9ok',
+            'title': 'Fight Groove',
+            'description': 'Episode two of our Detroit series',
+            'published_at': '2020-12-03T20:00:10Z',
+            'duration': 350,
+            'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
+            'language': 'en',
+            'video_type': 'youtube',
+            'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+            'category': ['10'],
+            'tags': []
+        }]
+    }
+
+
+def test_empty_videolist_post(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
     with freeze_time() as frozen_time:
         r = api_client.post(reverse('playlist-list'), data={
             'playlist_id': 'qcYthscy9ok',
@@ -47,7 +110,8 @@ def test_empty_videolist_post(api_client):
     }
 
 
-def test_playlist_patch(api_client):
+def test_playlist_patch(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
     playlist = PlaylistFactory(videos=2)
 
     with freeze_time():
@@ -78,9 +142,32 @@ def test_playlist_patch(api_client):
 
 
 def test_playlists_delete(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
     playlist = PlaylistFactory(videos=2)
     r = api_client.delete(reverse('playlist-detail', (playlist.pk,)))
 
     assert r.status_code == status.HTTP_204_NO_CONTENT
     assert r.data is None
     assert Playlist.objects.filter(pk=str(playlist.pk)).first() is None
+
+
+def test_playlist_anon_post(api_client):
+    r = api_client.post(reverse('playlist-list'), data={'title': 'new title'}, format='json')
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_playlist_anon_patch(api_client):
+    playlist = PlaylistFactory()
+
+    r = api_client.post(reverse('playlist-detail', (playlist.pk,)), data={'title': 'new title'}, format='json')
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_platlist_anon_delete(api_client):
+    playlist = PlaylistFactory()
+
+    r = api_client.delete(reverse('playlist-detail', (playlist.pk,)))
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
