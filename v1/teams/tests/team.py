@@ -31,6 +31,8 @@ def test_teams_list(api_client, django_assert_max_num_queries):
             'modified_date': serializers.DateTimeField().to_representation(team_member.modified_date),
         } for team_member in teams[0].team_members.order_by('created_date').all()],
         'title': teams[0].title,
+        'about': teams[0].about,
+        'responsibilities': teams[0].responsibilities,
     }
 
 
@@ -40,6 +42,7 @@ def test_teams_members_empty_post(api_client, staff_user):
     with freeze_time() as frozen_time:
         r = api_client.post(reverse('team-list'), data={
             'title': 'Star team',
+            'about': 'About Star team',
         }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
@@ -49,6 +52,8 @@ def test_teams_members_empty_post(api_client, staff_user):
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'team_members_meta': [],
         'title': 'Star team',
+        'about': 'About Star team',
+        'responsibilities': None,
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -61,6 +66,7 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
     with freeze_time() as frozen_time, django_assert_max_num_queries(6):
         r = api_client.post(reverse('team-list'), data={
             'title': 'Star team',
+            'about': 'About Star team',
             'team_members_meta': [
                 {
                     'user': users[1].pk,
@@ -103,6 +109,8 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
             }
         ],
         'title': 'Star team',
+        'about': 'About Star team',
+        'responsibilities': None,
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -120,6 +128,7 @@ def test_teams_patch(api_client, staff_user):
             reverse('team-detail', (team.pk,)),
             data={
                 'title': 'Star team',
+                'about': 'About Star team',
                 'team_members_meta': [
                     {
                         'user': old_team_member.user_id,
@@ -164,6 +173,8 @@ def test_teams_patch(api_client, staff_user):
             },
         ],
         'title': 'Star team',
+        'about': 'About Star team',
+        'responsibilities': team.responsibilities,
     }
 
     assert Team.objects.get(pk=str(team.pk)).title == 'Star team'

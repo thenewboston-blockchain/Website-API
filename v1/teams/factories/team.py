@@ -8,6 +8,8 @@ from ..models.team_member import TeamMember
 
 class TeamFactory(DjangoModelFactory):
     title = factory.Faker('pystr', max_chars=250)
+    about = factory.Faker('text', max_nb_chars=1024)
+    responsibilities = factory.Faker('text', max_nb_chars=1024)
 
     class Meta:
         model = Team
