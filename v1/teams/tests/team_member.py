@@ -8,7 +8,7 @@ def test_teams_members_list(api_client, django_assert_max_num_queries):
     teams = TeamFactory.create_batch(10, team_members=5)
 
     with django_assert_max_num_queries(2):
-        r = api_client.get(reverse('teammember-list'))
+        r = api_client.get(reverse('teammember-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 50
@@ -26,19 +26,19 @@ def test_teams_members_list(api_client, django_assert_max_num_queries):
 def test_teams_members_list_filter(api_client, django_assert_max_num_queries):
     teams = TeamFactory.create_batch(10, team_members=5)
 
-    with django_assert_max_num_queries(3):
-        r = api_client.get(f'{reverse("teammember-list")}?user={teams[1].team_members.all()[0].user_id}')
+    with django_assert_max_num_queries(4):
+        r = api_client.get(f'{reverse("teammember-list")}?user={teams[0].team_members.all()[0].user_id}')
 
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 1
-    assert r.data[0] == {
-        'user': teams[1].team_members.all()[0].user_id,
-        'team': teams[1].pk,
-        'is_lead': teams[1].team_members.all()[0].is_lead,
-        'pay_per_day': teams[1].team_members.all()[0].pay_per_day,
-        'job_title': teams[1].team_members.all()[0].job_title,
-        'created_date': serializers.DateTimeField().to_representation(teams[1].team_members.all()[0].created_date),
-        'modified_date': serializers.DateTimeField().to_representation(teams[1].team_members.all()[0].modified_date),
+    assert len(r.json()['results']) == 1
+    assert r.json()['results'][0] == {
+        'user': str(teams[0].team_members.all()[0].user_id),
+        'team': str(teams[0].pk),
+        'is_lead': teams[0].team_members.all()[0].is_lead,
+        'pay_per_day': teams[0].team_members.all()[0].pay_per_day,
+        'job_title': teams[0].team_members.all()[0].job_title,
+        'created_date': serializers.DateTimeField().to_representation(teams[0].team_members.all()[0].created_date),
+        'modified_date': serializers.DateTimeField().to_representation(teams[0].team_members.all()[0].modified_date),
     }
 
 

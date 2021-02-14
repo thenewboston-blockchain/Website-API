@@ -15,5 +15,4 @@ class OpeningViewSet(viewsets.ModelViewSet):
         .all()
 
     serializer_class = OpeningSerializer
-    pagination_class = None
     permission_classes = [IsStaffOrReadOnly]

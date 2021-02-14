@@ -8,5 +8,4 @@ from ..serializers.repository import RepositorySerializer
 class RepositoryViewSet(ModelViewSet):
     queryset = Repository.objects.order_by('created_date').all()
     serializer_class = RepositorySerializer
-    pagination_class = None
     permission_classes = [IsStaffOrReadOnly]

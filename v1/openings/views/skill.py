@@ -8,5 +8,4 @@ from ..serializers.skill import SkillSerializer
 class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
-    pagination_class = None
     permission_classes = [IsStaffOrReadOnly]
