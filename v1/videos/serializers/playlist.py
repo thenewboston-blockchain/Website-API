@@ -3,7 +3,6 @@ from django.utils import dateparse
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-
 from .video import VideoSerializer
 from ..models.playlist import Playlist
 from ..models.video import Video
