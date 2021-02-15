@@ -1,3 +1,5 @@
+from smtplib import SMTPException
+
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.response import Response
@@ -5,6 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from ..serializers.user import UserSerializer, UserSerializerCreate, UserSerializerUpdate
 from ...third_party.rest_framework.permissions import AnonWrite, ReadOnly, SelfEdit, StaffDelete
+from ...utils.verification import send_account_email
 
 User = get_user_model()
 
@@ -14,11 +17,22 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
+        data = request.data
         serializer = UserSerializerCreate(
-            data=request.data,
+            data=data,
             context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
+        try:
+
+            host = request.get_host()
+            protocol_secure = request.is_secure()
+            send_account_email(
+                data, host, protocol_secure,
+                'thenewboston - Activate your account',
+                '/users/activate', 'activate_account.html')
+        except (SMTPException, IndexError, TypeError):
+            return Response({'message': 'An error occurred!'}, status=status.HTTP_400_BAD_REQUEST)
         user = serializer.save()
 
         return Response(

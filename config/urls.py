@@ -27,6 +27,7 @@ urlpatterns = [
     path('login', LoginView.as_view(), name='login'),
     path('refresh_token', TokenRefreshView.as_view(), name='refresh_token'),
 
+
     # OpenAPI Schema UI
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
