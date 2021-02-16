@@ -30,8 +30,8 @@ class UserViewSet(ModelViewSet):
         try:
             send_account_email(
                 request,
-                'thenewboston - Activate your account',
-                '/users/activate', 'activate_account.html')
+                'thenewboston - Verify your email',
+                '/users/verify', 'verify_account.html')
         except (SMTPException, IndexError, TypeError):
             return Response({'message': 'An error occurred, please retry!'}, status=status.HTTP_400_BAD_REQUEST)
         user = serializer.save()
@@ -41,7 +41,7 @@ class UserViewSet(ModelViewSet):
             status=status.HTTP_201_CREATED
         )
 
-    def activate(self, request, uid, token):
+    def verify(self, request, uid, token):
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
             user = User.objects.get(email=payload['email'])

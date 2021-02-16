@@ -19,8 +19,8 @@ admin.site.index_title = 'Admin'
 admin.site.site_header = 'thenewboston'
 admin.site.site_title = 'thenewboston'
 
-activate_user = UserViewSet.as_view({
-    'get': 'activate'
+verify_user = UserViewSet.as_view({
+    'get': 'verify'
 })
 
 urlpatterns = [
@@ -31,7 +31,7 @@ urlpatterns = [
     # Auth
     path('login', LoginView.as_view(), name='login'),
     path('refresh_token', TokenRefreshView.as_view(), name='refresh_token'),
-    path('users/activate/<uid>/<token>', activate_user, name='activate_user'),
+    path('users/verify/<uid>/<token>', verify_user, name='verify_user'),
 
     # OpenAPI Schema UI
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

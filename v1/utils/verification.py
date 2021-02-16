@@ -30,12 +30,12 @@ def account_url_metadata(request):
         protocol = 'http://'
     uid = urlsafe_base64_encode(force_bytes(
         email))
-    env = os.environ['DJANGO_APPLICATION_ENVIRONMENT']
+    env = os.getenv('DJANGO_APPLICATION_ENVIRONMENT')
     host = ''
     if env == 'local' or env == 'postgres_local' or env == 'test':
         host = request.get_host()
     if env == 'production':
-        host = 'www.thenewboston.com'
+        host = os.getenv('FRONTEND_URL', 'www.thenewboston.com')
     return (token, host, protocol, uid)
 
 

@@ -1,11 +1,16 @@
 from unittest.mock import ANY
 
+from django.core import mail
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
+
 from ..factories.user import UserFactory
 from ..models import User
+from ...utils.verification import generate_token
 
 
 def test_anon_delete(api_client):
@@ -75,6 +80,41 @@ def test_anon_post(api_client):
         'slack_username': '',
     }
     assert User.objects.get(pk=r.data['pk']).display_name == ''
+    assert len(mail.outbox) == 1
+    assert mail.outbox[0].subject == 'thenewboston - Verify your email'
+    assert mail.outbox[0].to[0] == 'bucky@email.com'
+
+
+def test_user_verification(api_client):
+    with freeze_time():
+        api_client.post(
+            reverse('user-list'),
+            data={
+                'email': 'bucky@email.com',
+                'password': 'Pswd43234!',
+            },
+            format='json'
+        )
+    uid = urlsafe_base64_encode(force_bytes('bucky@email.com'))
+    token = generate_token('bucky@email.com')
+    with freeze_time():
+        r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
+                           format='json'
+                           )
+    assert r.status_code == status.HTTP_200_OK
+    is_token = 'access_token' in dict(r.data)['authentication']
+    assert is_token
+
+
+def test_invalid_token_verification(api_client):
+    uid = urlsafe_base64_encode(force_bytes('bucky@email.com'))
+    token = 'randomstring'
+    with freeze_time():
+        r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
+                           format='json'
+                           )
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    assert r.data['message'] == 'Token is invalid'
 
 
 def test_anon_post_common_password(api_client):
