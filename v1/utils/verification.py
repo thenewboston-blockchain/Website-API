@@ -1,7 +1,7 @@
 import os
-import jwt
 from datetime import datetime, timedelta
 
+import jwt
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -20,29 +20,35 @@ def generate_token(email):
     return token.decode('utf-8')
 
 
-def account_url_metadata(data, host, protocol_secure):
-    email = data.get('email')
+def account_url_metadata(request):
+    email = request.data.get('email')
     token = generate_token(email)
+    protocol_secure = request.is_secure()
     if protocol_secure:
         protocol = 'https://'
     else:
         protocol = 'http://'
     uid = urlsafe_base64_encode(force_bytes(
         email))
-
+    env = os.environ['DJANGO_APPLICATION_ENVIRONMENT']
+    host = ''
+    if env == 'local' or env == 'postgres_local' or env == 'test':
+        host = request.get_host()
+    if env == 'production':
+        host = 'www.thenewboston.com'
     return (token, host, protocol, uid)
 
 
-def send_account_email(data, host, protocol_secure, subject, path, template):
-    token, host, protocol, uid = account_url_metadata(data, host, protocol_secure)
-    email = data.get('email')
-    display_name = data.get('display_name')
+def send_account_email(request, subject, path, template):
+    token, host, protocol, uid = account_url_metadata(request)
+    email = request.data.get('email')
+    display_name = request.data.get('display_name')
     message = render_to_string(
         template, {
             'domain': host,
             'uid': uid,
             'name': display_name,
-            'link': protocol + host + path + '?key=' + token
+            'link': protocol + host + path + '/' + uid + '/' + token
         })
 
     to_email = email
