@@ -22,6 +22,9 @@ admin.site.site_title = 'thenewboston'
 verify_user = UserViewSet.as_view({
     'get': 'verify'
 })
+generate_new_link = UserViewSet.as_view({
+    'post': 'generate_new_link'
+})
 
 urlpatterns = [
 
@@ -32,6 +35,7 @@ urlpatterns = [
     path('login', LoginView.as_view(), name='login'),
     path('refresh_token', TokenRefreshView.as_view(), name='refresh_token'),
     path('users/verify/<uid>/<token>', verify_user, name='verify_user'),
+    path('users/new-link', generate_new_link, name='generate_new_link'),
 
     # OpenAPI Schema UI
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

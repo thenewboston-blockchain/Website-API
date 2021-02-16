@@ -42,7 +42,7 @@ def account_url_metadata(request):
 def send_account_email(request, subject, path, template):
     token, host, protocol, uid = account_url_metadata(request)
     email = request.data.get('email')
-    display_name = request.data.get('display_name')
+    display_name = request.data.get('display_name', '')
     message = render_to_string(
         template, {
             'domain': host,

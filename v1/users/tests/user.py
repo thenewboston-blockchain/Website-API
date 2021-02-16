@@ -86,21 +86,19 @@ def test_anon_post(api_client):
 
 
 def test_user_verification(api_client):
-    with freeze_time():
-        api_client.post(
-            reverse('user-list'),
-            data={
-                'email': 'bucky@email.com',
-                'password': 'Pswd43234!',
-            },
-            format='json'
-        )
+    api_client.post(
+        reverse('user-list'),
+        data={
+            'email': 'bucky@email.com',
+            'password': 'Pswd43234!',
+        },
+        format='json'
+    )
     uid = urlsafe_base64_encode(force_bytes('bucky@email.com'))
     token = generate_token('bucky@email.com')
-    with freeze_time():
-        r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
-                           format='json'
-                           )
+    r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
+                       format='json'
+                       )
     assert r.status_code == status.HTTP_200_OK
     is_token = 'access_token' in dict(r.data)['authentication']
     assert is_token
@@ -109,12 +107,35 @@ def test_user_verification(api_client):
 def test_invalid_token_verification(api_client):
     uid = urlsafe_base64_encode(force_bytes('bucky@email.com'))
     token = 'randomstring'
-    with freeze_time():
-        r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
-                           format='json'
-                           )
+    r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
+                       format='json'
+                       )
     assert r.status_code == status.HTTP_400_BAD_REQUEST
     assert r.data['message'] == 'Token is invalid'
+
+
+def test_user_generate_new_link(api_client):
+    api_client.post(
+        reverse('user-list'),
+        data={
+            'email': 'test@thenewboston.com',
+            'password': '@secret123',
+        },
+        format='json'
+    )
+    r = api_client.post(
+        reverse('user-list') + '/new-link',
+        data={
+            'email': 'test@thenewboston.com',
+            'req_type': 'verify'
+        },
+        format='json'
+    )
+    assert r.status_code == status.HTTP_200_OK
+    assert len(mail.outbox) == 2
+    assert r.data == {
+        'mesage': 'A new link has been sent to your email'
+    }
 
 
 def test_anon_post_common_password(api_client):

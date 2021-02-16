@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from ..serializers.user import UserSerializer, UserSerializerCreate, UserSerializerUpdate
+from ..serializers.user import SecurityLinkSerializer, UserSerializer, UserSerializerCreate, UserSerializerUpdate
 from ...third_party.rest_framework.permissions import AnonWrite, ReadOnly, SelfEdit, StaffDelete
 from ...utils.verification import send_account_email
 
@@ -71,8 +71,31 @@ class UserViewSet(ModelViewSet):
         except (TypeError, ValueError, OverflowError):
             return Response({'message': 'An error occurred, please retry'}, status=status.HTTP_400_BAD_REQUEST)
 
+    def generate_new_link(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        req_type = request.data.get('req_type')
+        serializer = SecurityLinkSerializer(
+            data=request.data
+        )
+        serializer.is_valid(raise_exception=True)
+        try:
+            User.objects.get(email=email)
+            if req_type == 'verify':
+                path = '/users/verify'
+                subject = 'thenewboston - verify your account'
+                template = 'verify_account.html'
+
+            send_account_email(
+                request, subject,
+                path, template)
+            return Response({'mesage': 'A new link has been sent to your email'}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'mesage': 'User with the given email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        except (SMTPException, IndexError, TypeError):
+            return Response({'mesage': 'An error occurred, please retry'}, status=status.HTTP_400_BAD_REQUEST)
+
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action == 'create' or self.action == 'generate_new_link':
             permission_classes = [AnonWrite]
         elif self.action == 'destroy':
             permission_classes = [StaffDelete]
