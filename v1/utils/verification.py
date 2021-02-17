@@ -15,8 +15,9 @@ def generate_token(email):
         'email': email,
         'exp': int(dt.strftime('%s'))
     }, settings.SECRET_KEY, algorithm='HS256')
-
-    return token.decode('utf-8')
+    if (isinstance(token, bytes)):
+        return token.decode('utf-8')
+    return token
 
 
 def account_url_metadata(request):
