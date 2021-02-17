@@ -1,10 +1,9 @@
 import os
+import smtplib
 from datetime import datetime, timedelta
 
 import jwt
 from django.conf import settings
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
@@ -39,27 +38,18 @@ def account_url_metadata(request):
     return (token, host, protocol, uid)
 
 
-def send_account_email(request, subject, path, template):
+def send_account_email(request, subject, path):
     token, host, protocol, uid = account_url_metadata(request)
     email = request.data.get('email')
     display_name = request.data.get('display_name', '')
-    message = render_to_string(
-        template, {
-            'domain': host,
-            'uid': uid,
-            'name': display_name,
-            'link': protocol + host + path + '/' + uid + '/' + token
-        })
-
+    link = protocol + host + path + '/' + uid + '/' + token
     to_email = email
     from_email = os.getenv('DEFAULT_FROM_EMAIL')
-
-    send_mail(
-        subject,
-        'thenewboston',
-        from_email, [
-            to_email,
-        ],
-        html_message=message,
-        fail_silently=False
-    )
+    s = smtplib.SMTP()
+    s.connect(os.getenv('SMTP_SERVER'), 587)
+    s.starttls()
+    s.login(os.getenv('SMTP_USER'), os.getenv('SMTP_PASSWORD'))
+    msg = 'From: ' + from_email + '\nTo: ' + to_email + '\nSubject: ' + subject + '\n\nHi' + \
+        display_name + '\nThank you for registering an account with thenewboston!\nPlease confirm your'\
+        'account by clicking the link below\n\n' + link
+    s.sendmail(from_email, [to_email], msg)

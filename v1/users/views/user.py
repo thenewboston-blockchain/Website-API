@@ -31,11 +31,10 @@ class UserViewSet(ModelViewSet):
             send_account_email(
                 request,
                 'thenewboston - Verify your email',
-                '/users/verify', 'verify_account.html')
-        except (SMTPException, IndexError, TypeError):
+                '/users/verify')
+        except (SMTPException, ConnectionError):
             return Response({'message': 'An error occurred, please retry!'}, status=status.HTTP_400_BAD_REQUEST)
         user = serializer.save()
-
         return Response(
             self.get_serializer(user).data,
             status=status.HTTP_201_CREATED
@@ -83,15 +82,13 @@ class UserViewSet(ModelViewSet):
             if req_type == 'verify':
                 path = '/users/verify'
                 subject = 'thenewboston - verify your account'
-                template = 'verify_account.html'
-
             send_account_email(
                 request, subject,
-                path, template)
+                path)
             return Response({'mesage': 'A new link has been sent to your email'}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({'mesage': 'User with the given email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
-        except (SMTPException, IndexError, TypeError):
+        except (SMTPException, ConnectionError):
             return Response({'mesage': 'An error occurred, please retry'}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_permissions(self):

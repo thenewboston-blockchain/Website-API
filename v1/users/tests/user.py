@@ -1,6 +1,5 @@
 from unittest.mock import ANY
 
-from django.core import mail
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from freezegun import freeze_time
@@ -80,9 +79,6 @@ def test_anon_post(api_client):
         'slack_username': '',
     }
     assert User.objects.get(pk=r.data['pk']).display_name == ''
-    assert len(mail.outbox) == 1
-    assert mail.outbox[0].subject == 'thenewboston - Verify your email'
-    assert mail.outbox[0].to[0] == 'bucky@email.com'
 
 
 def test_user_verification(api_client):
@@ -132,7 +128,6 @@ def test_user_generate_new_link(api_client):
         format='json'
     )
     assert r.status_code == status.HTTP_200_OK
-    assert len(mail.outbox) == 2
     assert r.data == {
         'mesage': 'A new link has been sent to your email'
     }
