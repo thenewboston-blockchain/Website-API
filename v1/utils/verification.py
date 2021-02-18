@@ -7,6 +7,8 @@ from django.conf import settings
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
+from .threading import EmailThread
+
 
 def generate_token(email):
     dt = datetime.now() + timedelta(days=1)
@@ -54,4 +56,4 @@ def send_account_email(request, subject, path):
     msg = 'From: ' + from_email + '\nTo: ' + to_email + '\nSubject: ' + subject + '\n\nHi' + \
         display_name + '\nThank you for registering an account with thenewboston!\nPlease confirm your'\
         'account by clicking the link below\n\n' + link
-    s.sendmail(from_email, [to_email], msg)
+    EmailThread(s, from_email, to_email, msg).start()

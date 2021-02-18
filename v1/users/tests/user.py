@@ -1,4 +1,4 @@
-from unittest.mock import ANY
+from unittest.mock import ANY, MagicMock, patch
 
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -55,6 +55,7 @@ def test_anon_patch(api_client):
     assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+@patch('v1.users.views.user.send_account_email', MagicMock(return_value=None))
 def test_anon_post(api_client):
     with freeze_time() as frozen_time:
         r = api_client.post(
@@ -81,6 +82,7 @@ def test_anon_post(api_client):
     assert User.objects.get(pk=r.data['pk']).display_name == ''
 
 
+@patch('v1.users.views.user.send_account_email', MagicMock(return_value=None))
 def test_user_verification(api_client):
     api_client.post(
         reverse('user-list'),
@@ -110,6 +112,7 @@ def test_invalid_token_verification(api_client):
     assert r.data['message'] == 'Token is invalid'
 
 
+@patch('v1.users.views.user.send_account_email', MagicMock(return_value=None))
 def test_user_generate_new_link(api_client):
     api_client.post(
         reverse('user-list'),
