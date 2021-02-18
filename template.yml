@@ -292,12 +292,12 @@ Resources:
                 - ":1}}"
 
         - Namespace: aws:elasticbeanstalk:application:environment
-          OptionName: FRONTEND_URL
+          OptionName: ENVIRONMENT
           Value:
             Fn::Join:
               - ""
               - - "{{resolve:ssm:"
-                - !Sub "${EnvironmentName}FrontendUrl"
+                - !Sub "${EnvironmentName}Env"
                 - ":1}}"
 
         - Namespace: aws:elasticbeanstalk:application:environment
@@ -324,7 +324,7 @@ Resources:
             Fn::Join:
               - ""
               - - "{{resolve:ssm:"
-                - !Sub "${EnvironmentName}SmtpServer"
+                - !Sub "SmtpServer"
                 - ":1}}"
 
         - Namespace: aws:elasticbeanstalk:application:environment
@@ -333,7 +333,7 @@ Resources:
             Fn::Join:
               - ""
               - - "{{resolve:ssm:"
-                - !Sub "${EnvironmentName}FromUrl"
+                - !Sub "$EmailFrom"
                 - ":1}}"
 
   WebsiteApiEnvironment:
