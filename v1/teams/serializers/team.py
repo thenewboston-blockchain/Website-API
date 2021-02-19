@@ -1,9 +1,9 @@
 from django.db import transaction
 from rest_framework import serializers
 
+from ..models.slack_channel import SlackChannel
 from ..models.team import Team
 from ..models.team_member import TeamMember
-from ..models.slack_channel import SlackChannel
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
@@ -83,6 +83,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
         return instance
 
+
 class SlackChannelSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
@@ -90,6 +91,7 @@ class SlackChannelSerializer(serializers.ModelSerializer):
             'name',
             'modified_date',
             'team',
+            'pk'
         )
         model = SlackChannel
         read_only_fields = 'created_date', 'modified_date'

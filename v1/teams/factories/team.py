@@ -35,6 +35,7 @@ class TeamMemberFactory(DjangoModelFactory):
     class Meta:
         model = TeamMember
 
+
 class SlackChannelFactory(DjangoModelFactory):
     name = factory.Faker('pystr', max_chars=250)
     team = factory.SubFactory(TeamFactory)

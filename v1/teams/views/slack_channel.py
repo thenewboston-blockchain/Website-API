@@ -8,5 +8,4 @@ from ..serializers.team import SlackChannelSerializer
 class SlackChannelViewSet(ModelViewSet):
     queryset = SlackChannel.objects.all()
     serializer_class = SlackChannelSerializer
-    pagination_class = None
     permission_classes = [IsStaffOrReadOnly]
