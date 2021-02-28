@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 User = get_user_model()
@@ -58,3 +59,20 @@ class UserSerializerUpdate(UserSerializer):
             'modified_date',
             'pk',
         )
+
+
+class SecurityLinkSerializer(serializers.Serializer):
+    """
+    serialize and validate new security link for
+
+    email verification or password rest
+    """
+
+    req_type = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
+
+    def validate_req_type(self, value):
+        req_types = ['verify', 'reset']
+        if value not in req_types:
+            raise serializers.ValidationError('Invalid request type')
+        return value

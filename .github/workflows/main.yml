@@ -1,13 +1,12 @@
 name: Python package
 
-on: [ pull_request ]
-
+on: [pull_request]
 
 jobs:
   build:
     strategy:
       matrix:
-        python-version: [ 3.7, 3.8, 3.9 ]
+        python-version: [3.7, 3.8, 3.9]
 
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
@@ -51,3 +50,8 @@ jobs:
           POSTGRES_DB: thenewboston
           POSTGRES_USER: thenewboston
           POSTGRES_PASSWORD: thenewboston
+          ENVIRONMENT: test
+          SMTP_USER: ${{ secrets.DEVSMTPUSER }}
+          SMTP_PASSWORD: ${{ secrets.DEVSMTPPASSWORD }}
+          SMTP_SERVER: ${{ secrets.SMTPSERVER }}
+          DEFAULT_FROM_EMAIL: ${{ secrets.EMAILFROM }}

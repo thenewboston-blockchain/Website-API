@@ -12,11 +12,19 @@ from v1.repositories.urls import router as repositories_router
 from v1.tasks.urls import router as tasks_router
 from v1.teams.urls import router as teams_router
 from v1.users.urls import router as users_router
+from v1.users.views.user import UserViewSet
 from v1.videos.urls import router as videos_router
 
 admin.site.index_title = 'Admin'
 admin.site.site_header = 'thenewboston'
 admin.site.site_title = 'thenewboston'
+
+verify_user = UserViewSet.as_view({
+    'get': 'verify'
+})
+generate_new_link = UserViewSet.as_view({
+    'post': 'generate_new_link'
+})
 
 urlpatterns = [
 
@@ -26,6 +34,8 @@ urlpatterns = [
     # Auth
     path('login', LoginView.as_view(), name='login'),
     path('refresh_token', TokenRefreshView.as_view(), name='refresh_token'),
+    path('users/verify/<uid>/<token>', verify_user, name='verify_user'),
+    path('users/new-link', generate_new_link, name='generate_new_link'),
 
     # OpenAPI Schema UI
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

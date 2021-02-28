@@ -37,19 +37,25 @@ Mappings:
       SSLCertificateId: ApiDevThenewbostonComCertificateArn
 
 Conditions:
-  IsProd: !Equals [ !Ref EnvironmentName, "prod" ]
+  IsProd: !Equals [!Ref EnvironmentName, "prod"]
 
 Resources:
   WebsiteApiRecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
-      Name: !If [ IsProd, "api.thenewboston.com", !Sub "api-${EnvironmentName}.thenewboston.com" ]
+      Name:
+        !If [
+          IsProd,
+          "api.thenewboston.com",
+          !Sub "api-${EnvironmentName}.thenewboston.com",
+        ]
       Type: A
       HostedZoneId: ZDHCZ05S94NJT # thenewboston.com
       AliasTarget:
         DNSName: !GetAtt WebsiteApiEnvironment.EndpointURL
         HostedZoneId:
-          Fn::FindInMap: [ Beanstalk2Route53HostedZoneId, !Ref AWS::Region, HostedZoneId ]
+          Fn::FindInMap:
+            [Beanstalk2Route53HostedZoneId, !Ref AWS::Region, HostedZoneId]
 
   WebsiteApiServiceRole:
     Type: AWS::IAM::Role
@@ -163,7 +169,7 @@ Resources:
       DBSubnetGroupName: !Sub ${EnvironmentName} WebsiteApiDBSubnetGroup
       SubnetIds:
         Fn::Split:
-          - ','
+          - ","
           - Ref: PrivateSubnetIds
       Tags:
         - Key: Name
@@ -239,7 +245,14 @@ Resources:
           Value:
             Fn::ImportValue: !Sub
               - ${FoundInMap}
-              - { FoundInMap: !FindInMap [ Env2Domain, !Ref EnvironmentName, SSLCertificateId ] }
+              - {
+                  FoundInMap:
+                    !FindInMap [
+                      Env2Domain,
+                      !Ref EnvironmentName,
+                      SSLCertificateId,
+                    ],
+                }
 
         - Namespace: aws:elb:listener:443
           OptionName: ListenerProtocol
@@ -273,10 +286,55 @@ Resources:
           OptionName: SENTRY_DSN
           Value:
             Fn::Join:
-              - ''
-              - - '{{resolve:ssm:'
+              - ""
+              - - "{{resolve:ssm:"
                 - !Sub "${EnvironmentName}SentryDsn"
-                - ':1}}'
+                - ":1}}"
+
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: ENVIRONMENT
+          Value:
+            Fn::Join:
+              - ""
+              - - "{{resolve:ssm:"
+                - !Sub "${EnvironmentName}Env"
+                - ":1}}"
+
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SMTP_USER
+          Value:
+            Fn::Join:
+              - ""
+              - - "{{resolve:ssm:"
+                - !Sub "${EnvironmentName}SmtpUser"
+                - ":1}}"
+
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SMTP_PASSWORD
+          Value:
+            Fn::Join:
+              - ""
+              - - "{{resolve:ssm:"
+                - !Sub "${EnvironmentName}SmtpPassword"
+                - ":1}}"
+
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: SMTP_SERVER
+          Value:
+            Fn::Join:
+              - ""
+              - - "{{resolve:ssm:"
+                - !Sub "SmtpServer"
+                - ":1}}"
+
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: DEFAULT_FROM_EMAIL
+          Value:
+            Fn::Join:
+              - ""
+              - - "{{resolve:ssm:"
+                - !Sub "$EmailFrom"
+                - ":1}}"
 
         - Namespace: aws:elasticbeanstalk:application:environment
           OptionName: SECRET_KEY

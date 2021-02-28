@@ -1,11 +1,15 @@
-from unittest.mock import ANY
+from unittest.mock import ANY, MagicMock, patch
 
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
+
 from ..factories.user import UserFactory
 from ..models import User
+from ...utils.verification import generate_token
 
 
 def test_anon_delete(api_client):
@@ -51,6 +55,7 @@ def test_anon_patch(api_client):
     assert r.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+@patch('v1.users.views.user.send_account_email', MagicMock(return_value=None))
 def test_anon_post(api_client):
     with freeze_time() as frozen_time:
         r = api_client.post(
@@ -75,6 +80,60 @@ def test_anon_post(api_client):
         'slack_username': '',
     }
     assert User.objects.get(pk=r.data['pk']).display_name == ''
+
+
+@patch('v1.users.views.user.send_account_email', MagicMock(return_value=None))
+def test_user_verification(api_client):
+    api_client.post(
+        reverse('user-list'),
+        data={
+            'email': 'bucky@email.com',
+            'password': 'Pswd43234!',
+        },
+        format='json'
+    )
+    uid = urlsafe_base64_encode(force_bytes('bucky@email.com'))
+    token = generate_token('bucky@email.com')
+    r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
+                       format='json'
+                       )
+    assert r.status_code == status.HTTP_200_OK
+    is_token = 'access_token' in dict(r.data)['authentication']
+    assert is_token
+
+
+def test_invalid_token_verification(api_client):
+    uid = urlsafe_base64_encode(force_bytes('bucky@email.com'))
+    token = 'randomstring'
+    r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
+                       format='json'
+                       )
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    assert r.data['message'] == 'Token is invalid'
+
+
+@patch('v1.users.views.user.send_account_email', MagicMock(return_value=None))
+def test_user_generate_new_link(api_client):
+    api_client.post(
+        reverse('user-list'),
+        data={
+            'email': 'test@thenewboston.com',
+            'password': '@secret123',
+        },
+        format='json'
+    )
+    r = api_client.post(
+        reverse('user-list') + '/new-link',
+        data={
+            'email': 'test@thenewboston.com',
+            'req_type': 'verify'
+        },
+        format='json'
+    )
+    assert r.status_code == status.HTTP_200_OK
+    assert r.data == {
+        'mesage': 'A new link has been sent to your email'
+    }
 
 
 def test_anon_post_common_password(api_client):
