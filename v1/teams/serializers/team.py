@@ -1,6 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 
+from ..models.slack_channel import SlackChannel
 from ..models.team import Team
 from ..models.team_member import TeamMember
 
@@ -34,10 +35,12 @@ class TeamSerializer(serializers.ModelSerializer):
             'created_date',
             'modified_date',
             'pk',
-            'title'
+            'title',
+            'responsibilities',
+            'about'
         )
         model = Team
-        read_only_fields = 'created_date', 'modified_date'
+        read_only_fields = 'created_date', 'modified_date', 'responsibilities'
 
     @transaction.atomic
     def create(self, validated_data):
@@ -79,3 +82,16 @@ class TeamSerializer(serializers.ModelSerializer):
                 tc.save()
 
         return instance
+
+
+class SlackChannelSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'created_date',
+            'name',
+            'modified_date',
+            'team',
+            'pk'
+        )
+        model = SlackChannel
+        read_only_fields = 'created_date', 'modified_date'

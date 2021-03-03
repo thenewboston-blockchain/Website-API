@@ -4,8 +4,8 @@ from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
-from v1.repositories.factories.repositories import RepositoryFactory
-from v1.repositories.models.repository import Repository
+from ..factories.repositories import RepositoryFactory
+from ..models.repository import Repository
 
 
 def test_repositories_list(api_client, django_assert_max_num_queries):
@@ -21,7 +21,8 @@ def test_repositories_list(api_client, django_assert_max_num_queries):
         'created_date': serializers.DateTimeField().to_representation(repositories[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(repositories[0].modified_date),
         'display_name': repositories[0].display_name,
-        'url': repositories[0].url
+        'url': repositories[0].url,
+        'team': repositories[0].team.pk
     }
 
 
@@ -44,7 +45,8 @@ def test_repositories_post(api_client, staff_user):
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'display_name': 'SuperRepo',
-        'url': 'https://github.com/repo/super/'
+        'url': 'https://github.com/repo/super/',
+        'team': ANY
     }
 
     assert Repository.objects.get(pk=r.data['pk']).display_name == 'SuperRepo'
@@ -71,7 +73,8 @@ def test_repositories_patch(api_client, staff_user):
         'created_date': serializers.DateTimeField().to_representation(repository.created_date),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'display_name': 'MyLittleRepo',
-        'url': 'https://github.com/google/search/'
+        'url': 'https://github.com/google/search/',
+        'team': repository.team.pk
     }
 
     assert Repository.objects.get(pk=str(repository.pk)).display_name == 'MyLittleRepo'

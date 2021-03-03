@@ -12,5 +12,4 @@ class TeamMemberViewSet(mixins.RetrieveModelMixin,
     filterset_fields = ['user']
     queryset = TeamMember.objects.all()
     serializer_class = TeamMemberSerializer
-    # pagination_class = None
     permission_classes = [IsStaffOrReadOnly]
