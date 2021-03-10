@@ -4,6 +4,7 @@ from rest_framework import serializers
 from ..models.slack_channel import SlackChannel
 from ..models.team import Team
 from ..models.team_member import TeamMember
+from ..models.core_team import CoreTeam
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
@@ -84,6 +85,12 @@ class TeamSerializer(serializers.ModelSerializer):
                 tc.save()
 
         return instance
+
+
+class CoreTeamSerializer(TeamSerializer):
+    class Meta:
+        fields = TeamSerializer.Meta.fields + ('responsibilities',)
+        model = CoreTeam
 
 
 class SlackChannelSerializer(serializers.ModelSerializer):

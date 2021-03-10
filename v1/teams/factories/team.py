@@ -2,6 +2,7 @@ import factory
 from factory.django import DjangoModelFactory
 
 from v1.users.factories.user import UserFactory
+from ..models.core_team import CoreTeam
 from ..models.slack_channel import SlackChannel
 from ..models.team import Team
 from ..models.team_member import TeamMember
@@ -24,6 +25,13 @@ class TeamFactory(DjangoModelFactory):
         if extracted:
             if isinstance(extracted, int):
                 TeamMemberFactory.create_batch(extracted, team=self)
+
+
+class CoreTeamFactory(TeamFactory):
+    responsibilities = factory.Faker('text', max_nb_chars=1024)
+
+    class Meta:
+        model = CoreTeam
 
 
 class TeamMemberFactory(DjangoModelFactory):

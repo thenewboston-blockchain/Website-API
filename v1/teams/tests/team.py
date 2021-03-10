@@ -5,7 +5,8 @@ from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
 from v1.users.factories.user import UserFactory
-from ..factories.team import TeamFactory
+from ..factories.team import CoreTeamFactory, TeamFactory
+from ..models.core_team import CoreTeam
 from ..models.team import Team
 
 
@@ -34,6 +35,35 @@ def test_teams_list(api_client, django_assert_max_num_queries):
         'about': teams[0].about,
         'github': teams[0].github,
         'slack': teams[0].slack,
+    }
+
+
+def test_core_teams_list(api_client, django_assert_max_num_queries):
+    teams = CoreTeamFactory.create_batch(10, team_members=5)
+
+    with django_assert_max_num_queries(3):
+        r = api_client.get(reverse('coreteam-list'), {'limit': 0})
+
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 10
+    assert r.data[0] == {
+        'pk': str(teams[0].pk),
+        'created_date': serializers.DateTimeField().to_representation(teams[0].created_date),
+        'modified_date': serializers.DateTimeField().to_representation(teams[0].modified_date),
+        'team_members_meta': [{
+            'team': team_member.team_id,
+            'user': team_member.user_id,
+            'is_lead': team_member.is_lead,
+            'pay_per_day': team_member.pay_per_day,
+            'job_title': team_member.job_title,
+            'created_date': serializers.DateTimeField().to_representation(team_member.created_date),
+            'modified_date': serializers.DateTimeField().to_representation(team_member.modified_date),
+        } for team_member in teams[0].team_members.order_by('created_date').all()],
+        'title': teams[0].title,
+        'about': teams[0].about,
+        'github': teams[0].github,
+        'slack': teams[0].slack,
+        'responsibilities': teams[0].responsibilities,
     }
 
 
@@ -117,6 +147,51 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
         'slack': r.data['slack'],
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
+
+
+def test_core_teams_post(api_client, staff_user, django_assert_max_num_queries):
+    api_client.force_authenticate(staff_user)
+
+    users = UserFactory.create_batch(5)
+
+    with freeze_time() as frozen_time, django_assert_max_num_queries(7):
+        r = api_client.post(reverse('coreteam-list'), data={
+            'title': 'Star team',
+            'about': 'About Star team',
+            'responsibilities': 'Be awesome',
+            'team_members_meta': [
+                {
+                    'user': users[1].pk,
+                    'is_lead': True,
+                    'pay_per_day': 19001,
+                    'job_title': 'Back-End Developer'
+                },
+            ],
+        }, format='json')
+
+    assert r.status_code == status.HTTP_201_CREATED
+    assert r.data == {
+        'pk': ANY,
+        'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'team_members_meta': [
+            {
+                'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+                'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+                'user': users[1].pk,
+                'team': ANY,
+                'is_lead': True,
+                'pay_per_day': 19001,
+                'job_title': 'Back-End Developer'
+            },
+        ],
+        'title': 'Star team',
+        'about': 'About Star team',
+        'github': r.data['github'],
+        'slack': r.data['slack'],
+        'responsibilities': 'Be awesome',
+    }
+    assert CoreTeam.objects.get(pk=r.data['pk']).title == 'Star team'
 
 
 def test_teams_patch(api_client, staff_user):
