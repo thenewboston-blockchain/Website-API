@@ -3,6 +3,7 @@ from factory.django import DjangoModelFactory
 
 from v1.users.factories.user import UserFactory
 from ..models.core_team import CoreTeam
+from ..models.project_team import ProjectTeam
 from ..models.slack_channel import SlackChannel
 from ..models.team import Team
 from ..models.team_member import TeamMember
@@ -32,6 +33,14 @@ class CoreTeamFactory(TeamFactory):
 
     class Meta:
         model = CoreTeam
+
+
+class ProjectTeamFactory(TeamFactory):
+    external_url = factory.Faker('pystr')
+    is_active = factory.Faker('pybool')
+
+    class Meta:
+        model = ProjectTeam
 
 
 class TeamMemberFactory(DjangoModelFactory):

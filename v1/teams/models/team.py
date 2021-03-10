@@ -16,3 +16,12 @@ class Team(CreatedModified):
 
     class Meta:
         ordering = ('created_date', 'title')
+
+
+class CoreTeam(Team):
+    responsibilities = models.TextField(blank=True, null=True)
+
+
+class ProjectTeam(Team):
+    external_url = models.URLField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)

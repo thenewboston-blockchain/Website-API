@@ -2,9 +2,8 @@ from django.db import transaction
 from rest_framework import serializers
 
 from ..models.slack_channel import SlackChannel
-from ..models.team import Team
+from ..models.team import CoreTeam, ProjectTeam, Team
 from ..models.team_member import TeamMember
-from ..models.core_team import CoreTeam
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
@@ -91,6 +90,12 @@ class CoreTeamSerializer(TeamSerializer):
     class Meta:
         fields = TeamSerializer.Meta.fields + ('responsibilities',)
         model = CoreTeam
+
+
+class ProjectTeamSerializer(TeamSerializer):
+    class Meta:
+        fields = TeamSerializer.Meta.fields + ('is_active', 'external_url',)
+        model = ProjectTeam
 
 
 class SlackChannelSerializer(serializers.ModelSerializer):
