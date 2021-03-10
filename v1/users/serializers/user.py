@@ -30,10 +30,13 @@ class UserSerializer(ModelSerializer):
 
 
 class UserSerializerCreate(ModelSerializer):
+    display_name = serializers.CharField(required=True)
+
     class Meta:
         fields = (
             'email',
-            'password'
+            'password',
+            'display_name'
         )
         model = User
 

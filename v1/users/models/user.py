@@ -11,7 +11,7 @@ class User(CreatedModified, AbstractUser):
     uuid = UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
 
     account_number = CharField(blank=True, max_length=VERIFY_KEY_LENGTH)
-    display_name = CharField(blank=True, max_length=250)
+    display_name = CharField(max_length=250)
     github_username = CharField(blank=True, max_length=250)
     profile_image = URLField(blank=True, max_length=500)
     slack_username = CharField(blank=True, max_length=250)

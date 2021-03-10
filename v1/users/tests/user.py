@@ -63,6 +63,7 @@ def test_anon_post(api_client):
             data={
                 'email': 'bucky@email.com',
                 'password': 'Pswd43234!',
+                'display_name': 'Bucky'
             },
             format='json'
         )
@@ -71,7 +72,7 @@ def test_anon_post(api_client):
     assert r.data == {
         'account_number': '',
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'display_name': '',
+        'display_name': 'Bucky',
         'github_username': '',
         'is_email_verified': False,
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
@@ -79,7 +80,7 @@ def test_anon_post(api_client):
         'profile_image': '',
         'slack_username': '',
     }
-    assert User.objects.get(pk=r.data['pk']).display_name == ''
+    assert User.objects.get(pk=r.data['pk']).display_name == 'Bucky'
 
 
 @patch('v1.users.views.user.send_account_email', MagicMock(return_value=None))
@@ -89,6 +90,7 @@ def test_user_verification(api_client):
         data={
             'email': 'bucky@email.com',
             'password': 'Pswd43234!',
+            'display_name': 'Bucky'
         },
         format='json'
     )
@@ -119,6 +121,7 @@ def test_user_generate_new_link(api_client):
         data={
             'email': 'test@thenewboston.com',
             'password': '@secret123',
+            'display_name': 'Bucky'
         },
         format='json'
     )
@@ -142,6 +145,7 @@ def test_anon_post_common_password(api_client):
         data={
             'email': 'bucky@email.com',
             'password': 'pass1234',
+            'display_name': 'Bucky'
         },
         format='json'
     )
@@ -267,6 +271,7 @@ def test_staff_post(api_client, staff_user):
         data={
             'email': 'bucky@email.com',
             'password': 'Pswd43234!',
+            'display_name': 'Bucky'
         },
         format='json'
     )
