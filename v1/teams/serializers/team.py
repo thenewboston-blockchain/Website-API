@@ -22,6 +22,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
 
 class TeamSerializer(serializers.ModelSerializer):
+    about = serializers.CharField(required=True)
     team_members_meta = TeamMemberSerializer(
         source='team_members',
         allow_null=True,
@@ -36,11 +37,12 @@ class TeamSerializer(serializers.ModelSerializer):
             'modified_date',
             'pk',
             'title',
-            'responsibilities',
-            'about'
+            'about',
+            'github',
+            'slack'
         )
         model = Team
-        read_only_fields = 'created_date', 'modified_date', 'responsibilities'
+        read_only_fields = 'created_date', 'modified_date',
 
     @transaction.atomic
     def create(self, validated_data):

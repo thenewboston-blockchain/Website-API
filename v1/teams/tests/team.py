@@ -32,7 +32,8 @@ def test_teams_list(api_client, django_assert_max_num_queries):
         } for team_member in teams[0].team_members.order_by('created_date').all()],
         'title': teams[0].title,
         'about': teams[0].about,
-        'responsibilities': teams[0].responsibilities,
+        'github': teams[0].github,
+        'slack': teams[0].slack,
     }
 
 
@@ -43,6 +44,7 @@ def test_teams_members_empty_post(api_client, staff_user):
         r = api_client.post(reverse('team-list'), data={
             'title': 'Star team',
             'about': 'About Star team',
+            'github': 'https://github.com/thenewboston-developers'
         }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
@@ -53,7 +55,8 @@ def test_teams_members_empty_post(api_client, staff_user):
         'team_members_meta': [],
         'title': 'Star team',
         'about': 'About Star team',
-        'responsibilities': None,
+        'github': 'https://github.com/thenewboston-developers',
+        'slack': r.data['slack'],
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -110,7 +113,8 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
         ],
         'title': 'Star team',
         'about': 'About Star team',
-        'responsibilities': None,
+        'github': r.data['github'],
+        'slack': r.data['slack'],
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -174,7 +178,8 @@ def test_teams_patch(api_client, staff_user):
         ],
         'title': 'Star team',
         'about': 'About Star team',
-        'responsibilities': team.responsibilities,
+        'github': team.github,
+        'slack': team.slack,
     }
 
     assert Team.objects.get(pk=str(team.pk)).title == 'Star team'

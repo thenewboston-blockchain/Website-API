@@ -10,12 +10,13 @@ from ..models.team_member import TeamMember
 class TeamFactory(DjangoModelFactory):
     title = factory.Faker('pystr', max_chars=250)
     about = factory.Faker('text', max_nb_chars=1024)
-    responsibilities = factory.Faker('text', max_nb_chars=1024)
+    github = factory.Faker('pystr')
+    slack = factory.Faker('pystr', max_chars=250)
 
     class Meta:
         model = Team
 
-    @factory.post_generation
+    @ factory.post_generation
     def team_members(self, create, extracted, **kwargs):
         if not create:
             return
