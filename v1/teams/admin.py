@@ -1,7 +1,12 @@
 from django.contrib import admin
 
-from .models.team import Team, CoreTeam, ProjectTeam
-from .models.team_member import TeamMember, CoreMember, ProjectMember
+from .models.core_member import CoreMember
+from .models.core_team import CoreTeam
+from .models.project_member import ProjectMember
+from .models.project_team import ProjectTeam
+from .models.team import Team
+from .models.team_member import TeamMember
+
 
 admin.site.register(Team)
 admin.site.register(TeamMember)
