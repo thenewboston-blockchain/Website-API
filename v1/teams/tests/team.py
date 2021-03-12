@@ -25,7 +25,6 @@ def test_teams_list(api_client, django_assert_max_num_queries):
             'team': team_member.team_id,
             'user': team_member.user_id,
             'is_lead': team_member.is_lead,
-            'pay_per_day': team_member.pay_per_day,
             'job_title': team_member.job_title,
             'created_date': serializers.DateTimeField().to_representation(team_member.created_date),
             'modified_date': serializers.DateTimeField().to_representation(team_member.modified_date),
@@ -53,7 +52,6 @@ def test_core_teams_list(api_client, django_assert_max_num_queries):
             'team': team_member.team_id,
             'user': team_member.user_id,
             'is_lead': team_member.is_lead,
-            'pay_per_day': team_member.pay_per_day,
             'job_title': team_member.job_title,
             'created_date': serializers.DateTimeField().to_representation(team_member.created_date),
             'modified_date': serializers.DateTimeField().to_representation(team_member.modified_date),
@@ -82,7 +80,6 @@ def test_project_teams_list(api_client, django_assert_max_num_queries):
             'team': team_member.team_id,
             'user': team_member.user_id,
             'is_lead': team_member.is_lead,
-            'pay_per_day': team_member.pay_per_day,
             'job_title': team_member.job_title,
             'created_date': serializers.DateTimeField().to_representation(team_member.created_date),
             'modified_date': serializers.DateTimeField().to_representation(team_member.modified_date),
@@ -133,13 +130,11 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 {
                     'user': users[1].pk,
                     'is_lead': True,
-                    'pay_per_day': 19001,
                     'job_title': 'Back-End Developer'
                 },
                 {
                     'user': users[3].pk,
                     'is_lead': False,
-                    'pay_per_day': 9001,
                     'job_title': 'Front-End Developer'
                 }
             ],
@@ -157,7 +152,6 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 'user': users[1].pk,
                 'team': ANY,
                 'is_lead': True,
-                'pay_per_day': 19001,
                 'job_title': 'Back-End Developer'
             },
             {
@@ -166,7 +160,6 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 'user': users[3].pk,
                 'team': ANY,
                 'is_lead': False,
-                'pay_per_day': 9001,
                 'job_title': 'Front-End Developer'
             }
         ],
@@ -192,7 +185,6 @@ def test_core_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 {
                     'user': users[1].pk,
                     'is_lead': True,
-                    'pay_per_day': 19001,
                     'job_title': 'Back-End Developer'
                 },
             ],
@@ -210,7 +202,6 @@ def test_core_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 'user': users[1].pk,
                 'team': ANY,
                 'is_lead': True,
-                'pay_per_day': 19001,
                 'job_title': 'Back-End Developer'
             },
         ],
@@ -237,7 +228,6 @@ def test_project_teams_post(api_client, staff_user, django_assert_max_num_querie
                 {
                     'user': users[1].pk,
                     'is_lead': True,
-                    'pay_per_day': 19001,
                     'job_title': 'Go Developer'
                 },
             ],
@@ -255,7 +245,6 @@ def test_project_teams_post(api_client, staff_user, django_assert_max_num_querie
                 'user': users[1].pk,
                 'team': ANY,
                 'is_lead': True,
-                'pay_per_day': 19001,
                 'job_title': 'Go Developer'
             },
         ],
@@ -293,7 +282,6 @@ def test_teams_patch(api_client, staff_user):
                     {
                         'user': user.pk,
                         'is_lead': False,
-                        'pay_per_day': 9001,
                         'job_title': 'Front-End Developer'
                     }
                 ]
@@ -313,7 +301,6 @@ def test_teams_patch(api_client, staff_user):
                 'user': old_team_member.user_id,
                 'team': team.pk,
                 'is_lead': True,
-                'pay_per_day': 19001,
                 'job_title': 'Back-End Developer'
             },
             {
@@ -322,7 +309,6 @@ def test_teams_patch(api_client, staff_user):
                 'user': user.pk,
                 'team': team.pk,
                 'is_lead': False,
-                'pay_per_day': 9001,
                 'job_title': 'Front-End Developer'
             },
         ],

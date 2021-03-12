@@ -2,11 +2,9 @@ import factory
 from factory.django import DjangoModelFactory
 
 from v1.users.factories.user import UserFactory
-from ..models.core_team import CoreTeam
-from ..models.project_team import ProjectTeam
 from ..models.slack_channel import SlackChannel
-from ..models.team import Team
-from ..models.team_member import TeamMember
+from ..models.team import CoreTeam, ProjectTeam, Team
+from ..models.team_member import CoreMember, TeamMember
 
 
 class TeamFactory(DjangoModelFactory):
@@ -46,12 +44,18 @@ class ProjectTeamFactory(TeamFactory):
 class TeamMemberFactory(DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     is_lead = factory.Faker('pybool')
-    pay_per_day = factory.Faker('pyint')
     job_title = factory.Faker('pystr', max_chars=250)
     team = factory.SubFactory(TeamFactory)
 
     class Meta:
         model = TeamMember
+
+
+class CoreMemberFactory(TeamMemberFactory):
+    pay_per_day = factory.Faker('pyint')
+
+    class Meta:
+        model = CoreMember
 
 
 class SlackChannelFactory(DjangoModelFactory):
