@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from ..models.slack_channel import SlackChannel
 from ..models.team import CoreTeam, ProjectTeam, Team
-from ..models.team_member import CoreMember, TeamMember
+from ..models.team_member import CoreMember, ProjectMember, TeamMember
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
@@ -111,3 +111,9 @@ class CoreMemberSerializer(TeamMemberSerializer):
     class Meta:
         fields = TeamMemberSerializer.Meta.fields + ('core_team', 'pay_per_day',)
         model = CoreMember
+
+
+class ProjectMemberSerializer(TeamMemberSerializer):
+    class Meta:
+        fields = TeamMemberSerializer.Meta.fields + ('project_team',)
+        model = ProjectMember

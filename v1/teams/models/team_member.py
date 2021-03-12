@@ -29,3 +29,6 @@ class CoreMember(TeamMember):
 
 class ProjectMember(TeamMember):
     project_team = models.ForeignKey('teams.ProjectTeam', on_delete=models.CASCADE)
+
+    class Meta:
+        default_related_name = 'project_members'

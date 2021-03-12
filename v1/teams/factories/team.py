@@ -4,7 +4,7 @@ from factory.django import DjangoModelFactory
 from v1.users.factories.user import UserFactory
 from ..models.slack_channel import SlackChannel
 from ..models.team import CoreTeam, ProjectTeam, Team
-from ..models.team_member import CoreMember, TeamMember
+from ..models.team_member import CoreMember, ProjectMember, TeamMember
 
 
 class TeamFactory(DjangoModelFactory):
@@ -49,6 +49,15 @@ class ProjectTeamFactory(TeamFactory):
     class Meta:
         model = ProjectTeam
 
+    @ factory.post_generation
+    def team_members(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            if isinstance(extracted, int):
+                ProjectMemberFactory.create_batch(extracted, project_team=self)
+
 
 class TeamMemberFactory(DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
@@ -66,6 +75,13 @@ class CoreMemberFactory(TeamMemberFactory):
 
     class Meta:
         model = CoreMember
+
+
+class ProjectMemberFactory(TeamMemberFactory):
+    project_team = factory.SubFactory(ProjectTeamFactory)
+
+    class Meta:
+        model = ProjectMember
 
 
 class SlackChannelFactory(DjangoModelFactory):
