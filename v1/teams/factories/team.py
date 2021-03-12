@@ -32,6 +32,15 @@ class CoreTeamFactory(TeamFactory):
     class Meta:
         model = CoreTeam
 
+    @ factory.post_generation
+    def team_members(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            if isinstance(extracted, int):
+                CoreMemberFactory.create_batch(extracted, core_team=self)
+
 
 class ProjectTeamFactory(TeamFactory):
     external_url = factory.Faker('pystr')
@@ -53,6 +62,7 @@ class TeamMemberFactory(DjangoModelFactory):
 
 class CoreMemberFactory(TeamMemberFactory):
     pay_per_day = factory.Faker('pyint')
+    core_team = factory.SubFactory(CoreTeamFactory)
 
     class Meta:
         model = CoreMember

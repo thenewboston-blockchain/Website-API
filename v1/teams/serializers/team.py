@@ -109,5 +109,5 @@ class SlackChannelSerializer(serializers.ModelSerializer):
 
 class CoreMemberSerializer(TeamMemberSerializer):
     class Meta:
-        fields = TeamMemberSerializer.Meta.fields + ('pay_per_day',)
+        fields = TeamMemberSerializer.Meta.fields + ('core_team', 'pay_per_day',)
         model = CoreMember
