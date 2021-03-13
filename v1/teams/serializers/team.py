@@ -1,7 +1,6 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from ..models.slack_channel import SlackChannel
 from ..models.team import CoreTeam, ProjectTeam, Team
 from ..models.team_member import CoreMember, ProjectMember, TeamMember
 
@@ -18,6 +17,20 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         )
         model = TeamMember
         read_only_fields = 'created_date', 'modified_date', 'team'
+
+
+class CoreMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = TeamMemberSerializer.Meta.fields + ('core_team', 'pay_per_day',)
+        model = CoreMember
+        read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('core_team',)
+
+
+class ProjectMemberSerializer(TeamMemberSerializer):
+    class Meta:
+        fields = TeamMemberSerializer.Meta.fields + ('project_team',)
+        model = ProjectMember
+        read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('project_team',)
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -83,37 +96,96 @@ class TeamSerializer(serializers.ModelSerializer):
 
 
 class CoreTeamSerializer(TeamSerializer):
+    core_members_meta = CoreMemberSerializer(
+        source='core_members',
+        allow_null=True,
+        many=True,
+        required=False
+    )
+
     class Meta:
-        fields = TeamSerializer.Meta.fields + ('responsibilities',)
+        fields = TeamSerializer.Meta.fields + ('core_members_meta', 'responsibilities',)
         model = CoreTeam
+
+    @transaction.atomic
+    def create(self, validated_data):
+        core_members = validated_data.pop('core_members', [])
+        instance = super(CoreTeamSerializer, self).create(validated_data)
+
+        for core_member in core_members:
+            CoreMember.objects.create(**core_member,
+                                      core_team=instance
+                                      )
+        return instance
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        core_members = validated_data.pop('core_members', [])
+        instance = super(CoreTeamSerializer, self).update(instance, validated_data)
+
+        CoreMember.objects \
+            .filter(core_team=instance) \
+            .exclude(user__in=[core_member['user'].pk for core_member in core_members]) \
+            .delete()
+
+        for core_member in core_members:
+            tc, created = CoreMember.objects.get_or_create(defaults={
+                'is_lead': core_member['is_lead'],
+                'job_title': core_member['job_title'],
+                'pay_per_day': core_member['pay_per_day']
+            }, core_team=instance, user=core_member['user'])
+
+            if not created:
+                tc.is_lead = core_member['is_lead']
+                tc.job_title = core_member['job_title']
+                tc.pay_per_day = core_member['pay_per_day']
+                tc.save()
+
+        return instance
 
 
 class ProjectTeamSerializer(TeamSerializer):
+    project_members_meta = ProjectMemberSerializer(
+        source='project_members',
+        allow_null=True,
+        many=True,
+        required=False
+    )
+
     class Meta:
-        fields = TeamSerializer.Meta.fields + ('is_active', 'external_url',)
+        fields = TeamSerializer.Meta.fields + ('project_members_meta', 'is_active', 'external_url',)
         model = ProjectTeam
 
+    @transaction.atomic
+    def create(self, validated_data):
+        project_members = validated_data.pop('project_members', [])
+        instance = super(ProjectTeamSerializer, self).create(validated_data)
 
-class SlackChannelSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = (
-            'created_date',
-            'name',
-            'modified_date',
-            'team',
-            'pk'
-        )
-        model = SlackChannel
-        read_only_fields = 'created_date', 'modified_date'
+        for project_member in project_members:
+            ProjectMember.objects.create(**project_member,
+                                         project_team=instance
+                                         )
+        return instance
 
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        project_members = validated_data.pop('project_members', [])
+        instance = super(ProjectTeamSerializer, self).update(instance, validated_data)
 
-class CoreMemberSerializer(TeamMemberSerializer):
-    class Meta:
-        fields = TeamMemberSerializer.Meta.fields + ('core_team', 'pay_per_day',)
-        model = CoreMember
+        ProjectMember.objects \
+            .filter(project_team=instance) \
+            .exclude(user__in=[project_member['user'].pk for project_member in project_members]) \
+            .delete()
 
+        for project_member in project_members:
+            tc, created = ProjectMember.objects.get_or_create(defaults={
+                'is_lead': project_member['is_lead'],
+                'job_title': project_member['job_title'],
+            }, project_team=instance, user=project_member['user'])
 
-class ProjectMemberSerializer(TeamMemberSerializer):
-    class Meta:
-        fields = TeamMemberSerializer.Meta.fields + ('project_team',)
-        model = ProjectMember
+            if not created:
+                tc.is_lead = project_member['is_lead']
+                tc.job_title = project_member['job_title']
+                tc.save()
+
+        return instance

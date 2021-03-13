@@ -2,7 +2,6 @@ import factory
 from factory.django import DjangoModelFactory
 
 from v1.users.factories.user import UserFactory
-from ..models.slack_channel import SlackChannel
 from ..models.team import CoreTeam, ProjectTeam, Team
 from ..models.team_member import CoreMember, ProjectMember, TeamMember
 
@@ -33,7 +32,7 @@ class CoreTeamFactory(TeamFactory):
         model = CoreTeam
 
     @ factory.post_generation
-    def team_members(self, create, extracted, **kwargs):
+    def core_members(self, create, extracted, **kwargs):
         if not create:
             return
 
@@ -50,7 +49,7 @@ class ProjectTeamFactory(TeamFactory):
         model = ProjectTeam
 
     @ factory.post_generation
-    def team_members(self, create, extracted, **kwargs):
+    def project_members(self, create, extracted, **kwargs):
         if not create:
             return
 
@@ -82,11 +81,3 @@ class ProjectMemberFactory(TeamMemberFactory):
 
     class Meta:
         model = ProjectMember
-
-
-class SlackChannelFactory(DjangoModelFactory):
-    name = factory.Faker('pystr', max_chars=250)
-    team = factory.SubFactory(TeamFactory)
-
-    class Meta:
-        model = SlackChannel

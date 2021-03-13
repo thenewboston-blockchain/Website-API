@@ -16,7 +16,7 @@ class TeamViewSet(ModelViewSet):
 
 class CoreTeamViewSet(ModelViewSet):
     queryset = CoreTeam.objects \
-        .prefetch_related('team_members') \
+        .prefetch_related('core_members') \
         .order_by('created_date') \
         .all()
     serializer_class = CoreTeamSerializer
@@ -25,7 +25,7 @@ class CoreTeamViewSet(ModelViewSet):
 
 class ProjectTeamViewSet(ModelViewSet):
     queryset = ProjectTeam.objects \
-        .prefetch_related('team_members') \
+        .prefetch_related('project_members') \
         .order_by('created_date') \
         .all()
     serializer_class = ProjectTeamSerializer

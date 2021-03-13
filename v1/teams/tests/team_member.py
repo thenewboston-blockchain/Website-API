@@ -22,7 +22,7 @@ def test_teams_members_list(api_client, django_assert_max_num_queries):
 
 
 def test_core_members_list(api_client, django_assert_max_num_queries):
-    teams = CoreTeamFactory.create_batch(10, team_members=5)
+    teams = CoreTeamFactory.create_batch(10, core_members=5)
 
     with django_assert_max_num_queries(2):
         r = api_client.get(reverse('coremember-list'), {'limit': 0})
@@ -42,7 +42,7 @@ def test_core_members_list(api_client, django_assert_max_num_queries):
 
 
 def test_project_members_list(api_client, django_assert_max_num_queries):
-    teams = ProjectTeamFactory.create_batch(10, team_members=5)
+    teams = ProjectTeamFactory.create_batch(10, project_members=5)
 
     with django_assert_max_num_queries(2):
         r = api_client.get(reverse('projectmember-list'), {'limit': 0})
