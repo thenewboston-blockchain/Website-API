@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from rest_framework import serializers
 
@@ -14,16 +15,30 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             'modified_date',
             'team',
             'user',
+            'pk'
         )
         model = TeamMember
         read_only_fields = 'created_date', 'modified_date', 'team'
 
 
-class CoreMemberSerializer(serializers.ModelSerializer):
-    class Meta:
+class CoreMemberSerializer(TeamMemberSerializer):
+    class Meta(TeamMemberSerializer.Meta):
         fields = TeamMemberSerializer.Meta.fields + ('core_team', 'pay_per_day',)
         model = CoreMember
         read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('core_team',)
+
+    def create(self, validated_data):
+        try:
+            core_team_id = self.context.get('request').data.get('core_team')
+            if not core_team_id:
+                raise serializers.ValidationError({'core_team': ['This field is required.']})
+            core_team = CoreTeam.objects.get(pk=core_team_id)
+            validated_data['core_team'] = core_team
+            return super().create(validated_data)
+        except CoreTeam.DoesNotExist:
+            raise serializers.ValidationError({'core_team': ['CoreTeam not found', ]})
+        except ValidationError:
+            raise serializers.ValidationError({'core_team': ['{} is not a valid UUID.'.format(core_team_id), ]})
 
 
 class ProjectMemberSerializer(TeamMemberSerializer):
@@ -31,6 +46,19 @@ class ProjectMemberSerializer(TeamMemberSerializer):
         fields = TeamMemberSerializer.Meta.fields + ('project_team',)
         model = ProjectMember
         read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('project_team',)
+
+    def create(self, validated_data):
+        try:
+            project_team_id = self.context.get('request').data.get('project_team')
+            if not project_team_id:
+                raise serializers.ValidationError({'project_team': ['This field is required.']})
+            project_team = ProjectTeam.objects.get(pk=project_team_id)
+            validated_data['project_team'] = project_team
+            return super().create(validated_data)
+        except ProjectTeam.DoesNotExist:
+            raise serializers.ValidationError({'project_team': ['ProjectTeam not found', ]})
+        except ValidationError:
+            raise serializers.ValidationError({'project_team': ['{} is not a valid UUID.'.format(project_team_id), ]})
 
 
 class TeamSerializer(serializers.ModelSerializer):

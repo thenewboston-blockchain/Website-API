@@ -1,3 +1,5 @@
+from unittest.mock import ANY
+
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
@@ -12,6 +14,7 @@ def test_teams_members_list(api_client, django_assert_max_num_queries):
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 50
     assert r.data[0] == {
+        'pk': ANY,
         'user': teams[0].team_members.all()[0].user_id,
         'team': teams[0].pk,
         'is_lead': teams[0].team_members.all()[0].is_lead,
@@ -30,6 +33,7 @@ def test_core_members_list(api_client, django_assert_max_num_queries):
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 50
     assert r.data[0] == {
+        'pk': ANY,
         'user': teams[0].core_members.all()[0].user_id,
         'team': teams[0].core_members.all()[0].team.pk,
         'core_team': teams[0].pk,
@@ -50,6 +54,7 @@ def test_project_members_list(api_client, django_assert_max_num_queries):
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 50
     assert r.data[0] == {
+        'pk': ANY,
         'user': teams[0].project_members.all()[0].user_id,
         'team': teams[0].project_members.all()[0].team.pk,
         'project_team': teams[0].pk,
@@ -69,6 +74,7 @@ def test_teams_members_list_filter(api_client, django_assert_max_num_queries):
     assert r.status_code == status.HTTP_200_OK
     assert len(r.json()['results']) == 1
     assert r.json()['results'][0] == {
+        'pk': ANY,
         'user': str(teams[0].team_members.all()[0].user_id),
         'team': str(teams[0].pk),
         'is_lead': teams[0].team_members.all()[0].is_lead,
@@ -92,7 +98,35 @@ def test_teams_members_post(api_client, staff_user):
     assert r.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
 
-def test_core_members_post(api_client, staff_user):
+def test_core_members_post(api_client, superuser):
+    api_client.force_authenticate(superuser)
+    team = CoreTeamFactory()
+    r = api_client.post(reverse('coremember-list'), data={
+        'user': superuser.pk,
+        'core_team': team.pk,
+        'is_lead': False,
+        'job_title': 'User',
+        'pay_per_day': 2800
+    }, format='json')
+
+    assert r.status_code == status.HTTP_201_CREATED
+
+
+def test_project_members_post(api_client, superuser):
+    api_client.force_authenticate(superuser)
+    team = ProjectTeamFactory()
+
+    r = api_client.post(reverse('projectmember-list'), data={
+        'user': superuser.pk,
+        'project_team': team.pk,
+        'is_lead': False,
+        'job_title': 'User',
+    }, format='json')
+
+    assert r.status_code == status.HTTP_201_CREATED
+
+
+def test_core_members_staff_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
     team = CoreTeamFactory()
 
@@ -104,10 +138,10 @@ def test_core_members_post(api_client, staff_user):
         'pay_per_day': 2800
     }, format='json')
 
-    assert r.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+    assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_project_members_post(api_client, staff_user):
+def test_project_members_staff_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
     team = ProjectTeamFactory()
 
@@ -118,7 +152,7 @@ def test_project_members_post(api_client, staff_user):
         'job_title': 'User',
     }, format='json')
 
-    assert r.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+    assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_teams_members_patch(api_client, staff_user):

@@ -39,3 +39,21 @@ def staff_user(django_user_model):
             email, 'password', **extra_fields
         )
     return user
+
+
+@pytest.fixture()
+def superuser(django_user_model):
+    """Creates superuser"""
+    UserModel = django_user_model
+    email = 'super@example.com'
+
+    try:
+        user = UserModel._default_manager.get(email=email)
+    except UserModel.DoesNotExist:
+        extra_fields = {
+            'is_superuser': True
+        }
+        user = UserModel._default_manager.create_user(
+            email, 'password', **extra_fields
+        )
+    return user

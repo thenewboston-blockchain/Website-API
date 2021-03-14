@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
 
-from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
+from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly, IsSuperUserOrReadOnly
 from ..models.team import CoreTeam, ProjectTeam, Team
 from ..serializers.team import CoreTeamSerializer, ProjectTeamSerializer, TeamSerializer
 
@@ -20,7 +20,7 @@ class CoreTeamViewSet(ModelViewSet):
         .order_by('created_date') \
         .all()
     serializer_class = CoreTeamSerializer
-    permission_classes = [IsStaffOrReadOnly]
+    permission_classes = [IsSuperUserOrReadOnly]
 
 
 class ProjectTeamViewSet(ModelViewSet):
@@ -29,4 +29,4 @@ class ProjectTeamViewSet(ModelViewSet):
         .order_by('created_date') \
         .all()
     serializer_class = ProjectTeamSerializer
-    permission_classes = [IsStaffOrReadOnly]
+    permission_classes = [IsSuperUserOrReadOnly]
