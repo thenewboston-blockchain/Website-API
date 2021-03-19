@@ -185,7 +185,7 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
 
     users = UserFactory.create_batch(5)
 
-    with freeze_time() as frozen_time, django_assert_max_num_queries(9):
+    with freeze_time() as frozen_time, django_assert_max_num_queries(10):
         r = api_client.post(reverse('coreteam-list'), data={
             'title': 'Star team',
             'about': 'About Star team',
@@ -232,7 +232,7 @@ def test_project_teams_post(api_client, superuser, django_assert_max_num_queries
 
     users = UserFactory.create_batch(5)
 
-    with freeze_time() as frozen_time, django_assert_max_num_queries(9):
+    with freeze_time() as frozen_time, django_assert_max_num_queries(10):
         r = api_client.post(reverse('projectteam-list'), data={
             'title': 'Ether Team',
             'about': 'About Ether team',

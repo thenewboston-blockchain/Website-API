@@ -22,6 +22,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
 
 class CoreMemberSerializer(TeamMemberSerializer):
+
     class Meta(TeamMemberSerializer.Meta):
         fields = TeamMemberSerializer.Meta.fields + ('core_team', 'pay_per_day',)
         model = CoreMember
@@ -158,15 +159,15 @@ class CoreTeamSerializer(TeamSerializer):
 
         for core_member in core_members:
             tc, created = CoreMember.objects.get_or_create(defaults={
-                'is_lead': core_member['is_lead'],
-                'job_title': core_member['job_title'],
-                'pay_per_day': core_member['pay_per_day']
+                'is_lead': core_member.get('is_lead'),
+                'job_title': core_member.get('job_title', ''),
+                'pay_per_day': core_member.get('pay_per_day', 2800)
             }, core_team=instance, user=core_member['user'])
 
             if not created:
-                tc.is_lead = core_member['is_lead']
-                tc.job_title = core_member['job_title']
-                tc.pay_per_day = core_member['pay_per_day']
+                tc.is_lead = core_member.get('is_lead', tc.is_lead)
+                tc.job_title = core_member.get('job_title', tc.job_title)
+                tc.pay_per_day = core_member.get('pay_per_day', tc.pay_per_day)
                 tc.save()
 
         return instance
@@ -184,7 +185,7 @@ class ProjectTeamSerializer(TeamSerializer):
         fields = TeamSerializer.Meta.fields + ('project_members_meta', 'is_active', 'external_url',)
         model = ProjectTeam
 
-    @transaction.atomic
+    @ transaction.atomic
     def create(self, validated_data):
         project_members = validated_data.pop('project_members', [])
         instance = super(ProjectTeamSerializer, self).create(validated_data)
@@ -195,25 +196,25 @@ class ProjectTeamSerializer(TeamSerializer):
                                          )
         return instance
 
-    @transaction.atomic
+    @ transaction.atomic
     def update(self, instance, validated_data):
         project_members = validated_data.pop('project_members', [])
         instance = super(ProjectTeamSerializer, self).update(instance, validated_data)
 
         ProjectMember.objects \
             .filter(project_team=instance) \
-            .exclude(user__in=[project_member['user'].pk for project_member in project_members]) \
+            .exclude(user__in=[project_member['user'].pk for project_member in project_members])\
             .delete()
 
         for project_member in project_members:
             tc, created = ProjectMember.objects.get_or_create(defaults={
-                'is_lead': project_member['is_lead'],
-                'job_title': project_member['job_title'],
+                'is_lead': project_member.get('is_lead'),
+                'job_title': project_member.get('job_title', ''),
             }, project_team=instance, user=project_member['user'])
 
             if not created:
-                tc.is_lead = project_member['is_lead']
-                tc.job_title = project_member['job_title']
+                tc.is_lead = project_member.get('is_lead', tc.is_lead)
+                tc.job_title = project_member.get('job_title', tc.job_title)
                 tc.save()
 
         return instance
