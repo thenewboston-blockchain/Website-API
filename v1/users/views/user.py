@@ -22,8 +22,10 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
+        data = request.data
+        data['email'] = data['email'].lower()
         serializer = UserSerializerCreate(
-            data=request.data,
+            data=data,
             context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
@@ -43,7 +45,7 @@ class UserViewSet(ModelViewSet):
     def verify(self, request, uid, token):
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-            user = User.objects.get(email=payload['email'])
+            user = User.objects.get(email__iexact=payload['email'])
             email = force_text(urlsafe_base64_decode(uid))
             if user is not None:
                 if not user.is_email_verified:
@@ -78,7 +80,7 @@ class UserViewSet(ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
         try:
-            User.objects.get(email=email)
+            User.objects.get(email__iexact=email)
             if req_type == 'verify':
                 path = '/users/verify'
                 subject = 'thenewboston - verify your account'
