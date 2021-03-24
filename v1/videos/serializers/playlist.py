@@ -42,6 +42,7 @@ class PlaylistSerializer(ModelSerializer):
         instance.description = validated_data.get('description', instance.description)
         instance.thumbnail = validated_data.get('thumbnail', instance.thumbnail)
         instance.language = validated_data.get('language', instance.language)
+        instance.category = validated_data.get('category', instance.category)
         instance.playlist_type = validated_data.get('playlist_type', instance.playlist_type)
         instance.author = validated_data.get('author', instance.author)
         instance.save()
