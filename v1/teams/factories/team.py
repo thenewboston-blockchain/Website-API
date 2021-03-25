@@ -69,7 +69,8 @@ class TeamMemberFactory(DjangoModelFactory):
 
 
 class CoreMemberFactory(TeamMemberFactory):
-    pay_per_day = factory.Faker('pyint')
+    hourly_rate = factory.Faker('pyint')
+    weekly_hourly_commitment = factory.Faker('pyint')
     core_team = factory.SubFactory(CoreTeamFactory)
 
     class Meta:

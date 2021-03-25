@@ -38,7 +38,8 @@ def test_core_members_list(api_client, django_assert_max_num_queries):
         'team': teams[0].core_members.all()[0].team.pk,
         'core_team': teams[0].pk,
         'is_lead': teams[0].core_members.all()[0].is_lead,
-        'pay_per_day': teams[0].core_members.all()[0].pay_per_day,
+        'hourly_rate': teams[0].core_members.all()[0].hourly_rate,
+        'weekly_hourly_commitment': teams[0].core_members.all()[0].weekly_hourly_commitment,
         'job_title': teams[0].core_members.all()[0].job_title,
         'created_date': serializers.DateTimeField().to_representation(teams[0].core_members.all()[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(teams[0].core_members.all()[0].modified_date),
@@ -106,7 +107,8 @@ def test_core_members_post(api_client, superuser):
         'core_team': team.pk,
         'is_lead': False,
         'job_title': 'User',
-        'pay_per_day': 2800
+        'hourly_rate': 50,
+        'weekly_hourly_commitment': 30
     }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
@@ -135,7 +137,7 @@ def test_core_members_staff_post(api_client, staff_user):
         'core_team': team.pk,
         'is_lead': False,
         'job_title': 'User',
-        'pay_per_day': 2800
+        'hourly_rate': 2800
     }, format='json')
 
     assert r.status_code == status.HTTP_403_FORBIDDEN

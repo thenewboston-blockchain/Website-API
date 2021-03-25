@@ -55,7 +55,8 @@ def test_core_teams_list(api_client, django_assert_max_num_queries):
             'user': core_member.user_id,
             'is_lead': core_member.is_lead,
             'job_title': core_member.job_title,
-            'pay_per_day': core_member.pay_per_day,
+            'hourly_rate': core_member.hourly_rate,
+            'weekly_hourly_commitment': core_member.weekly_hourly_commitment,
             'created_date': serializers.DateTimeField().to_representation(core_member.created_date),
             'modified_date': serializers.DateTimeField().to_representation(core_member.modified_date),
         } for core_member in teams[0].core_members.order_by('created_date').all()],
@@ -195,7 +196,8 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
                     'user': users[1].pk,
                     'is_lead': True,
                     'job_title': 'Back-End Developer',
-                    'pay_per_day': 2000
+                    'hourly_rate': 2000,
+                    'weekly_hourly_commitment': 50,
                 },
             ],
         }, format='json')
@@ -213,7 +215,8 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
                 'core_team': ANY,
                 'is_lead': True,
                 'job_title': 'Back-End Developer',
-                'pay_per_day': 2000,
+                'hourly_rate': 2000,
+                'weekly_hourly_commitment': 50,
                 'pk': ANY
             },
         ],
@@ -292,7 +295,7 @@ def test_teams_patch(api_client, staff_user):
                     {
                         'user': old_team_member.user_id,
                         'is_lead': True,
-                        'pay_per_day': 19001,
+                        'hourly_rate': 19001,
                         'job_title': 'Back-End Developer'
                     },
                     {
