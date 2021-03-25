@@ -27,6 +27,7 @@ def test_playlist_post(api_client, staff_user):
             'published_at': '2020-12-03T20:00:10Z',
             'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
             'language': 'en',
+            'category': ['Devops'],
             'playlist_type': 'youtube',
             'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
             'video_list': [{
@@ -56,6 +57,7 @@ def test_playlist_post(api_client, staff_user):
         'published_at': '2020-12-03T20:00:10Z',
         'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
         'language': 'en',
+        'category': ['Devops'],
         'playlist_type': 'youtube',
         'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
         'video_list': [{
@@ -89,6 +91,7 @@ def test_empty_videolist_post(api_client, staff_user):
             'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
             'language': 'en',
             'playlist_type': 'youtube',
+            'category': ['Devops'],
             'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
         }, format='json')
 
@@ -105,6 +108,7 @@ def test_empty_videolist_post(api_client, staff_user):
         'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
         'language': 'en',
         'playlist_type': 'youtube',
+        'category': ['Devops'],
         'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
         'video_list': []
     }
@@ -131,7 +135,7 @@ def test_playlist_patch(api_client, staff_user):
                         'language': 'en',
                         'video_type': 'youtube',
                         'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
-                        'category': ['10']
+                        'category': ['Music']
                     },
                 ]
             },

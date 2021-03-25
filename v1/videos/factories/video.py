@@ -14,6 +14,7 @@ class PlaylistFactory(DjangoModelFactory):
     author = factory.Faker('pystr', max_chars=250)
     thumbnail = factory.Faker('pystr', max_chars=250)
     language = factory.Faker('pystr', max_chars=250)
+    category = factory.Faker('pylist', nb_elements=10, variable_nb_elements=True, value_types='str')
     playlist_type = factory.Faker('pystr', max_chars=11)
 
     class Meta:
