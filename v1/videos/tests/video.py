@@ -1,20 +1,21 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ..factories.video import PlaylistFactory, VideoFactory
+from ..factories.video import CategoryFactory, PlaylistFactory, VideoFactory
 
 
 def test_playlists_videos_list(api_client, django_assert_max_num_queries):
-    PlaylistFactory.create_batch(10, videos=5)
-    with django_assert_max_num_queries(2):
+    PlaylistFactory.create_batch(5, videos=5)
+    with django_assert_max_num_queries(27):
         r = api_client.get(reverse('video-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 50
+    assert len(r.data) == 25
 
 
 def test_video_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
+    category = CategoryFactory.create_batch(2)
     playlist = PlaylistFactory()
 
     r = api_client.post(reverse('video-list'), data={
@@ -28,7 +29,7 @@ def test_video_post(api_client, staff_user):
         'language': 'en',
         'video_type': 'youtube',
         'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
-        'category': ['10']
+        'categories': [category[0].pk]
     }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED

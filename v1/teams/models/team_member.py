@@ -38,9 +38,9 @@ class CoreMember(TeamMember):
                     }
                 )
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, **kwargs):
         self.validate_unique()
-        return super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+        return super(CoreMember, self).save(*args, **kwargs)
 
 
 class ProjectMember(TeamMember):
@@ -59,6 +59,6 @@ class ProjectMember(TeamMember):
                     }
                 )
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, **kwargs):
         self.validate_unique()
-        return super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+        return super(ProjectMember, self).save(*args, **kwargs)
