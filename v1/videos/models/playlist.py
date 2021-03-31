@@ -1,6 +1,5 @@
 import uuid
 
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from thenewboston.models.created_modified import CreatedModified
 
@@ -18,7 +17,7 @@ class Playlist(CreatedModified):
     author = models.CharField(max_length=250)
     thumbnail = models.CharField(max_length=250)
     language = models.CharField(max_length=250)
-    category = ArrayField(models.CharField(max_length=250))
+    categories = models.ManyToManyField('Category')
     playlist_type = models.CharField(max_length=15, choices=PLAYLIST_TYPE)
 
     class Meta:
