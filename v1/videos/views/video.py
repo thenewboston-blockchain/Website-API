@@ -17,7 +17,7 @@ class VideoViewSet(viewsets.ModelViewSet):
         if request.query_params.get('category'):
             category = request.query_params.get('category')
             try:
-                category = Category.objects.get(name=category)
+                category = Category.objects.get(name__iexact=category)
                 playlists = Video.objects.filter(categories__pk=category.pk).order_by('created_date')
                 playlists = self.filter_queryset(playlists)
                 page = self.paginate_queryset(playlists)

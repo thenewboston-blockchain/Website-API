@@ -20,7 +20,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         if request.query_params.get('category'):
             category = request.query_params.get('category')
             try:
-                category = Category.objects.get(name=category)
+                category = Category.objects.get(name__iexact=category)
                 playlists = Playlist.objects.filter(categories__pk=category.pk).prefetch_related('videos').order_by('created_date')
                 page = self.paginate_queryset(playlists)
                 serializer = self.get_serializer(page, context={'request': request}, many=True)

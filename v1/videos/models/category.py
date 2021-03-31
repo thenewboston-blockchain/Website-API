@@ -12,4 +12,6 @@ class Category(CreatedModified):
         return f'#{self.pk}: {self.name}'
 
     class Meta:
+        verbose_name = 'category'
+        verbose_name_plural = 'categories'
         ordering = ('created_date',)
