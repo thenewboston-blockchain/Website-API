@@ -6,11 +6,21 @@ from ..factories.video import CategoryFactory, PlaylistFactory, VideoFactory
 
 def test_playlists_videos_list(api_client, django_assert_max_num_queries):
     PlaylistFactory.create_batch(5, videos=5)
-    with django_assert_max_num_queries(27):
-        r = api_client.get(reverse('video-list'), {'limit': 0})
+    with django_assert_max_num_queries(28):
+        r = api_client.get(reverse('video-list'))
 
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 25
+    assert len(r.data) == 4
+
+
+def test_videos_filter(api_client, django_assert_max_num_queries):
+    category = CategoryFactory.create_batch(1)
+    VideoFactory.create_batch(3)
+    VideoFactory.create_batch(2, categories=[category[0].pk])
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('video-list') + f'?category={category[0].name}')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 4
 
 
 def test_video_post(api_client, staff_user):

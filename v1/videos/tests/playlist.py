@@ -10,10 +10,20 @@ from ..models.playlist import Playlist
 
 def test_playlists_list(api_client, django_assert_max_num_queries):
     PlaylistFactory.create_batch(5, videos=5)
-    with django_assert_max_num_queries(33):
-        r = api_client.get(reverse('playlist-list'), {'limit': 0})
+    with django_assert_max_num_queries(35):
+        r = api_client.get(reverse('playlist-list'))
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
+    assert len(r.data) == 4
+
+
+def test_playlists_filter(api_client, django_assert_max_num_queries):
+    category = CategoryFactory.create_batch(1)
+    PlaylistFactory.create_batch(3)
+    PlaylistFactory.create_batch(2, categories=[category[0].pk])
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('playlist-list') + f'?category={category[0].name}')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 4
 
 
 def test_playlist_post(api_client, staff_user):
