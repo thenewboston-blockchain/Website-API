@@ -53,7 +53,7 @@ def send_account_email(request, subject, path):
     s.connect(os.getenv('SMTP_SERVER'), 587)
     s.starttls()
     s.login(os.getenv('SMTP_USER'), os.getenv('SMTP_PASSWORD'))
-    msg = 'From: ' + from_email + '\nTo: ' + to_email + '\nSubject: ' + subject + '\n\nHi' + \
+    msg = 'From: ' + from_email + '\nTo: ' + to_email + '\nSubject: ' + subject + '\n\nHi ' + \
         display_name + '\nThank you for registering an account with thenewboston!\nPlease confirm your'\
         'account by clicking the link below\n\n' + link
     EmailThread(s, from_email, to_email, msg).start()
