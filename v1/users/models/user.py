@@ -14,7 +14,7 @@ class User(CreatedModified, AbstractUser):
     display_name = CharField(max_length=250)
     github_username = CharField(blank=True, max_length=250)
     profile_image = URLField(blank=True, max_length=500)
-    slack_username = CharField(blank=True, max_length=250)
+    discord_username = CharField(blank=True, max_length=250)
 
     # Auth
     is_email_verified = BooleanField(default=False)
