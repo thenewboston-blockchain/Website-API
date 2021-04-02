@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('display_name', models.CharField(max_length=250)),
                 ('github_username', models.CharField(blank=True, max_length=250)),
                 ('profile_image', models.URLField(blank=True, max_length=500)),
-                ('discord_username', models.CharField(blank=True, max_length=250)),
+                ('slack_username', models.CharField(blank=True, max_length=250)),
                 ('groups', models.ManyToManyField(blank=True,
                                                   help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
                                                   related_name='user_set', related_query_name='user', to='auth.Group',
