@@ -18,7 +18,7 @@ class UserSerializer(ModelSerializer):
             'modified_date',
             'pk',
             'profile_image',
-            'slack_username',
+            'discord_username',
         )
         model = User
         read_only_fields = (
