@@ -142,4 +142,3 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API for thenewboston.com site',
     'VERSION': '0.0.1',
 }
-DEBUG = True
