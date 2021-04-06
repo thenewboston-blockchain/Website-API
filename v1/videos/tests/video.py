@@ -10,17 +10,39 @@ def test_playlists_videos_list(api_client, django_assert_max_num_queries):
         r = api_client.get(reverse('video-list'))
 
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 4
+    assert len(r.data['results']) == 25
 
 
-def test_videos_filter(api_client, django_assert_max_num_queries):
-    category = CategoryFactory.create_batch(1)
+def test_videos_filter_by_category(api_client, django_assert_max_num_queries):
+    category = CategoryFactory.create()
     VideoFactory.create_batch(3)
-    VideoFactory.create_batch(2, categories=[category[0].pk])
+    VideoFactory.create_batch(2, categories=[category.pk])
     with django_assert_max_num_queries(10):
-        r = api_client.get(reverse('video-list') + f'?category={category[0].name}')
+        r = api_client.get(reverse('video-list') + f'?category={category.name}')
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 4
+    assert len(r.data['results']) == 2
+
+
+def test_videos_filter_by_playlist(api_client, django_assert_max_num_queries):
+    playlist = PlaylistFactory.create()
+    VideoFactory.create_batch(3)
+    VideoFactory.create_batch(2, playlist=playlist)
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('video-list') + f'?playlist={str(playlist.uuid)}')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data['results']) == 2
+
+
+def test_videos_filter_by_category_and_playlist(api_client, django_assert_max_num_queries):
+    category = CategoryFactory.create()
+    playlist = PlaylistFactory.create()
+    VideoFactory.create_batch(3)
+    VideoFactory.create(playlist=playlist)
+    VideoFactory.create(categories=[category.pk], playlist=playlist)
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('video-list') + f'?category={category.name}&playlist={str(playlist.uuid)}')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data['results']) == 1
 
 
 def test_video_post(api_client, staff_user):
