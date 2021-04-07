@@ -25,7 +25,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
                 page = self.paginate_queryset(playlists)
                 serializer = self.get_serializer(page, context={'request': request}, many=True)
             except Category.DoesNotExist:
-                return Response({'detail': 'No playlist under category "{}" was found'.format(category)}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'detail': 'No playlist under category: {} was found'.format(category)}, status=status.HTTP_404_NOT_FOUND)
         else:
             queryset = Playlist.objects\
                 .prefetch_related('videos')\
