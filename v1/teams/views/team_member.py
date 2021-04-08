@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework.response import Response
@@ -12,14 +13,29 @@ class TeamMemberViewSet(mixins.RetrieveModelMixin,
                         mixins.ListModelMixin,
                         GenericViewSet):
     filterset_fields = ['user']
-    queryset = TeamMember.objects.all()
+    queryset = TeamMember.objects.order_by('created_date').all()
     serializer_class = TeamMemberSerializer
     permission_classes = [IsStaffOrReadOnly]
+
+    def list(self, request):  # noqa: ignore=A003
+        user = request.query_params.get('user')
+        if user:
+            try:
+                members = TeamMember.objects.filter(user=user).order_by('created_date')
+                page = self.paginate_queryset(members)
+            except ValidationError:
+                return Response({'detail': '{} is not a valid UUID'.format(user)}, status=status.HTTP_400_BAD_REQUEST)
+            except TeamMember.DoesNotExist:
+                return Response({'detail': 'No TeamMember with User ID: {} was found'.format(user)}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            page = self.paginate_queryset(self.queryset)
+        serializer = self.serializer_class(page, context={'request': request}, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class CoreMemberViewSet(ModelViewSet):
     filterset_fields = ['user']
-    queryset = CoreMember.objects.all()
+    queryset = CoreMember.objects.order_by('created_date').all()
     serializer_class = CoreMemberSerializer
 
     def create(self, request, *args, **kwargs):
@@ -42,10 +58,25 @@ class CoreMemberViewSet(ModelViewSet):
 
         return [permission() for permission in permission_classes]
 
+    def list(self, request):  # noqa: ignore=A003
+        user = request.query_params.get('user')
+        if user:
+            try:
+                members = CoreMember.objects.filter(user=user).order_by('created_date')
+                page = self.paginate_queryset(members)
+            except ValidationError:
+                return Response({'detail': '{} is not a valid UUID'.format(user)}, status=status.HTTP_400_BAD_REQUEST)
+            except CoreMember.DoesNotExist:
+                return Response({'detail': 'No CoreMember with User ID: {} was found'.format(user)}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            page = self.paginate_queryset(self.queryset)
+        serializer = self.serializer_class(page, context={'request': request}, many=True)
+        return self.get_paginated_response(serializer.data)
+
 
 class ProjectMemberViewSet(ModelViewSet):
     filterset_fields = ['user']
-    queryset = ProjectMember.objects.all()
+    queryset = ProjectMember.objects.order_by('created_date').all()
     serializer_class = ProjectMemberSerializer
 
     def get_permissions(self):
@@ -67,3 +98,18 @@ class ProjectMemberViewSet(ModelViewSet):
         if not is_lead:
             return Response({'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
         return super().create(request, *args, **kwargs)
+
+    def list(self, request):  # noqa: ignore=AA03
+        user = request.query_params.get('user')
+        if user:
+            try:
+                members = ProjectMember.objects.filter(user=user)
+                page = self.paginate_queryset(members)
+            except ValidationError:
+                return Response({'detail': '{} is not a valid UUID'.format(user)}, status=status.HTTP_400_BAD_REQUEST)
+            except ProjectMember.DoesNotExist:
+                return Response({'detail': 'No ProjectMember with User ID: {} was found'.format(user)}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            page = self.paginate_queryset(self.queryset)
+        serializer = self.serializer_class(page, context={'request': request}, many=True)
+        return self.get_paginated_response(serializer.data)
