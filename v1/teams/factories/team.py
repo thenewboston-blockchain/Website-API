@@ -10,7 +10,7 @@ class TeamFactory(DjangoModelFactory):
     title = factory.Faker('pystr', max_chars=250)
     about = factory.Faker('text', max_nb_chars=1024)
     github = factory.Faker('pystr')
-    slack = factory.Faker('pystr', max_chars=250)
+    discord = factory.Faker('pystr', max_chars=250)
 
     class Meta:
         model = Team

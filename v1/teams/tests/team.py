@@ -33,7 +33,7 @@ def test_teams_list(api_client, django_assert_max_num_queries):
         'title': teams[0].title,
         'about': teams[0].about,
         'github': teams[0].github,
-        'slack': teams[0].slack,
+        'discord': teams[0].discord,
     }
 
 
@@ -64,8 +64,9 @@ def test_core_teams_list(api_client, django_assert_max_num_queries):
         'title': teams[0].title,
         'about': teams[0].about,
         'github': teams[0].github,
-        'slack': teams[0].slack,
+        'discord': teams[0].discord,
         'responsibilities': teams[0].responsibilities,
+        'responsibility': teams[0].responsibility,
     }
 
 
@@ -95,7 +96,7 @@ def test_project_teams_list(api_client, django_assert_max_num_queries):
         'title': teams[0].title,
         'about': teams[0].about,
         'github': teams[0].github,
-        'slack': teams[0].slack,
+        'discord': teams[0].discord,
         'external_url': teams[0].external_url,
         'is_active': teams[0].is_active,
     }
@@ -120,7 +121,7 @@ def test_teams_members_empty_post(api_client, staff_user):
         'title': 'Star team',
         'about': 'About Star team',
         'github': 'https://github.com/thenewboston-developers',
-        'slack': r.data['slack'],
+        'discord': r.data['discord'],
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -176,7 +177,7 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
         'title': 'Star team',
         'about': 'About Star team',
         'github': r.data['github'],
-        'slack': r.data['slack'],
+        'discord': r.data['discord'],
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -224,8 +225,9 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
         'title': 'Star team',
         'about': 'About Star team',
         'github': r.data['github'],
-        'slack': r.data['slack'],
+        'discord': r.data['discord'],
         'responsibilities': 'Be awesome',
+        'responsibility': []
     }
     assert CoreTeam.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -270,7 +272,7 @@ def test_project_teams_post(api_client, superuser, django_assert_max_num_queries
         'title': 'Ether Team',
         'about': 'About Ether team',
         'github': r.data['github'],
-        'slack': r.data['slack'],
+        'discord': r.data['discord'],
         'external_url': 'https://github.com/google',
         'is_active': True
     }
@@ -336,7 +338,7 @@ def test_teams_patch(api_client, staff_user):
         'title': 'Star team',
         'about': 'About Star team',
         'github': team.github,
-        'slack': team.slack,
+        'discord': team.discord,
     }
 
     assert Team.objects.get(pk=str(team.pk)).title == 'Star team'
