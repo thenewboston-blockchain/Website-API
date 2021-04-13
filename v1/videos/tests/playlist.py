@@ -71,6 +71,7 @@ def test_playlist_post(api_client, staff_user):
         'categories': [category[0].pk],
         'playlist_type': 'youtube',
         'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+        'duration': 350,
         'video_list': [{
             'created_date': serializers.DateTimeField().to_representation(frozen_time()),
             'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
@@ -122,7 +123,8 @@ def test_empty_videolist_post(api_client, staff_user):
         'playlist_type': 'youtube',
         'categories': [category[0].pk],
         'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
-        'video_list': []
+        'video_list': [],
+        'duration': 0,
     }
 
 

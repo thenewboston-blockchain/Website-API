@@ -15,6 +15,7 @@ class PlaylistSerializer(ModelSerializer):
         many=True,
         required=False
     )
+    duration = serializers.SerializerMethodField('total_duration')
 
     class Meta:
         fields = '__all__'
@@ -79,3 +80,10 @@ class PlaylistSerializer(ModelSerializer):
             else:
                 data['published_at'] = published_at
         return data
+
+    def total_duration(self, obj):
+        videos = obj.videos.all()
+        total = 0
+        for video in videos:
+            total += video.duration
+        return total
