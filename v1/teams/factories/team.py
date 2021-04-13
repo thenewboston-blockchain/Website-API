@@ -26,7 +26,7 @@ class TeamFactory(DjangoModelFactory):
 
 
 class CoreTeamFactory(TeamFactory):
-    responsibilities = factory.Faker('text', max_nb_chars=1024)
+    responsibilities = factory.Faker('pylist', nb_elements=10, variable_nb_elements=True, value_types='str')
 
     class Meta:
         model = CoreTeam

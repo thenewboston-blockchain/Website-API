@@ -20,8 +20,7 @@ class Team(CreatedModified):
 
 
 class CoreTeam(Team):
-    responsibilities = models.TextField(blank=True, null=True)
-    responsibility = ArrayField(models.TextField(null=True, blank=True), default=list, blank=True)
+    responsibilities = ArrayField(models.TextField(null=True, blank=True), default=list, blank=True)
 
 
 class ProjectTeam(Team):

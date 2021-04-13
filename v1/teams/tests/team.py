@@ -66,7 +66,6 @@ def test_core_teams_list(api_client, django_assert_max_num_queries):
         'github': teams[0].github,
         'discord': teams[0].discord,
         'responsibilities': teams[0].responsibilities,
-        'responsibility': teams[0].responsibility,
     }
 
 
@@ -191,7 +190,7 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
         r = api_client.post(reverse('coreteam-list'), data={
             'title': 'Star team',
             'about': 'About Star team',
-            'responsibilities': 'Be awesome',
+            'responsibilities': ['Be awesome'],
             'core_members_meta': [
                 {
                     'user': users[1].pk,
@@ -226,8 +225,7 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
         'about': 'About Star team',
         'github': r.data['github'],
         'discord': r.data['discord'],
-        'responsibilities': 'Be awesome',
-        'responsibility': []
+        'responsibilities': ['Be awesome'],
     }
     assert CoreTeam.objects.get(pk=r.data['pk']).title == 'Star team'
 
