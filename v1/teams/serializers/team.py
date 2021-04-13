@@ -133,7 +133,7 @@ class CoreTeamSerializer(TeamSerializer):
     )
 
     class Meta:
-        fields = TeamSerializer.Meta.fields + ('core_members_meta', 'responsibilities', 'responsibility')
+        fields = TeamSerializer.Meta.fields + ('core_members_meta', 'responsibilities')
         model = CoreTeam
 
     @transaction.atomic
