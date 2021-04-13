@@ -80,7 +80,7 @@ class TeamSerializer(serializers.ModelSerializer):
             'title',
             'about',
             'github',
-            'slack'
+            'discord'
         )
         model = Team
         read_only_fields = 'created_date', 'modified_date',
@@ -133,7 +133,7 @@ class CoreTeamSerializer(TeamSerializer):
     )
 
     class Meta:
-        fields = TeamSerializer.Meta.fields + ('core_members_meta', 'responsibilities',)
+        fields = TeamSerializer.Meta.fields + ('core_members_meta', 'responsibilities', 'responsibility')
         model = CoreTeam
 
     @transaction.atomic

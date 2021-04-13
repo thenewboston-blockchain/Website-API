@@ -1,5 +1,6 @@
 import uuid
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from thenewboston.models.created_modified import CreatedModified
 
@@ -9,7 +10,7 @@ class Team(CreatedModified):
     title = models.CharField(max_length=250)
     about = models.TextField(default='')
     github = models.URLField(blank=True, null=True)
-    slack = models.CharField(max_length=250, blank=True, null=True)
+    discord = models.CharField(max_length=250, blank=True, null=True)
 
     def __str__(self):
         return f'#{self.pk}: {self.title}'
@@ -20,6 +21,7 @@ class Team(CreatedModified):
 
 class CoreTeam(Team):
     responsibilities = models.TextField(blank=True, null=True)
+    responsibility = ArrayField(models.TextField(null=True, blank=True), default=list, blank=True)
 
 
 class ProjectTeam(Team):
