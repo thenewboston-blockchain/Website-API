@@ -45,6 +45,13 @@ def test_videos_filter_by_category_and_playlist(api_client, django_assert_max_nu
     assert len(r.data['results']) == 1
 
 
+def test_videos_filter_by_invalid_playlist(api_client, django_assert_max_num_queries):
+    VideoFactory.create_batch(3)
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('video-list') + '?playlist=invalidUUID')
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+
+
 def test_video_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
     category = CategoryFactory.create_batch(2)
@@ -65,6 +72,25 @@ def test_video_post(api_client, staff_user):
     }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
+
+
+def test_invalid_video_datetime_post(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+    playlist = PlaylistFactory()
+
+    r = api_client.post(reverse('video-list'), data={
+        'playlist': playlist.pk,
+        'video_id': 'qcYthscy9ok',
+        'title': 'Fight Groove',
+        'published_at': '2020-12-03',
+        'duration': 350,
+        'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
+        'language': 'en',
+        'video_type': 'youtube',
+        'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+    }, format='json')
+    assert 'Invalid datetime format' in str(r.data['published_at'])
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_video_patch(api_client, staff_user):
