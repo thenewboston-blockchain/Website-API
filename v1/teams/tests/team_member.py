@@ -202,6 +202,77 @@ def test_teams_members_patch(api_client, staff_user):
     assert r.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
 
+def test_core_members_staff_patch(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+
+    core_member = CoreMemberFactory()
+
+    r = api_client.patch(
+        reverse('coremember-detail', (core_member.pk,)),
+        data={
+            'is_lead': True,
+            'job_title': 'anotherTitle',
+
+        },
+        format='json'
+    )
+
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_core_members_teamlead_patch(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+    core_member = CoreMemberFactory.create(user=staff_user, is_lead=True)
+
+    r = api_client.patch(
+        reverse('coremember-detail', (core_member.pk,)),
+        data={
+            'is_lead': False,
+            'job_title': 'anotherTitle',
+
+        },
+        format='json'
+    )
+
+    assert r.status_code == status.HTTP_200_OK
+
+
+def test_project_members_staff_patch(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+    project_member = ProjectMemberFactory()
+    project_member.is_lead = True
+    project_member.save()
+
+    r = api_client.patch(
+        reverse('projectmember-detail', (project_member.pk,)),
+        data={
+            'is_lead': True,
+            'job_title': 'anotherTitle',
+
+        },
+        format='json'
+    )
+
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_project_members_teamlead_patch(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+    project_member = ProjectMemberFactory.create(is_lead=True, user=staff_user)
+
+    r = api_client.patch(
+        reverse('projectmember-detail', (project_member.pk,)),
+        data={
+            'is_lead': False,
+            'job_title': 'anotherTitle',
+
+        },
+        format='json'
+    )
+
+    assert r.status_code == status.HTTP_200_OK
+
+
 def test_teams_members_delete(api_client, staff_user):
     api_client.force_authenticate(staff_user)
 
@@ -210,6 +281,46 @@ def test_teams_members_delete(api_client, staff_user):
     r = api_client.delete(reverse('teammember-detail', (team_member.pk,)))
 
     assert r.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+
+
+def test_core_members_delete(api_client, superuser):
+    api_client.force_authenticate(superuser)
+
+    core_member = CoreMemberFactory()
+
+    r = api_client.delete(reverse('coremember-detail', (core_member.pk,)))
+
+    assert r.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_core_members_teamlead_delete(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+
+    core_member = CoreMemberFactory.create(is_lead=True)
+
+    r = api_client.delete(reverse('coremember-detail', (core_member.pk,)))
+
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_project_members_delete(api_client, superuser):
+    api_client.force_authenticate(superuser)
+
+    project_member = ProjectMemberFactory()
+
+    r = api_client.delete(reverse('projectmember-detail', (project_member.pk,)))
+
+    assert r.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_project_members_teamlead_delete(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+
+    project_member = ProjectMemberFactory.create(is_lead=True)
+
+    r = api_client.delete(reverse('projectmember-detail', (project_member.pk,)))
+
+    assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_teams_members_anon_post(api_client):
