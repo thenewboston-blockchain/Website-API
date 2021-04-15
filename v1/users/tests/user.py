@@ -114,6 +114,27 @@ def test_invalid_token_verification(api_client):
     assert r.data['message'] == 'Token is invalid'
 
 
+def test_invalid_link_verification(api_client):
+    uid = urlsafe_base64_encode(force_bytes('bucky@email.com'))
+    user = UserFactory()
+    token = generate_token(user.email)
+    r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
+                       format='json'
+                       )
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    assert r.data['message'] == 'Invalid activation link'
+
+
+def test_invalid_user_verification(api_client):
+    uid = urlsafe_base64_encode(force_bytes('bucky@email.com'))
+    token = generate_token('nonregistered@email.com')
+    r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
+                       format='json'
+                       )
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    assert r.data['message'] == 'Invalid user'
+
+
 @patch('v1.users.views.user.send_account_email', MagicMock(return_value=None))
 def test_user_generate_new_link(api_client):
     api_client.post(

@@ -5,7 +5,7 @@ from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
 from v1.users.factories.user import UserFactory
-from ..factories.team import ProjectMemberFactory, CoreMemberFactory, CoreTeamFactory, ProjectTeamFactory, TeamFactory
+from ..factories.team import CoreMemberFactory, CoreTeamFactory, ProjectMemberFactory, ProjectTeamFactory, TeamFactory
 from ..models.team import CoreTeam, ProjectTeam, Team
 
 
