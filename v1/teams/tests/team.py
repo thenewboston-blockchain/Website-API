@@ -5,7 +5,7 @@ from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
 from v1.users.factories.user import UserFactory
-from ..factories.team import CoreTeamFactory, ProjectTeamFactory, TeamFactory
+from ..factories.team import CoreMemberFactory, CoreTeamFactory, ProjectMemberFactory, ProjectTeamFactory, TeamFactory
 from ..models.team import CoreTeam, ProjectTeam, Team
 
 
@@ -379,6 +379,38 @@ def test_project_teams_staff_post(api_client, staff_user, django_assert_max_num_
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
+def test_core_teams_staff_patch(api_client, staff_user, django_assert_max_num_queries):
+    api_client.force_authenticate(staff_user)
+    core_team = CoreTeamFactory()
+    r = api_client.post(reverse('coreteam-detail', (core_team.pk,)), data={'title': 'New Title'}, format='json')
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_core_teams_teamlead_patch(api_client, staff_user, django_assert_max_num_queries):
+    api_client.force_authenticate(staff_user)
+    core_team = CoreTeamFactory()
+    CoreMemberFactory.create(is_lead=True, user=staff_user, core_team=core_team)
+
+    r = api_client.patch(reverse('coreteam-detail', (core_team.pk,)), data={'title': 'New Title'}, format='json')
+    assert r.status_code == status.HTTP_200_OK
+
+
+def test_project_teams_staff_patch(api_client, staff_user, django_assert_max_num_queries):
+    api_client.force_authenticate(staff_user)
+    project_team = ProjectTeamFactory()
+    r = api_client.post(reverse('projectteam-detail', (project_team.pk,)), data={'title': 'New Title'}, format='json')
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_project_teams_teamlead_patch(api_client, staff_user, django_assert_max_num_queries):
+    api_client.force_authenticate(staff_user)
+    project_team = ProjectTeamFactory()
+    ProjectMemberFactory.create(is_lead=True, user=staff_user, project_team=project_team)
+
+    r = api_client.patch(reverse('projectteam-detail', (project_team.pk,)), data={'title': 'New Title'}, format='json')
+    assert r.status_code == status.HTTP_200_OK
+
+
 def test_teams_anon_patch(api_client):
     team = TeamFactory()
 
@@ -393,3 +425,20 @@ def test_teams_anon_delete(api_client):
     r = api_client.delete(reverse('team-detail', (team.pk,)))
 
     assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_core_team_anon_delete(api_client):
+    core_team = CoreTeamFactory()
+
+    r = api_client.delete(reverse('coreteam-detail', (core_team.pk,)))
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_project_team_superuser_delete(api_client, superuser):
+    api_client.force_authenticate(superuser)
+    project_team = ProjectTeamFactory()
+
+    r = api_client.delete(reverse('projectteam-detail', (project_team.pk,)))
+
+    assert r.status_code == status.HTTP_204_NO_CONTENT

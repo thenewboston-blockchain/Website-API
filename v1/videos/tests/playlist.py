@@ -128,6 +128,24 @@ def test_empty_videolist_post(api_client, staff_user):
     }
 
 
+def test_invalid_playlist_datetime_post(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+    category = CategoryFactory.create_batch(1)
+
+    r = api_client.post(reverse('playlist-list'), data={
+        'playlist_id': 'qcYthscy9ok',
+        'title': 'Native tutorials',
+        'published_at': '2020-12-03',
+        'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
+        'language': 'en',
+        'playlist_type': 'youtube',
+        'categories': [category[0].pk],
+        'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+    }, format='json')
+    assert 'Invalid datetime format' in str(r.data['published_at'])
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+
+
 def test_playlist_patch(api_client, staff_user):
     api_client.force_authenticate(staff_user)
     playlist = PlaylistFactory(videos=2)
