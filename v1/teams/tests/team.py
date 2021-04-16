@@ -5,7 +5,7 @@ from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
 from v1.users.factories.user import UserFactory
-from ..factories.team import CoreTeamFactory, ProjectTeamFactory, TeamFactory
+from ..factories.team import CoreMemberFactory, CoreTeamFactory, ProjectMemberFactory, ProjectTeamFactory, TeamFactory
 from ..models.team import CoreTeam, ProjectTeam, Team
 
 
@@ -33,7 +33,7 @@ def test_teams_list(api_client, django_assert_max_num_queries):
         'title': teams[0].title,
         'about': teams[0].about,
         'github': teams[0].github,
-        'slack': teams[0].slack,
+        'discord': teams[0].discord,
     }
 
 
@@ -55,7 +55,8 @@ def test_core_teams_list(api_client, django_assert_max_num_queries):
             'user': core_member.user_id,
             'is_lead': core_member.is_lead,
             'job_title': core_member.job_title,
-            'pay_per_day': core_member.pay_per_day,
+            'hourly_rate': core_member.hourly_rate,
+            'weekly_hourly_commitment': core_member.weekly_hourly_commitment,
             'created_date': serializers.DateTimeField().to_representation(core_member.created_date),
             'modified_date': serializers.DateTimeField().to_representation(core_member.modified_date),
         } for core_member in teams[0].core_members.order_by('created_date').all()],
@@ -63,7 +64,7 @@ def test_core_teams_list(api_client, django_assert_max_num_queries):
         'title': teams[0].title,
         'about': teams[0].about,
         'github': teams[0].github,
-        'slack': teams[0].slack,
+        'discord': teams[0].discord,
         'responsibilities': teams[0].responsibilities,
     }
 
@@ -94,7 +95,7 @@ def test_project_teams_list(api_client, django_assert_max_num_queries):
         'title': teams[0].title,
         'about': teams[0].about,
         'github': teams[0].github,
-        'slack': teams[0].slack,
+        'discord': teams[0].discord,
         'external_url': teams[0].external_url,
         'is_active': teams[0].is_active,
     }
@@ -119,7 +120,7 @@ def test_teams_members_empty_post(api_client, staff_user):
         'title': 'Star team',
         'about': 'About Star team',
         'github': 'https://github.com/thenewboston-developers',
-        'slack': r.data['slack'],
+        'discord': r.data['discord'],
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -175,7 +176,7 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
         'title': 'Star team',
         'about': 'About Star team',
         'github': r.data['github'],
-        'slack': r.data['slack'],
+        'discord': r.data['discord'],
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -189,13 +190,14 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
         r = api_client.post(reverse('coreteam-list'), data={
             'title': 'Star team',
             'about': 'About Star team',
-            'responsibilities': 'Be awesome',
+            'responsibilities': ['Be awesome'],
             'core_members_meta': [
                 {
                     'user': users[1].pk,
                     'is_lead': True,
                     'job_title': 'Back-End Developer',
-                    'pay_per_day': 2000
+                    'hourly_rate': 2000,
+                    'weekly_hourly_commitment': 50,
                 },
             ],
         }, format='json')
@@ -213,7 +215,8 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
                 'core_team': ANY,
                 'is_lead': True,
                 'job_title': 'Back-End Developer',
-                'pay_per_day': 2000,
+                'hourly_rate': 2000,
+                'weekly_hourly_commitment': 50,
                 'pk': ANY
             },
         ],
@@ -221,8 +224,8 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
         'title': 'Star team',
         'about': 'About Star team',
         'github': r.data['github'],
-        'slack': r.data['slack'],
-        'responsibilities': 'Be awesome',
+        'discord': r.data['discord'],
+        'responsibilities': ['Be awesome'],
     }
     assert CoreTeam.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -267,7 +270,7 @@ def test_project_teams_post(api_client, superuser, django_assert_max_num_queries
         'title': 'Ether Team',
         'about': 'About Ether team',
         'github': r.data['github'],
-        'slack': r.data['slack'],
+        'discord': r.data['discord'],
         'external_url': 'https://github.com/google',
         'is_active': True
     }
@@ -292,7 +295,7 @@ def test_teams_patch(api_client, staff_user):
                     {
                         'user': old_team_member.user_id,
                         'is_lead': True,
-                        'pay_per_day': 19001,
+                        'hourly_rate': 19001,
                         'job_title': 'Back-End Developer'
                     },
                     {
@@ -333,7 +336,7 @@ def test_teams_patch(api_client, staff_user):
         'title': 'Star team',
         'about': 'About Star team',
         'github': team.github,
-        'slack': team.slack,
+        'discord': team.discord,
     }
 
     assert Team.objects.get(pk=str(team.pk)).title == 'Star team'
@@ -376,6 +379,38 @@ def test_project_teams_staff_post(api_client, staff_user, django_assert_max_num_
     assert r.status_code == status.HTTP_403_FORBIDDEN
 
 
+def test_core_teams_staff_patch(api_client, staff_user, django_assert_max_num_queries):
+    api_client.force_authenticate(staff_user)
+    core_team = CoreTeamFactory()
+    r = api_client.post(reverse('coreteam-detail', (core_team.pk,)), data={'title': 'New Title'}, format='json')
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_core_teams_teamlead_patch(api_client, staff_user, django_assert_max_num_queries):
+    api_client.force_authenticate(staff_user)
+    core_team = CoreTeamFactory()
+    CoreMemberFactory.create(is_lead=True, user=staff_user, core_team=core_team)
+
+    r = api_client.patch(reverse('coreteam-detail', (core_team.pk,)), data={'title': 'New Title'}, format='json')
+    assert r.status_code == status.HTTP_200_OK
+
+
+def test_project_teams_staff_patch(api_client, staff_user, django_assert_max_num_queries):
+    api_client.force_authenticate(staff_user)
+    project_team = ProjectTeamFactory()
+    r = api_client.post(reverse('projectteam-detail', (project_team.pk,)), data={'title': 'New Title'}, format='json')
+    assert r.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_project_teams_teamlead_patch(api_client, staff_user, django_assert_max_num_queries):
+    api_client.force_authenticate(staff_user)
+    project_team = ProjectTeamFactory()
+    ProjectMemberFactory.create(is_lead=True, user=staff_user, project_team=project_team)
+
+    r = api_client.patch(reverse('projectteam-detail', (project_team.pk,)), data={'title': 'New Title'}, format='json')
+    assert r.status_code == status.HTTP_200_OK
+
+
 def test_teams_anon_patch(api_client):
     team = TeamFactory()
 
@@ -390,3 +425,20 @@ def test_teams_anon_delete(api_client):
     r = api_client.delete(reverse('team-detail', (team.pk,)))
 
     assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_core_team_anon_delete(api_client):
+    core_team = CoreTeamFactory()
+
+    r = api_client.delete(reverse('coreteam-detail', (core_team.pk,)))
+
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_project_team_superuser_delete(api_client, superuser):
+    api_client.force_authenticate(superuser)
+    project_team = ProjectTeamFactory()
+
+    r = api_client.delete(reverse('projectteam-detail', (project_team.pk,)))
+
+    assert r.status_code == status.HTTP_204_NO_CONTENT

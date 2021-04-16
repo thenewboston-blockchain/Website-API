@@ -37,7 +37,7 @@ def test_anon_list(api_client, django_assert_max_num_queries):
         'modified_date': serializers.DateTimeField().to_representation(users[0].modified_date),
         'pk': str(users[0].pk),
         'profile_image': '',
-        'slack_username': users[0].slack_username,
+        'discord_username': users[0].discord_username,
     }
 
 
@@ -78,7 +78,7 @@ def test_anon_post(api_client):
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'pk': ANY,
         'profile_image': '',
-        'slack_username': '',
+        'discord_username': '',
     }
     assert User.objects.get(pk=r.data['pk']).display_name == 'Bucky'
 
@@ -112,6 +112,27 @@ def test_invalid_token_verification(api_client):
                        )
     assert r.status_code == status.HTTP_400_BAD_REQUEST
     assert r.data['message'] == 'Token is invalid'
+
+
+def test_invalid_link_verification(api_client):
+    uid = urlsafe_base64_encode(force_bytes('bucky@email.com'))
+    user = UserFactory()
+    token = generate_token(user.email)
+    r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
+                       format='json'
+                       )
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    assert r.data['message'] == 'Invalid activation link'
+
+
+def test_invalid_user_verification(api_client):
+    uid = urlsafe_base64_encode(force_bytes('bucky@email.com'))
+    token = generate_token('nonregistered@email.com')
+    r = api_client.get(reverse('user-list') + '/verify/{}/{}'.format(uid, token),
+                       format='json'
+                       )
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    assert r.data['message'] == 'Invalid user'
 
 
 @patch('v1.users.views.user.send_account_email', MagicMock(return_value=None))
@@ -173,7 +194,7 @@ def test_other_user_patch(api_client):
         data={
             'display_name': 'Senior Super Dev',
             'github_username': 'senior_super_githuber',
-            'slack_username': 'senior_super_slacker',
+            'discord_username': 'senior_super_discorder',
         },
         format='json'
     )
@@ -191,7 +212,7 @@ def test_other_user_post(api_client):
             'account_number': '4ed6c42c98a9f9b521f434df41e7de87a1543940121c895f3fb383bb8585d3ec',
             'display_name': 'Super Dev',
             'github_username': 'super_githuber',
-            'slack_username': 'super_slacker',
+            'discord_username': 'super_discorder',
         },
         format='json'
     )
@@ -216,7 +237,7 @@ def test_self_patch(api_client):
         r = api_client.patch(reverse('user-detail', (user.pk,)), data={
             'display_name': 'I am a Senior Super Dev',
             'github_username': 'senior_super_githuber',
-            'slack_username': 'senior_super_slacker',
+            'discord_username': 'senior_super_discorder',
         }, format='json')
 
     assert r.status_code == status.HTTP_200_OK
@@ -229,7 +250,7 @@ def test_self_patch(api_client):
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'pk': str(user.pk),
         'profile_image': '',
-        'slack_username': 'senior_super_slacker',
+        'discord_username': 'senior_super_discorder',
     }
     assert User.objects.get(pk=str(user.pk)).display_name == 'I am a Senior Super Dev'
 
@@ -255,7 +276,7 @@ def test_staff_patch(api_client, staff_user):
         data={
             'display_name': 'Senior Super Dev',
             'github_username': 'senior_super_githuber',
-            'slack_username': 'senior_super_slacker',
+            'discord_username': 'senior_super_discorder',
         },
         format='json'
     )

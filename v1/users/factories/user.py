@@ -12,7 +12,7 @@ class UserFactory(DjangoModelFactory):
     display_name = factory.Faker('name')
     email = factory.Faker('email')
     github_username = factory.Faker('pystr', max_chars=250)
-    slack_username = factory.Faker('pystr', max_chars=250)
+    discord_username = factory.Faker('pystr', max_chars=250)
 
     class Meta:
         model = User

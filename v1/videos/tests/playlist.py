@@ -4,20 +4,31 @@ from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
-from ..factories.video import PlaylistFactory
+from ..factories.video import CategoryFactory, PlaylistFactory
 from ..models.playlist import Playlist
 
 
 def test_playlists_list(api_client, django_assert_max_num_queries):
-    PlaylistFactory.create_batch(10, videos=5)
-    with django_assert_max_num_queries(3):
-        r = api_client.get(reverse('playlist-list'), {'limit': 0})
+    PlaylistFactory.create_batch(5, videos=5)
+    with django_assert_max_num_queries(35):
+        r = api_client.get(reverse('playlist-list'))
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 10
+    assert len(r.data) == 4
+
+
+def test_playlists_filter(api_client, django_assert_max_num_queries):
+    category = CategoryFactory.create_batch(1)
+    PlaylistFactory.create_batch(3)
+    PlaylistFactory.create_batch(2, categories=[category[0].pk])
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('playlist-list') + f'?category={category[0].name}')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 4
 
 
 def test_playlist_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
+    category = CategoryFactory.create_batch(2)
 
     with freeze_time() as frozen_time:
         r = api_client.post(reverse('playlist-list'), data={
@@ -27,6 +38,7 @@ def test_playlist_post(api_client, staff_user):
             'published_at': '2020-12-03T20:00:10Z',
             'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
             'language': 'en',
+            'categories': [category[0].pk],
             'playlist_type': 'youtube',
             'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
             'video_list': [{
@@ -39,7 +51,7 @@ def test_playlist_post(api_client, staff_user):
                 'language': 'en',
                 'video_type': 'youtube',
                 'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
-                'category': ['10'],
+                'categories': [category[0].pk, category[1].pk],
                 'tags':[]
             }]
         }, format='json')
@@ -56,8 +68,10 @@ def test_playlist_post(api_client, staff_user):
         'published_at': '2020-12-03T20:00:10Z',
         'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
         'language': 'en',
+        'categories': [category[0].pk],
         'playlist_type': 'youtube',
         'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+        'duration': 350,
         'video_list': [{
             'created_date': serializers.DateTimeField().to_representation(frozen_time()),
             'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
@@ -72,7 +86,7 @@ def test_playlist_post(api_client, staff_user):
             'language': 'en',
             'video_type': 'youtube',
             'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
-            'category': ['10'],
+            'categories': [category[0].pk, category[1].pk],
             'tags': []
         }]
     }
@@ -80,6 +94,7 @@ def test_playlist_post(api_client, staff_user):
 
 def test_empty_videolist_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
+    category = CategoryFactory.create_batch(1)
     with freeze_time() as frozen_time:
         r = api_client.post(reverse('playlist-list'), data={
             'playlist_id': 'qcYthscy9ok',
@@ -89,6 +104,7 @@ def test_empty_videolist_post(api_client, staff_user):
             'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
             'language': 'en',
             'playlist_type': 'youtube',
+            'categories': [category[0].pk],
             'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
         }, format='json')
 
@@ -105,9 +121,29 @@ def test_empty_videolist_post(api_client, staff_user):
         'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
         'language': 'en',
         'playlist_type': 'youtube',
+        'categories': [category[0].pk],
         'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
-        'video_list': []
+        'video_list': [],
+        'duration': 0,
     }
+
+
+def test_invalid_playlist_datetime_post(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+    category = CategoryFactory.create_batch(1)
+
+    r = api_client.post(reverse('playlist-list'), data={
+        'playlist_id': 'qcYthscy9ok',
+        'title': 'Native tutorials',
+        'published_at': '2020-12-03',
+        'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
+        'language': 'en',
+        'playlist_type': 'youtube',
+        'categories': [category[0].pk],
+        'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+    }, format='json')
+    assert 'Invalid datetime format' in str(r.data['published_at'])
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_playlist_patch(api_client, staff_user):
@@ -131,7 +167,6 @@ def test_playlist_patch(api_client, staff_user):
                         'language': 'en',
                         'video_type': 'youtube',
                         'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
-                        'category': ['10']
                     },
                 ]
             },

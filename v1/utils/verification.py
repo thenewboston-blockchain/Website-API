@@ -49,11 +49,11 @@ def send_account_email(request, subject, path):
     link = protocol + host + path + '/' + uid + '/' + token
     to_email = email
     from_email = os.getenv('DEFAULT_FROM_EMAIL')
-    s = smtplib.SMTP()
-    s.connect(os.getenv('SMTP_SERVER'), 587)
+    s = smtplib.SMTP(os.getenv('SMTP_SERVER'))
+    s.connect(os.getenv('SMTP_SERVER'), 25)
     s.starttls()
     s.login(os.getenv('SMTP_USER'), os.getenv('SMTP_PASSWORD'))
-    msg = 'From: ' + from_email + '\nTo: ' + to_email + '\nSubject: ' + subject + '\n\nHi' + \
+    msg = 'From: ' + from_email + '\nTo: ' + to_email + '\nSubject: ' + subject + '\n\nHi ' + \
         display_name + '\nThank you for registering an account with thenewboston!\nPlease confirm your'\
         'account by clicking the link below\n\n' + link
     EmailThread(s, from_email, to_email, msg).start()

@@ -19,7 +19,7 @@ class Video(CreatedModified):
     duration = models.PositiveIntegerField()
     author = models.CharField(max_length=250)
     tags = ArrayField(models.CharField(max_length=250, null=True), size=500, default=list, blank=True)
-    category = ArrayField(models.CharField(max_length=250))
+    categories = models.ManyToManyField('Category', blank=True)
     thumbnail = models.CharField(max_length=250)
     language = models.CharField(max_length=250)
     video_type = models.CharField(max_length=15, choices=VIDEO_TYPE,)

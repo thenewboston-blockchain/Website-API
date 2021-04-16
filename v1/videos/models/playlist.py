@@ -17,6 +17,7 @@ class Playlist(CreatedModified):
     author = models.CharField(max_length=250)
     thumbnail = models.CharField(max_length=250)
     language = models.CharField(max_length=250)
+    categories = models.ManyToManyField('Category')
     playlist_type = models.CharField(max_length=15, choices=PLAYLIST_TYPE)
 
     class Meta:

@@ -10,7 +10,7 @@ class TeamFactory(DjangoModelFactory):
     title = factory.Faker('pystr', max_chars=250)
     about = factory.Faker('text', max_nb_chars=1024)
     github = factory.Faker('pystr')
-    slack = factory.Faker('pystr', max_chars=250)
+    discord = factory.Faker('pystr', max_chars=250)
 
     class Meta:
         model = Team
@@ -26,7 +26,7 @@ class TeamFactory(DjangoModelFactory):
 
 
 class CoreTeamFactory(TeamFactory):
-    responsibilities = factory.Faker('text', max_nb_chars=1024)
+    responsibilities = factory.Faker('pylist', nb_elements=10, variable_nb_elements=True, value_types='str')
 
     class Meta:
         model = CoreTeam
@@ -69,7 +69,8 @@ class TeamMemberFactory(DjangoModelFactory):
 
 
 class CoreMemberFactory(TeamMemberFactory):
-    pay_per_day = factory.Faker('pyint')
+    hourly_rate = factory.Faker('pyint')
+    weekly_hourly_commitment = factory.Faker('pyint')
     core_team = factory.SubFactory(CoreTeamFactory)
 
     class Meta:

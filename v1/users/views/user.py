@@ -47,7 +47,7 @@ class UserViewSet(ModelViewSet):
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
             user = User.objects.get(email__iexact=payload['email'])
             email = force_text(urlsafe_base64_decode(uid))
-            if user is not None:
+            if user is not None and email == payload['email']:
                 if not user.is_email_verified:
                     user.is_active = True
                     user.is_email_verified = True
@@ -69,6 +69,8 @@ class UserViewSet(ModelViewSet):
             return Response({'message': 'Token is expired', 'email': email}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError:
             return Response({'message': 'Token is invalid'}, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response({'message': 'Invalid user'}, status=status.HTTP_400_BAD_REQUEST)
         except (TypeError, ValueError, OverflowError):
             return Response({'message': 'An error occurred, please retry'}, status=status.HTTP_400_BAD_REQUEST)
 

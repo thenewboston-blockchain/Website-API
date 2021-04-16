@@ -21,7 +21,7 @@ class CustomUserAdmin(UserAdmin):
                     'display_name',
                     'github_username',
                     'profile_image',
-                    'slack_username',
+                    'discord_username',
                     'is_email_verified',
                 ),
             },

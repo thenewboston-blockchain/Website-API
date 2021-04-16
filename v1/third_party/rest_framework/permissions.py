@@ -59,7 +59,7 @@ class IsSuperUserOrTeamLead(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if isinstance(obj, CoreTeam):
-            members = CoreMember.objects.get(user=request.user, core_team=obj)
+            members = CoreMember.objects.filter(user=request.user, core_team=obj)
             is_lead = is_team_lead(members)
         elif isinstance(obj, ProjectTeam):
             members = ProjectMember.objects.filter(user=request.user, project_team=obj)

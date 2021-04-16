@@ -24,7 +24,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 class CoreMemberSerializer(TeamMemberSerializer):
 
     class Meta(TeamMemberSerializer.Meta):
-        fields = TeamMemberSerializer.Meta.fields + ('core_team', 'pay_per_day',)
+        fields = TeamMemberSerializer.Meta.fields + ('core_team', 'hourly_rate', 'weekly_hourly_commitment')
         model = CoreMember
         read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('core_team',)
 
@@ -80,7 +80,7 @@ class TeamSerializer(serializers.ModelSerializer):
             'title',
             'about',
             'github',
-            'slack'
+            'discord'
         )
         model = Team
         read_only_fields = 'created_date', 'modified_date',
@@ -133,7 +133,7 @@ class CoreTeamSerializer(TeamSerializer):
     )
 
     class Meta:
-        fields = TeamSerializer.Meta.fields + ('core_members_meta', 'responsibilities',)
+        fields = TeamSerializer.Meta.fields + ('core_members_meta', 'responsibilities')
         model = CoreTeam
 
     @transaction.atomic
@@ -161,13 +161,15 @@ class CoreTeamSerializer(TeamSerializer):
             tc, created = CoreMember.objects.get_or_create(defaults={
                 'is_lead': core_member.get('is_lead'),
                 'job_title': core_member.get('job_title', ''),
-                'pay_per_day': core_member.get('pay_per_day', 2800)
+                'hourly_rate': core_member.get('hourly_rate', 30),
+                'weekly_hourly_commitment': core_member.get('weekly_hourly_commitment', 30)
             }, core_team=instance, user=core_member['user'])
 
             if not created:
                 tc.is_lead = core_member.get('is_lead', tc.is_lead)
                 tc.job_title = core_member.get('job_title', tc.job_title)
-                tc.pay_per_day = core_member.get('pay_per_day', tc.pay_per_day)
+                tc.hourly_rate = core_member.get('hourly_rate', tc.hourly_rate)
+                tc.weekly_hourly_commitment = core_member.get('weekly_hourly_commitment', tc.weekly_hourly_commitment)
                 tc.save()
 
         return instance

@@ -21,7 +21,8 @@ class TeamMember(CreatedModified):
 
 
 class CoreMember(TeamMember):
-    pay_per_day = models.PositiveIntegerField(default=2800)
+    hourly_rate = models.PositiveIntegerField()
+    weekly_hourly_commitment = models.PositiveIntegerField(default=0)
     core_team = models.ForeignKey('teams.CoreTeam', on_delete=models.CASCADE)
 
     class Meta:
@@ -37,9 +38,9 @@ class CoreMember(TeamMember):
                     }
                 )
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, **kwargs):
         self.validate_unique()
-        return super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+        return super(CoreMember, self).save(*args, **kwargs)
 
 
 class ProjectMember(TeamMember):
@@ -58,6 +59,6 @@ class ProjectMember(TeamMember):
                     }
                 )
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, **kwargs):
         self.validate_unique()
-        return super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+        return super(ProjectMember, self).save(*args, **kwargs)

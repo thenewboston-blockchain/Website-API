@@ -15,6 +15,7 @@ class PlaylistSerializer(ModelSerializer):
         many=True,
         required=False
     )
+    duration = serializers.SerializerMethodField('total_duration')
 
     class Meta:
         fields = '__all__'
@@ -27,9 +28,12 @@ class PlaylistSerializer(ModelSerializer):
         instance = super(PlaylistSerializer, self).create(validated_data)
 
         for video in videos:
-            Video.objects.create(**video,
-                                 playlist=instance
-                                 )
+            categories = video.pop('categories', [])
+            video_instance = Video.objects.create(**video,
+                                                  playlist=instance
+                                                  )
+            video_instance.categories.add(*categories)
+
         return instance
 
     @transaction.atomic
@@ -44,6 +48,9 @@ class PlaylistSerializer(ModelSerializer):
         instance.language = validated_data.get('language', instance.language)
         instance.playlist_type = validated_data.get('playlist_type', instance.playlist_type)
         instance.author = validated_data.get('author', instance.author)
+        categories = validated_data.get('categories', [])
+        for category in categories:
+            instance.categories.add(category)
         instance.save()
 
         for video_data in videos_data:
@@ -56,8 +63,10 @@ class PlaylistSerializer(ModelSerializer):
             video.video_type = video_data.get('video_type', video.video_type)
             video.author = video_data.get('author', video.author)
             video.duration = video_data.get('duration', video.duration)
-            video.category = video_data.get('category', video.category)
             video.tags = video_data.get('tags', video.tags)
+            categories = validated_data.get('categories', [])
+            for category in categories:
+                instance.categories.add(category)
             video.save()
         return instance
 
@@ -71,3 +80,10 @@ class PlaylistSerializer(ModelSerializer):
             else:
                 data['published_at'] = published_at
         return data
+
+    def total_duration(self, obj):
+        videos = obj.videos.all()
+        total = 0
+        for video in videos:
+            total += video.duration
+        return total
