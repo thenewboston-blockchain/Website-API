@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'v1.teams.apps.TeamsConfig',
     'v1.repositories.apps.RepositoriesConfig',
     'v1.videos.apps.VideosConfig',
+    'v1.projects.apps.ProjectsConfig',
 ]
 
 MIDDLEWARE = [

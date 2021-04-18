@@ -14,6 +14,7 @@ from v1.teams.urls import router as teams_router
 from v1.users.urls import router as users_router
 from v1.users.views.user import UserViewSet
 from v1.videos.urls import router as videos_router
+from v1.projects.urls import router as projects_router
 
 admin.site.index_title = 'Admin'
 admin.site.site_header = 'thenewboston'
@@ -51,6 +52,7 @@ router.registry.extend(teams_router.registry)
 router.registry.extend(repositories_router.registry)
 router.registry.extend(users_router.registry)
 router.registry.extend(videos_router.registry)
+router.registry.extend(projects_router.registry)
 
 urlpatterns += router.urls
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
