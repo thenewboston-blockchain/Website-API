@@ -6,6 +6,6 @@ from ..serializers.project import ProjectSerializer
 
 
 class ProjectViewSet(ModelViewSet):
-    queryset = Project.objects.order_by('created_date').all()
+    queryset = Project.objects.order_by('title').all()
     serializer_class = ProjectSerializer
     permission_classes = [IsStaffOrReadOnly]

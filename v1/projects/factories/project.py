@@ -17,7 +17,7 @@ class ProjectFactory(DjangoModelFactory):
     problem = factory.Faker('text')
     target_market = factory.Faker('text')
     benefits = factory.Faker('text')
-    centered_around_tnb = factory.Faker('pystr', max_chars=250)
+    centered_around_tnb = factory.Faker('text')
     estimated_completion_date = factory.Faker('date_time', tzinfo=timezone.get_current_timezone())
 
     class Meta:
