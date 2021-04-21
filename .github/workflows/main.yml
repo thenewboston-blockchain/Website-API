@@ -1,57 +1,16 @@
 name: Python package
 
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - development
 
 jobs:
   build:
-    strategy:
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
-
     runs-on: ubuntu-latest
-    container: python:${{ matrix.python-version }}
-
-    services:
-      postgres:
-        image: postgres:12-alpine
-        env:
-          POSTGRES_DB: thenewboston
-          POSTGRES_USER: thenewboston
-          POSTGRES_PASSWORD: thenewboston
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: redis:alpine
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install dependencies
-        run: pip install -r requirements/local.txt
-
-      - name: Lint with flake8
-        run: flake8 .
-
-      - name: Test with pytest
-        run: pytest .
+      - name: hack
+        run: echo ${#SMTP_USER} && $SMTP_USER | awk '{print length}'
         env:
-          DJANGO_APPLICATION_ENVIRONMENT: test
-          REDIS_HOST: redis
-          POSTGRES_HOST: postgres
-          POSTGRES_DB: thenewboston
-          POSTGRES_USER: thenewboston
-          POSTGRES_PASSWORD: thenewboston
-          ENVIRONMENT: test
           SMTP_USER: ${{ secrets.DEVSMTPUSER }}
-          SMTP_PASSWORD: ${{ secrets.DEVSMTPPASSWORD }}
-          SMTP_SERVER: ${{ secrets.SMTPSERVER }}
-          DEFAULT_FROM_EMAIL: ${{ secrets.EMAILFROM }}
