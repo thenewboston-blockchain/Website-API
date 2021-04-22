@@ -7,14 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    environment: dev
+    environment: general
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
-
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -32,3 +31,37 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  deploy-to-dev:
+    runs-on: ubuntu-20.04
+    environment: dev
+    needs:
+      - build
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Download task def
+        env:
+          ENV: dev
+        run: |
+          aws ecs describe-task-definition --task-definition backend-$ENV --query taskDefinition > task-definition.json
+
+      - name: Render Amazon ECS task definition
+        id: render-web-container
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: backend-dev
+          image: ${{ steps.login-ecr.outputs.registry }}/backend:${{ github.sha }}
+
+      - name: Deploy to Amazon ECS service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-app-container.outputs.task-definition }}
+          service: backend-dev
+          cluster: NonProduction
