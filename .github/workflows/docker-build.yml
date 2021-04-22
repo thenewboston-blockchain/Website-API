@@ -52,7 +52,7 @@ jobs:
           aws ecs describe-task-definition --task-definition backend-$ENV --query taskDefinition > task-definition.json
 
       - name: Render Amazon ECS task definition
-        id: render-web-container
+        id: render-task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
@@ -62,6 +62,6 @@ jobs:
       - name: Deploy to Amazon ECS service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.render-app-container.outputs.task-definition }}
+          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
           service: backend-dev
           cluster: NonProduction
