@@ -1,5 +1,5 @@
-from .base import *  # noqa: F401
 import iptools
+from .base import *  # noqa: F401
 
 SENTRY_DSN = os.getenv('SENTRY_DSN')
 
