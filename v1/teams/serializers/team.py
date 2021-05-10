@@ -7,6 +7,8 @@ from ..models.team_member import CoreMember, ProjectMember, TeamMember
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
+    display_name = serializers.CharField(source='user.display_name', read_only=True)
+
     class Meta:
         fields = (
             'created_date',
@@ -15,6 +17,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             'modified_date',
             'team',
             'user',
+            'display_name',
             'pk'
         )
         model = TeamMember
@@ -22,9 +25,10 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
 
 class CoreMemberSerializer(TeamMemberSerializer):
+    core_team_name = serializers.CharField(source='core_team.title', read_only=True)
 
     class Meta(TeamMemberSerializer.Meta):
-        fields = TeamMemberSerializer.Meta.fields + ('core_team', 'hourly_rate', 'weekly_hourly_commitment')
+        fields = TeamMemberSerializer.Meta.fields + ('core_team', 'core_team_name', 'hourly_rate', 'weekly_hourly_commitment')
         model = CoreMember
         read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('core_team',)
 
@@ -43,8 +47,10 @@ class CoreMemberSerializer(TeamMemberSerializer):
 
 
 class ProjectMemberSerializer(TeamMemberSerializer):
+    project_team_name = serializers.CharField(source='project_team.title', read_only=True)
+
     class Meta:
-        fields = TeamMemberSerializer.Meta.fields + ('project_team',)
+        fields = TeamMemberSerializer.Meta.fields + ('project_team', 'project_team_name')
         model = ProjectMember
         read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('project_team',)
 

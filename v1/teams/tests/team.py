@@ -10,13 +10,13 @@ from ..models.team import CoreTeam, ProjectTeam, Team
 
 
 def test_teams_list(api_client, django_assert_max_num_queries):
-    teams = TeamFactory.create_batch(10, team_members=5)
+    teams = TeamFactory.create_batch(5, team_members=2)
 
-    with django_assert_max_num_queries(3):
+    with django_assert_max_num_queries(13):
         r = api_client.get(reverse('team-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 10
+    assert len(r.data) == 5
     assert r.data[0] == {
         'pk': str(teams[0].pk),
         'created_date': serializers.DateTimeField().to_representation(teams[0].created_date),
@@ -25,6 +25,7 @@ def test_teams_list(api_client, django_assert_max_num_queries):
             'pk': str(team_member.pk),
             'team': team_member.team_id,
             'user': team_member.user_id,
+            'display_name': team_member.user.display_name,
             'is_lead': team_member.is_lead,
             'job_title': team_member.job_title,
             'created_date': serializers.DateTimeField().to_representation(team_member.created_date),
@@ -39,7 +40,7 @@ def test_teams_list(api_client, django_assert_max_num_queries):
 
 def test_core_teams_list(api_client, django_assert_max_num_queries):
     teams = CoreTeamFactory.create_batch(2, core_members=5)
-    with django_assert_max_num_queries(13):
+    with django_assert_max_num_queries(15):
         r = api_client.get(reverse('coreteam-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
@@ -52,7 +53,9 @@ def test_core_teams_list(api_client, django_assert_max_num_queries):
             'pk': str(core_member.pk),
             'team': core_member.team_id,
             'core_team': core_member.core_team_id,
+            'core_team_name': teams[0].title,
             'user': core_member.user_id,
+            'display_name': core_member.user.display_name,
             'is_lead': core_member.is_lead,
             'job_title': core_member.job_title,
             'hourly_rate': core_member.hourly_rate,
@@ -72,7 +75,7 @@ def test_core_teams_list(api_client, django_assert_max_num_queries):
 def test_project_teams_list(api_client, django_assert_max_num_queries):
     teams = ProjectTeamFactory.create_batch(2, project_members=5)
 
-    with django_assert_max_num_queries(13):
+    with django_assert_max_num_queries(15):
         r = api_client.get(reverse('projectteam-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
@@ -85,7 +88,9 @@ def test_project_teams_list(api_client, django_assert_max_num_queries):
             'pk': str(project_member.pk),
             'team': project_member.team_id,
             'project_team': project_member.project_team_id,
+            'project_team_name': teams[0].title,
             'user': project_member.user_id,
+            'display_name': project_member.user.display_name,
             'is_lead': project_member.is_lead,
             'job_title': project_member.job_title,
             'created_date': serializers.DateTimeField().to_representation(project_member.created_date),
@@ -130,7 +135,7 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
 
     users = UserFactory.create_batch(5)
 
-    with freeze_time() as frozen_time, django_assert_max_num_queries(6):
+    with freeze_time() as frozen_time, django_assert_max_num_queries(8):
         r = api_client.post(reverse('team-list'), data={
             'title': 'Star team',
             'about': 'About Star team',
@@ -161,6 +166,7 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 'team': ANY,
                 'is_lead': True,
                 'job_title': 'Back-End Developer',
+                'display_name': users[1].display_name,
                 'pk': ANY,
             },
             {
@@ -170,6 +176,7 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 'team': ANY,
                 'is_lead': False,
                 'job_title': 'Front-End Developer',
+                'display_name': users[3].display_name,
                 'pk': ANY,
             }
         ],
@@ -186,7 +193,7 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
 
     users = UserFactory.create_batch(5)
 
-    with freeze_time() as frozen_time, django_assert_max_num_queries(10):
+    with freeze_time() as frozen_time, django_assert_max_num_queries(11):
         r = api_client.post(reverse('coreteam-list'), data={
             'title': 'Star team',
             'about': 'About Star team',
@@ -213,6 +220,8 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
                 'user': users[1].pk,
                 'team': ANY,
                 'core_team': ANY,
+                'display_name': users[1].display_name,
+                'core_team_name': 'Star team',
                 'is_lead': True,
                 'job_title': 'Back-End Developer',
                 'hourly_rate': 2000,
@@ -235,7 +244,7 @@ def test_project_teams_post(api_client, superuser, django_assert_max_num_queries
 
     users = UserFactory.create_batch(5)
 
-    with freeze_time() as frozen_time, django_assert_max_num_queries(10):
+    with freeze_time() as frozen_time, django_assert_max_num_queries(11):
         r = api_client.post(reverse('projectteam-list'), data={
             'title': 'Ether Team',
             'about': 'About Ether team',
@@ -261,6 +270,8 @@ def test_project_teams_post(api_client, superuser, django_assert_max_num_queries
                 'user': users[1].pk,
                 'team': ANY,
                 'project_team': ANY,
+                'display_name': users[1].display_name,
+                'project_team_name': 'Ether Team',
                 'is_lead': True,
                 'job_title': 'Go Developer',
                 'pk': ANY
@@ -319,6 +330,7 @@ def test_teams_patch(api_client, staff_user):
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'user': old_team_member.user_id,
                 'team': team.pk,
+                'display_name': old_team_member.user.display_name,
                 'is_lead': True,
                 'job_title': 'Back-End Developer',
                 'pk': ANY
@@ -328,6 +340,7 @@ def test_teams_patch(api_client, staff_user):
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'user': user.pk,
                 'team': team.pk,
+                'display_name': user.display_name,
                 'is_lead': False,
                 'job_title': 'Front-End Developer',
                 'pk': ANY

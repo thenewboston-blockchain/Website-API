@@ -7,15 +7,16 @@ from ..factories.team import CoreMemberFactory, CoreTeamFactory, ProjectMemberFa
 
 
 def test_teams_members_list(api_client, django_assert_max_num_queries):
-    teams = TeamFactory.create_batch(10, team_members=5)
+    teams = TeamFactory.create_batch(5, team_members=2)
 
-    with django_assert_max_num_queries(2):
+    with django_assert_max_num_queries(13):
         r = api_client.get(reverse('teammember-list'))
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data['results']) == 50
+    assert len(r.data['results']) == 10
     assert r.data['results'][0] == {
         'pk': ANY,
         'user': teams[0].team_members.all()[0].user_id,
+        'display_name': teams[0].team_members.all()[0].user.display_name,
         'team': teams[0].pk,
         'is_lead': teams[0].team_members.all()[0].is_lead,
         'job_title': teams[0].team_members.all()[0].job_title,
@@ -34,18 +35,20 @@ def test_teams_members_filter(api_client, staff_user):
 
 
 def test_core_members_list(api_client, django_assert_max_num_queries):
-    teams = CoreTeamFactory.create_batch(10, core_members=5)
+    teams = CoreTeamFactory.create_batch(5, core_members=2)
 
-    with django_assert_max_num_queries(2):
+    with django_assert_max_num_queries(22):
         r = api_client.get(reverse('coremember-list'))
 
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data['results']) == 50
+    assert len(r.data['results']) == 10
     assert r.data['results'][0] == {
         'pk': ANY,
         'user': teams[0].core_members.all()[0].user_id,
+        'display_name': teams[0].core_members.all()[0].user.display_name,
         'team': teams[0].core_members.all()[0].team.pk,
         'core_team': teams[0].pk,
+        'core_team_name': teams[0].title,
         'is_lead': teams[0].core_members.all()[0].is_lead,
         'hourly_rate': teams[0].core_members.all()[0].hourly_rate,
         'weekly_hourly_commitment': teams[0].core_members.all()[0].weekly_hourly_commitment,
@@ -65,18 +68,20 @@ def test_core_members_filter(api_client, staff_user):
 
 
 def test_project_members_list(api_client, django_assert_max_num_queries):
-    teams = ProjectTeamFactory.create_batch(10, project_members=5)
+    teams = ProjectTeamFactory.create_batch(5, project_members=2)
 
-    with django_assert_max_num_queries(2):
+    with django_assert_max_num_queries(22):
         r = api_client.get(reverse('projectmember-list'))
 
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data['results']) == 50
+    assert len(r.data['results']) == 10
     assert r.data['results'][0] == {
         'pk': ANY,
         'user': teams[0].project_members.all()[0].user_id,
+        'display_name': teams[0].project_members.all()[0].user.display_name,
         'team': teams[0].project_members.all()[0].team.pk,
         'project_team': teams[0].pk,
+        'project_team_name': teams[0].title,
         'is_lead': teams[0].project_members.all()[0].is_lead,
         'job_title': teams[0].project_members.all()[0].job_title,
         'created_date': serializers.DateTimeField().to_representation(teams[0].project_members.all()[0].created_date),
@@ -96,7 +101,7 @@ def test_project_members_filter(api_client, staff_user):
 def test_teams_members_list_filter(api_client, django_assert_max_num_queries):
     teams = TeamFactory.create_batch(10, team_members=5)
 
-    with django_assert_max_num_queries(4):
+    with django_assert_max_num_queries(5):
         r = api_client.get(f'{reverse("teammember-list")}?user={teams[0].team_members.all()[0].user_id}')
 
     assert r.status_code == status.HTTP_200_OK
@@ -104,6 +109,7 @@ def test_teams_members_list_filter(api_client, django_assert_max_num_queries):
     assert r.json()['results'][0] == {
         'pk': ANY,
         'user': str(teams[0].team_members.all()[0].user_id),
+        'display_name': teams[0].team_members.all()[0].user.display_name,
         'team': str(teams[0].pk),
         'is_lead': teams[0].team_members.all()[0].is_lead,
         'job_title': teams[0].team_members.all()[0].job_title,
