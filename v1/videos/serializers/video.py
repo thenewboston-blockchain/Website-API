@@ -9,7 +9,7 @@ class VideoSerializer(ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Video
-        read_only_fields = 'published_at', 'created_date', 'modified_date'
+        read_only_fields = 'created_date', 'modified_date'
 
     def validate(self, data):
         published_at = self.context.get('request').data.get('published_at')
