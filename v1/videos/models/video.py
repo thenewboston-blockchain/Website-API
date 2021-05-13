@@ -6,7 +6,8 @@ from thenewboston.models.created_modified import CreatedModified
 
 class Video(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    playlist = models.ForeignKey('videos.Playlist', on_delete=models.CASCADE)
+    video_id = models.CharField(max_length=11)
+    playlist = models.ForeignKey('videos.Playlist', on_delete=models.CASCADE, null=True)
     title = models.CharField(max_length=250)
     description = models.TextField(blank=True)
     published_at = models.DateTimeField()

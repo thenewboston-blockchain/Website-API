@@ -17,7 +17,7 @@ class PlaylistSerializer(ModelSerializer):
         required=False
     )
     instructor = serializers.PrimaryKeyRelatedField(queryset=Instructor.objects.all())
-    duration_seconds = serializers.SerializerMethodField('total_duration')
+    duration = serializers.SerializerMethodField('total_duration')
 
     class Meta:
         fields = '__all__'
@@ -30,12 +30,7 @@ class PlaylistSerializer(ModelSerializer):
         instance = super(PlaylistSerializer, self).create(validated_data)
 
         for video in videos:
-            categories = video.pop('categories', [])
-            video_instance = Video.objects.create(**video,
-                                                  playlist=instance
-                                                  )
-            video_instance.categories.add(*categories)
-
+            Video.objects.create(**video, playlist=instance)
         return instance
 
     @transaction.atomic
@@ -46,6 +41,7 @@ class PlaylistSerializer(ModelSerializer):
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
         instance.thumbnail = validated_data.get('thumbnail', instance.thumbnail)
+        instance.playlist_type = validated_data.get('playlist_type', instance.playlist_type)
         categories = validated_data.get('categories', [])
         for category in categories:
             instance.categories.add(category)
@@ -53,10 +49,12 @@ class PlaylistSerializer(ModelSerializer):
 
         for video_data in videos_data:
             video = videos.pop(0)
+            video.video_id = video_data.get('video_id', video.video_id)
             video.title = video_data.get('title', video.title)
             video.description = video_data.get('description', video.description)
             video.thumbnail = video_data.get('thumbnail', video.thumbnail)
             video.duration_seconds = video_data.get('duration_seconds', video.duration_seconds)
+            video.position = video_data.get('position', video.position)
             video.save()
         return instance
 

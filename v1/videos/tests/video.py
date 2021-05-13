@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ..factories.video import CategoryFactory, PlaylistFactory, VideoFactory
+from ..factories.video import PlaylistFactory, VideoFactory
 
 
 def test_playlists_videos_list(api_client, django_assert_max_num_queries):
@@ -11,16 +11,6 @@ def test_playlists_videos_list(api_client, django_assert_max_num_queries):
 
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data['results']) == 25
-
-
-def test_videos_filter_by_category(api_client, django_assert_max_num_queries):
-    category = CategoryFactory.create()
-    VideoFactory.create_batch(3)
-    VideoFactory.create_batch(2, categories=[category.pk])
-    with django_assert_max_num_queries(10):
-        r = api_client.get(reverse('video-list') + f'?category={category.name}')
-    assert r.status_code == status.HTTP_200_OK
-    assert len(r.data['results']) == 2
 
 
 def test_videos_filter_by_playlist(api_client, django_assert_max_num_queries):
@@ -33,18 +23,6 @@ def test_videos_filter_by_playlist(api_client, django_assert_max_num_queries):
     assert len(r.data['results']) == 2
 
 
-def test_videos_filter_by_category_and_playlist(api_client, django_assert_max_num_queries):
-    category = CategoryFactory.create()
-    playlist = PlaylistFactory.create()
-    VideoFactory.create_batch(3)
-    VideoFactory.create(playlist=playlist)
-    VideoFactory.create(categories=[category.pk], playlist=playlist)
-    with django_assert_max_num_queries(10):
-        r = api_client.get(reverse('video-list') + f'?category={category.name}&playlist={str(playlist.uuid)}')
-    assert r.status_code == status.HTTP_200_OK
-    assert len(r.data['results']) == 1
-
-
 def test_videos_filter_by_invalid_playlist(api_client, django_assert_max_num_queries):
     VideoFactory.create_batch(3)
     with django_assert_max_num_queries(10):
@@ -54,7 +32,6 @@ def test_videos_filter_by_invalid_playlist(api_client, django_assert_max_num_que
 
 def test_video_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
-    category = CategoryFactory.create_batch(2)
     playlist = PlaylistFactory()
 
     r = api_client.post(reverse('video-list'), data={
@@ -63,12 +40,9 @@ def test_video_post(api_client, staff_user):
         'title': 'Fight Groove',
         'description': 'Episode two of our Detroit series',
         'published_at': '2020-12-03T20:00:10Z',
-        'duration': 350,
+        'duration_seconds': 350,
         'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
-        'language': 'en',
-        'video_type': 'youtube',
-        'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
-        'categories': [category[0].pk]
+        'position': '1',
     }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
@@ -83,13 +57,11 @@ def test_invalid_video_datetime_post(api_client, staff_user):
         'video_id': 'qcYthscy9ok',
         'title': 'Fight Groove',
         'published_at': '2020-12-03',
-        'duration': 350,
+        'duration_seconds': 350,
         'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
-        'language': 'en',
-        'video_type': 'youtube',
-        'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+        'postion': 1,
     }, format='json')
-    assert 'Invalid datetime format' in str(r.data['published_at'])
+    assert 'Datetime has wrong format' in str(r.data['published_at'])
     assert r.status_code == status.HTTP_400_BAD_REQUEST
 
 
