@@ -16,14 +16,35 @@ def test_playlists_list(api_client, django_assert_max_num_queries):
     assert len(r.data) == 4
 
 
-def test_playlists_filter(api_client, django_assert_max_num_queries):
-    category = PlaylistCategoryFactory.create_batch(1)
+def test_playlists_filter_by_category(api_client, django_assert_max_num_queries):
+    category = PlaylistCategoryFactory.create()
     PlaylistFactory.create_batch(3)
-    PlaylistFactory.create_batch(2, categories=[category[0].pk])
+    PlaylistFactory.create_batch(2, categories=[category.pk])
     with django_assert_max_num_queries(10):
-        r = api_client.get(reverse('playlist-list') + f'?category={category[0].name}')
+        r = api_client.get(reverse('playlist-list') + f'?category={category.name}')
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 4
+
+
+def test_playlists_filter_by_instructor(api_client, django_assert_max_num_queries):
+    instructor = InstructorFactory.create()
+    PlaylistFactory.create_batch(3)
+    PlaylistFactory.create_batch(2, instructor=instructor)
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('playlist-list') + f'?instructor={str(instructor.pk)}')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 4
+
+
+def test_playlists_filter_by_category_and_instructor(api_client, django_assert_max_num_queries):
+    category = PlaylistCategoryFactory.create()
+    instructor = InstructorFactory.create()
+    PlaylistFactory.create_batch(3)
+    PlaylistFactory.create(instructor=instructor, categories=[category.pk])
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('playlist-list') + f'?category={category.name}&instructor={str(instructor.pk)}')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data['results']) == 1
 
 
 def test_playlist_post(api_client, staff_user):
