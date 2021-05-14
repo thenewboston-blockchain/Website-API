@@ -20,7 +20,8 @@ class PlaylistSerializer(ModelSerializer):
     duration = serializers.SerializerMethodField('total_duration')
 
     class Meta:
-        fields = '__all__'
+        fields = ('pk', 'title', 'description', 'published_at', 'instructor',
+                  'thumbnail', 'categories', 'playlist_type', 'video_list', 'duration', 'created_date', 'modified_date',)
         model = Playlist
         read_only_fields = 'created_date', 'modified_date'
 

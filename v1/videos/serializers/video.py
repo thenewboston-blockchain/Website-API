@@ -9,7 +9,8 @@ from ..models.video import Video
 
 class VideoSerializer(ModelSerializer):
     class Meta:
-        fields = '__all__'
+        fields = ('pk', 'video_id', 'playlist', 'title', 'description', 'published_at',
+                  'duration_seconds', 'thumbnail', 'position', 'created_date', 'modified_date',)
         model = Video
         read_only_fields = 'playlist', 'created_date', 'modified_date'
 
