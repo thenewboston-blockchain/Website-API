@@ -73,9 +73,9 @@ def test_playlist_post(api_client, staff_user):
         }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
-    assert Playlist.objects.get(pk=r.data['uuid']).title == 'Native tutorials'
+    assert Playlist.objects.get(pk=r.data['pk']).title == 'Native tutorials'
     assert r.data == {
-        'uuid': ANY,
+        'pk': ANY,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'title': 'Native tutorials',
@@ -89,7 +89,7 @@ def test_playlist_post(api_client, staff_user):
         'video_list': [{
             'created_date': serializers.DateTimeField().to_representation(frozen_time()),
             'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-            'uuid': ANY,
+            'pk': ANY,
             'playlist': ANY,
             'video_id': 'qcYthscy9ok',
             'title': 'Fight Groove',
@@ -118,9 +118,9 @@ def test_empty_videolist_post(api_client, staff_user):
         }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
-    assert Playlist.objects.get(pk=r.data['uuid']).title == 'Native tutorials'
+    assert Playlist.objects.get(pk=r.data['pk']).title == 'Native tutorials'
     assert r.data == {
-        'uuid': ANY,
+        'pk': ANY,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'title': 'Native tutorials',

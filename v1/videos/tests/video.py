@@ -18,7 +18,7 @@ def test_videos_filter_by_playlist(api_client, django_assert_max_num_queries):
     VideoFactory.create_batch(3)
     VideoFactory.create_batch(2, playlist=playlist)
     with django_assert_max_num_queries(10):
-        r = api_client.get(reverse('video-list') + f'?playlist={str(playlist.uuid)}')
+        r = api_client.get(reverse('video-list') + f'?playlist={str(playlist.pk)}')
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data['results']) == 2
 
