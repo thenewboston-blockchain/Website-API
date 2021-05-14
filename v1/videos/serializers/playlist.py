@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from .video import VideoSerializer
+from ..models.instructor import Instructor
 from ..models.playlist import Playlist
 from ..models.video import Video
 
@@ -15,12 +16,13 @@ class PlaylistSerializer(ModelSerializer):
         many=True,
         required=False
     )
+    instructor = serializers.PrimaryKeyRelatedField(queryset=Instructor.objects.all())
     duration = serializers.SerializerMethodField('total_duration')
 
     class Meta:
         fields = '__all__'
         model = Playlist
-        read_only_fields = 'published_at', 'created_date', 'modified_date'
+        read_only_fields = 'created_date', 'modified_date'
 
     @transaction.atomic
     def create(self, validated_data):
@@ -28,12 +30,7 @@ class PlaylistSerializer(ModelSerializer):
         instance = super(PlaylistSerializer, self).create(validated_data)
 
         for video in videos:
-            categories = video.pop('categories', [])
-            video_instance = Video.objects.create(**video,
-                                                  playlist=instance
-                                                  )
-            video_instance.categories.add(*categories)
-
+            Video.objects.create(**video, playlist=instance)
         return instance
 
     @transaction.atomic
@@ -41,13 +38,10 @@ class PlaylistSerializer(ModelSerializer):
         videos_data = validated_data.pop('videos', [])
         videos = (instance.videos).all()
         videos = list(videos)
-        instance.playlist_id = validated_data.get('playlist_id', instance.playlist_id)
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
         instance.thumbnail = validated_data.get('thumbnail', instance.thumbnail)
-        instance.language = validated_data.get('language', instance.language)
         instance.playlist_type = validated_data.get('playlist_type', instance.playlist_type)
-        instance.author = validated_data.get('author', instance.author)
         categories = validated_data.get('categories', [])
         for category in categories:
             instance.categories.add(category)
@@ -59,14 +53,8 @@ class PlaylistSerializer(ModelSerializer):
             video.title = video_data.get('title', video.title)
             video.description = video_data.get('description', video.description)
             video.thumbnail = video_data.get('thumbnail', video.thumbnail)
-            video.language = video_data.get('language', video.language)
-            video.video_type = video_data.get('video_type', video.video_type)
-            video.author = video_data.get('author', video.author)
-            video.duration = video_data.get('duration', video.duration)
-            video.tags = video_data.get('tags', video.tags)
-            categories = validated_data.get('categories', [])
-            for category in categories:
-                instance.categories.add(category)
+            video.duration_seconds = video_data.get('duration_seconds', video.duration_seconds)
+            video.position = video_data.get('position', video.position)
             video.save()
         return instance
 
@@ -85,5 +73,5 @@ class PlaylistSerializer(ModelSerializer):
         videos = obj.videos.all()
         total = 0
         for video in videos:
-            total += video.duration
+            total += video.duration_seconds
         return total
