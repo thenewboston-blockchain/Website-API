@@ -24,7 +24,7 @@ def test_teams_list(api_client, django_assert_max_num_queries):
         'team_members_meta': [{
             'pk': str(team_member.pk),
             'team': team_member.team_id,
-            'user': {
+            'user_data': {
                 'account_number': team_member.user.account_number,
                 'created_date': serializers.DateTimeField().to_representation(team_member.user.created_date),
                 'display_name': team_member.user.display_name,
@@ -62,7 +62,7 @@ def test_core_teams_list(api_client, django_assert_max_num_queries):
             'pk': str(core_member.pk),
             'team': core_member.team_id,
             'core_team': core_member.core_team_id,
-            'user': {
+            'user_data': {
                 'account_number': core_member.user.account_number,
                 'created_date': serializers.DateTimeField().to_representation(core_member.user.created_date),
                 'display_name': core_member.user.display_name,
@@ -105,7 +105,7 @@ def test_project_teams_list(api_client, django_assert_max_num_queries):
             'pk': str(project_member.pk),
             'team': project_member.team_id,
             'project_team': project_member.project_team_id,
-            'user': {
+            'user_data': {
                 'account_number': project_member.user.account_number,
                 'created_date': serializers.DateTimeField().to_representation(project_member.user.created_date),
                 'display_name': project_member.user.display_name,
@@ -187,7 +187,7 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
             {
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'user': {
+                'user_data': {
                     'account_number': users[1].account_number,
                     'created_date': serializers.DateTimeField().to_representation(users[1].created_date),
                     'display_name': users[1].display_name,
@@ -206,7 +206,7 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
             {
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'user': {
+                'user_data': {
                     'account_number': users[3].account_number,
                     'created_date': serializers.DateTimeField().to_representation(users[3].created_date),
                     'display_name': users[3].display_name,
@@ -260,7 +260,7 @@ def test_core_teams_post(api_client, superuser, django_assert_max_num_queries):
             {
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'user': {
+                'user_data': {
                     'account_number': users[1].account_number,
                     'created_date': serializers.DateTimeField().to_representation(users[1].created_date),
                     'display_name': users[1].display_name,
@@ -318,7 +318,7 @@ def test_project_teams_post(api_client, superuser, django_assert_max_num_queries
             {
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'user': {
+                'user_data': {
                     'account_number': users[1].account_number,
                     'created_date': serializers.DateTimeField().to_representation(users[1].created_date),
                     'display_name': users[1].display_name,
@@ -387,7 +387,7 @@ def test_teams_patch(api_client, staff_user):
             {
                 'created_date': serializers.DateTimeField().to_representation(old_team_member.created_date),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'user': {
+                'user_data': {
                     'account_number': old_team_member.user.account_number,
                     'created_date': serializers.DateTimeField().to_representation(old_team_member.user.created_date),
                     'display_name': old_team_member.user.display_name,
@@ -406,7 +406,7 @@ def test_teams_patch(api_client, staff_user):
             {
                 'created_date': serializers.DateTimeField().to_representation(frozen_time()),
                 'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-                'user': {
+                'user_data': {
                     'account_number': user.account_number,
                     'created_date': serializers.DateTimeField().to_representation(user.created_date),
                     'display_name': user.display_name,

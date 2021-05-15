@@ -9,7 +9,7 @@ from ...users.serializers.user import UserSerializer
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
+    user_data = serializers.SerializerMethodField('get_user_data')
 
     class Meta:
         fields = (
@@ -18,13 +18,13 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             'job_title',
             'modified_date',
             'team',
-            'user',
+            'user_data',
             'pk'
         )
         model = TeamMember
         read_only_fields = 'created_date', 'modified_date', 'team'
 
-    def get_user(self, member):
+    def get_user_data(self, member):
         return UserSerializer(member.user).data
 
 
@@ -32,6 +32,14 @@ class CoreMemberSerializer(TeamMemberSerializer):
 
     class Meta(TeamMemberSerializer.Meta):
         fields = TeamMemberSerializer.Meta.fields + ('core_team', 'hourly_rate', 'weekly_hourly_commitment')
+        model = CoreMember
+        read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('core_team',)
+
+
+class CoreMemberSerializerCreate(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
         model = CoreMember
         read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('core_team',)
 
@@ -52,6 +60,13 @@ class CoreMemberSerializer(TeamMemberSerializer):
 class ProjectMemberSerializer(TeamMemberSerializer):
     class Meta:
         fields = TeamMemberSerializer.Meta.fields + ('project_team',)
+        model = ProjectMember
+        read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('project_team',)
+
+
+class ProjectMemberSerializerCreate(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
         model = ProjectMember
         read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('project_team',)
 
@@ -162,6 +177,8 @@ class CoreTeamSerializer(TeamSerializer):
         team_members = self.context.get('request').data.pop('core_members_meta', [])
         members = []
         for team_member in team_members:
+            team_member.pop('core_team', None)
+            team_member.pop('user_data', None)
             for k, v in team_member.items():
                 if k == 'user':
                     try:
@@ -228,6 +245,8 @@ class ProjectTeamSerializer(TeamSerializer):
         team_members = self.context.get('request').data.pop('project_members_meta', [])
         members = []
         for team_member in team_members:
+            team_member.pop('project_team', None)
+            team_member.pop('user_data', None)
             for k, v in team_member.items():
                 if k == 'user':
                     try:

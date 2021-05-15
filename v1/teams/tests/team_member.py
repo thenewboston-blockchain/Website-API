@@ -15,7 +15,7 @@ def test_teams_members_list(api_client, django_assert_max_num_queries):
     assert len(r.data['results']) == 50
     assert r.data['results'][0] == {
         'pk': ANY,
-        'user': {
+        'user_data': {
             'account_number': teams[0].team_members.all()[0].user.account_number,
             'created_date': serializers.DateTimeField().to_representation(teams[0].team_members.all()[0].user.created_date),
             'display_name': teams[0].team_members.all()[0].user.display_name,
@@ -53,7 +53,7 @@ def test_core_members_list(api_client, django_assert_max_num_queries):
     assert len(r.data['results']) == 50
     assert r.data['results'][0] == {
         'pk': ANY,
-        'user': {
+        'user_data': {
             'account_number': teams[0].core_members.all()[0].user.account_number,
             'created_date': serializers.DateTimeField().to_representation(teams[0].core_members.all()[0].user.created_date),
             'display_name': teams[0].core_members.all()[0].user.display_name,
@@ -94,7 +94,7 @@ def test_project_members_list(api_client, django_assert_max_num_queries):
     assert len(r.data['results']) == 50
     assert r.data['results'][0] == {
         'pk': ANY,
-        'user': {
+        'user_data': {
             'account_number': teams[0].project_members.all()[0].user.account_number,
             'created_date': serializers.DateTimeField().to_representation(teams[0].project_members.all()[0].user.created_date),
             'display_name': teams[0].project_members.all()[0].user.display_name,
@@ -133,7 +133,7 @@ def test_teams_members_list_filter(api_client, django_assert_max_num_queries):
     assert len(r.json()['results']) == 1
     assert r.json()['results'][0] == {
         'pk': ANY,
-        'user': {
+        'user_data': {
             'account_number': teams[0].team_members.all()[0].user.account_number,
             'created_date': serializers.DateTimeField().to_representation(teams[0].team_members.all()[0].user.created_date),
             'display_name': teams[0].team_members.all()[0].user.display_name,
