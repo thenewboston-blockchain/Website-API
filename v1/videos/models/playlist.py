@@ -20,3 +20,6 @@ class Playlist(CreatedModified):
 
     class Meta:
         ordering = ('published_at',)
+
+    def __str__(self):
+        return f'#{self.pk}: {self.title}'
