@@ -18,3 +18,6 @@ class Video(CreatedModified):
     class Meta:
         default_related_name = 'videos'
         ordering = ('published_at',)
+
+    def __str__(self):
+        return f'#{self.pk}: {self.title}'
