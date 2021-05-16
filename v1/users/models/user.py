@@ -23,7 +23,7 @@ class User(CreatedModified, AbstractUser):
         swappable = 'AUTH_USER_MODEL'
 
     def __str__(self):
-        return f'#{self.pk}: {self.display_name}'
+        return f'#{self.pk}: {self.username}, {self.display_name}'
 
     @property
     def username(self):

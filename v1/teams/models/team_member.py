@@ -28,6 +28,9 @@ class CoreMember(TeamMember):
     class Meta:
         default_related_name = 'core_members'
 
+    def __str__(self):
+        return f'#{self.pk}: {self.user.display_name}, {self.core_team.title}, {self.job_title}, {self.is_lead}'
+
     def validate_unique(self, exclude=None):
         q = CoreMember.objects.filter(user=self.user, core_team=self.core_team)
         if self.pk is None:

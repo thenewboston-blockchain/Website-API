@@ -65,6 +65,7 @@ class CustomUserAdmin(UserAdmin):
     )
     list_display = (
         'email',
+        'display_name',
         'is_active',
         'is_staff',
         'is_superuser',

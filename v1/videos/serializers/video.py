@@ -1,15 +1,18 @@
+from django.core.exceptions import ValidationError
 from django.utils import dateparse
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
+from ..models.playlist import Playlist
 from ..models.video import Video
 
 
 class VideoSerializer(ModelSerializer):
     class Meta:
-        fields = '__all__'
+        fields = ('pk', 'video_id', 'playlist', 'title', 'description', 'published_at',
+                  'duration_seconds', 'thumbnail', 'position', 'created_date', 'modified_date',)
         model = Video
-        read_only_fields = 'published_at', 'created_date', 'modified_date'
+        read_only_fields = 'playlist', 'created_date', 'modified_date'
 
     def validate(self, data):
         published_at = self.context.get('request').data.get('published_at')
@@ -21,3 +24,16 @@ class VideoSerializer(ModelSerializer):
             else:
                 data['published_at'] = published_at
         return data
+
+    def create(self, data):
+        try:
+            playlist_id = self.context.get('request').data.get('playlist')
+            if not playlist_id:
+                raise serializers.ValidationError({'playlist': ['This field is required.']})
+            playlist = Playlist.objects.get(pk=playlist_id)
+            data['playlist'] = playlist
+            return super().create(data)
+        except Playlist.DoesNotExist:
+            raise serializers.ValidationError({'playlist': ['Playlist not found', ]})
+        except ValidationError:
+            raise serializers.ValidationError({'playlist': ['{} is not a valid UUID.'.format(playlist_id), ]})

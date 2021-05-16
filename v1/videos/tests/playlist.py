@@ -4,7 +4,7 @@ from freezegun import freeze_time
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
-from ..factories.video import CategoryFactory, PlaylistFactory
+from ..factories.video import InstructorFactory, PlaylistCategoryFactory, PlaylistFactory
 from ..models.playlist import Playlist
 
 
@@ -16,113 +16,120 @@ def test_playlists_list(api_client, django_assert_max_num_queries):
     assert len(r.data) == 4
 
 
-def test_playlists_filter(api_client, django_assert_max_num_queries):
-    category = CategoryFactory.create_batch(1)
+def test_playlists_filter_by_category(api_client, django_assert_max_num_queries):
+    category = PlaylistCategoryFactory.create()
     PlaylistFactory.create_batch(3)
-    PlaylistFactory.create_batch(2, categories=[category[0].pk])
+    PlaylistFactory.create_batch(2, categories=[category.pk])
     with django_assert_max_num_queries(10):
-        r = api_client.get(reverse('playlist-list') + f'?category={category[0].name}')
+        r = api_client.get(reverse('playlist-list') + f'?category={category.name}')
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 4
 
 
+def test_playlists_filter_by_instructor(api_client, django_assert_max_num_queries):
+    instructor = InstructorFactory.create()
+    PlaylistFactory.create_batch(3)
+    PlaylistFactory.create_batch(2, instructor=instructor)
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('playlist-list') + f'?instructor={str(instructor.pk)}')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 4
+
+
+def test_playlists_filter_by_category_and_instructor(api_client, django_assert_max_num_queries):
+    category = PlaylistCategoryFactory.create()
+    instructor = InstructorFactory.create()
+    PlaylistFactory.create_batch(3)
+    PlaylistFactory.create(instructor=instructor, categories=[category.pk])
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('playlist-list') + f'?category={category.name}&instructor={str(instructor.pk)}')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data['results']) == 1
+
+
 def test_playlist_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
-    category = CategoryFactory.create_batch(2)
+    category = PlaylistCategoryFactory.create()
+    instructor = InstructorFactory.create()
 
     with freeze_time() as frozen_time:
         r = api_client.post(reverse('playlist-list'), data={
-            'playlist_id': 'qcYthscy9ok',
             'title': 'Native tutorials',
             'description': 'Episode two of our Detroit series',
             'published_at': '2020-12-03T20:00:10Z',
             'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
-            'language': 'en',
-            'categories': [category[0].pk],
+            'categories': [category.pk],
             'playlist_type': 'youtube',
-            'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+            'instructor': instructor.pk,
             'video_list': [{
                 'video_id': 'qcYthscy9ok',
                 'title': 'Fight Groove',
                 'description': 'Episode two of our Detroit series',
                 'published_at': '2020-12-03T20:00:10Z',
-                'duration': 350,
+                'duration_seconds': 350,
                 'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
-                'language': 'en',
-                'video_type': 'youtube',
-                'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
-                'categories': [category[0].pk, category[1].pk],
-                'tags':[]
+                'position': 1,
             }]
         }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
-    assert Playlist.objects.get(pk=r.data['uuid']).title == 'Native tutorials'
+    assert Playlist.objects.get(pk=r.data['pk']).title == 'Native tutorials'
     assert r.data == {
-        'uuid': ANY,
+        'pk': ANY,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'playlist_id': 'qcYthscy9ok',
         'title': 'Native tutorials',
         'description': 'Episode two of our Detroit series',
         'published_at': '2020-12-03T20:00:10Z',
         'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
-        'language': 'en',
-        'categories': [category[0].pk],
+        'categories': [category.pk],
         'playlist_type': 'youtube',
-        'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+        'instructor': instructor.pk,
         'duration': 350,
         'video_list': [{
             'created_date': serializers.DateTimeField().to_representation(frozen_time()),
             'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-            'uuid': ANY,
+            'pk': ANY,
             'playlist': ANY,
             'video_id': 'qcYthscy9ok',
             'title': 'Fight Groove',
             'description': 'Episode two of our Detroit series',
             'published_at': '2020-12-03T20:00:10Z',
-            'duration': 350,
+            'duration_seconds': 350,
             'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
-            'language': 'en',
-            'video_type': 'youtube',
-            'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
-            'categories': [category[0].pk, category[1].pk],
-            'tags': []
+            'position': 1,
         }]
     }
 
 
 def test_empty_videolist_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
-    category = CategoryFactory.create_batch(1)
+    category = PlaylistCategoryFactory.create()
+    instructor = InstructorFactory.create()
     with freeze_time() as frozen_time:
         r = api_client.post(reverse('playlist-list'), data={
-            'playlist_id': 'qcYthscy9ok',
             'title': 'Native tutorials',
             'description': 'Episode two of our Detroit series',
             'published_at': '2020-12-03T20:00:10Z',
             'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
-            'language': 'en',
             'playlist_type': 'youtube',
-            'categories': [category[0].pk],
-            'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+            'categories': [category.pk],
+            'instructor': instructor.pk,
         }, format='json')
 
     assert r.status_code == status.HTTP_201_CREATED
-    assert Playlist.objects.get(pk=r.data['uuid']).title == 'Native tutorials'
+    assert Playlist.objects.get(pk=r.data['pk']).title == 'Native tutorials'
     assert r.data == {
-        'uuid': ANY,
+        'pk': ANY,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'playlist_id': 'qcYthscy9ok',
         'title': 'Native tutorials',
         'description': 'Episode two of our Detroit series',
         'published_at': '2020-12-03T20:00:10Z',
         'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
-        'language': 'en',
         'playlist_type': 'youtube',
-        'categories': [category[0].pk],
-        'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+        'categories': [category.pk],
+        'instructor': instructor.pk,
         'video_list': [],
         'duration': 0,
     }
@@ -130,19 +137,19 @@ def test_empty_videolist_post(api_client, staff_user):
 
 def test_invalid_playlist_datetime_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
-    category = CategoryFactory.create_batch(1)
+    category = PlaylistCategoryFactory.create()
+    instructor = InstructorFactory.create()
 
     r = api_client.post(reverse('playlist-list'), data={
         'playlist_id': 'qcYthscy9ok',
         'title': 'Native tutorials',
         'published_at': '2020-12-03',
         'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
-        'language': 'en',
         'playlist_type': 'youtube',
-        'categories': [category[0].pk],
-        'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+        'categories': [category.pk],
+        'instructor': instructor.pk,
     }, format='json')
-    assert 'Invalid datetime format' in str(r.data['published_at'])
+    assert 'Datetime has wrong format' in str(r.data['published_at'])
     assert r.status_code == status.HTTP_400_BAD_REQUEST
 
 
@@ -162,11 +169,9 @@ def test_playlist_patch(api_client, staff_user):
                         'video_id': 'qcYthscy9ok',
                         'title': 'Fight Groove',
                         'description': 'Episode two of our Detroit series',
-                        'duration': 350,
+                        'duration_seconds': 350,
                         'thumbnail': 'https://i.ytimg.com/vi/qcYthscy9ok/default.jpg',
-                        'language': 'en',
-                        'video_type': 'youtube',
-                        'author': 'UCI5Sn4UBWZG-jarsmyBzr3Q',
+                        'position': 2
                     },
                 ]
             },

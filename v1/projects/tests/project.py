@@ -7,7 +7,7 @@ from ...teams.factories.team import ProjectMemberFactory
 
 def test_projects_list(api_client, django_assert_max_num_queries):
     ProjectFactory.create_batch(5)
-    with django_assert_max_num_queries(2):
+    with django_assert_max_num_queries(7):
         r = api_client.get(reverse('project-list'), {'limit': 0})
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 5
