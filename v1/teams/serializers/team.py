@@ -9,7 +9,13 @@ from ...users.serializers.user import UserSerializer
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
-    user_data = serializers.SerializerMethodField('get_user_data')
+    """
+    this user dict field conflicts with the user object in create
+
+    hence the need to use a different serializer for create in core/project members
+    """
+
+    user = serializers.SerializerMethodField('get_user_data')
 
     class Meta:
         fields = (
@@ -18,7 +24,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             'job_title',
             'modified_date',
             'team',
-            'user_data',
+            'user',
             'pk'
         )
         model = TeamMember
