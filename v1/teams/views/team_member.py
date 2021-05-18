@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from ..models.team_member import CoreMember, ProjectMember, TeamMember
-from ..serializers.team import CoreMemberSerializer, ProjectMemberSerializer, TeamMemberSerializer
+from ..serializers.team import CoreMemberSerializer, CoreMemberSerializerCreate, ProjectMemberSerializer, ProjectMemberSerializerCreate, TeamMemberSerializer
 from ...third_party.rest_framework.permissions import IsStaffOrReadOnly, IsSuperUserOrReadOnly, IsSuperUserOrTeamLead, ReadOnly
 
 
@@ -36,7 +36,13 @@ class TeamMemberViewSet(mixins.RetrieveModelMixin,
 class CoreMemberViewSet(ModelViewSet):
     filterset_fields = ['user']
     queryset = CoreMember.objects.order_by('created_date').all()
-    serializer_class = CoreMemberSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrive':
+            return CoreMemberSerializer
+        if self.action in ['create', 'partial_update', 'update']:
+            return CoreMemberSerializerCreate
+        return CoreMemberSerializer
 
     def create(self, request, *args, **kwargs):
         try:
@@ -70,14 +76,21 @@ class CoreMemberViewSet(ModelViewSet):
                 return Response({'detail': 'No CoreMember with User ID: {} was found'.format(user)}, status=status.HTTP_404_NOT_FOUND)
         else:
             page = self.paginate_queryset(self.queryset)
-        serializer = self.serializer_class(page, context={'request': request}, many=True)
+        serializer = self.get_serializer_class()
+        serializer = serializer(page, context={'request': request}, many=True)
         return self.get_paginated_response(serializer.data)
 
 
 class ProjectMemberViewSet(ModelViewSet):
     filterset_fields = ['user']
     queryset = ProjectMember.objects.order_by('created_date').all()
-    serializer_class = ProjectMemberSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrive':
+            return ProjectMemberSerializer
+        if self.action in ['create', 'partial_update', 'update']:
+            return ProjectMemberSerializerCreate
+        return ProjectMemberSerializer
 
     def get_permissions(self):
         if self.action in ['destroy']:
@@ -111,5 +124,6 @@ class ProjectMemberViewSet(ModelViewSet):
                 return Response({'detail': 'No ProjectMember with User ID: {} was found'.format(user)}, status=status.HTTP_404_NOT_FOUND)
         else:
             page = self.paginate_queryset(self.queryset)
-        serializer = self.serializer_class(page, context={'request': request}, many=True)
+        serializer = self.get_serializer_class()
+        serializer = serializer(page, context={'request': request}, many=True)
         return self.get_paginated_response(serializer.data)
