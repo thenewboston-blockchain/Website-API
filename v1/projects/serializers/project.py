@@ -6,13 +6,29 @@ from ..serializers.milestone import MilestoneSerializer
 
 class ProjectSerializer(serializers.ModelSerializer):
     milestones = serializers.SerializerMethodField()
+    project_lead_display_name = serializers.CharField(source='project_lead.user.display_name', required=False)
 
     class Meta:
-        fields = ('pk', 'title', 'project_lead', 'description', 'logo', 'github_url',
-                  'overview', 'problem', 'target_market', 'benefits', 'centered_around_tnb',
-                  'estimated_completion_date', 'milestones', 'created_date', 'modified_date',)
+        fields = (
+            'benefits',
+            'centered_around_tnb',
+            'created_date',
+            'description',
+            'estimated_completion_date',
+            'github_url',
+            'logo',
+            'milestones',
+            'modified_date',
+            'overview',
+            'pk',
+            'problem',
+            'project_lead',
+            'project_lead_display_name',
+            'target_market',
+            'title',
+        )
         model = Project
-        read_only_fields = 'created_date', 'modified_date'
+        read_only_fields = 'created_date', 'modified_date', 'project_lead_display_name'
 
     def get_milestones(self, project):
         return MilestoneSerializer(project.milestone_set.all(), many=True).data
