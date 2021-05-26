@@ -4,9 +4,19 @@ from rest_framework import serializers
 
 from ..models.team import CoreTeam, ProjectTeam, Team
 from ..models.team_member import CoreMember, ProjectMember, TeamMember
+from ...users.models.user import User
+from ...users.serializers.user import UserSerializer
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
+    """
+    this user dict field conflicts with the user object in create
+
+    hence the need to use a different serializer for create in core/project members
+    """
+
+    user = serializers.SerializerMethodField('get_user_data')
+
     class Meta:
         fields = (
             'created_date',
@@ -20,11 +30,22 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         model = TeamMember
         read_only_fields = 'created_date', 'modified_date', 'team'
 
+    def get_user_data(self, member):
+        return UserSerializer(member.user).data
+
 
 class CoreMemberSerializer(TeamMemberSerializer):
 
     class Meta(TeamMemberSerializer.Meta):
         fields = TeamMemberSerializer.Meta.fields + ('core_team', 'hourly_rate', 'weekly_hourly_commitment')
+        model = CoreMember
+        read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('core_team',)
+
+
+class CoreMemberSerializerCreate(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
         model = CoreMember
         read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('core_team',)
 
@@ -45,6 +66,13 @@ class CoreMemberSerializer(TeamMemberSerializer):
 class ProjectMemberSerializer(TeamMemberSerializer):
     class Meta:
         fields = TeamMemberSerializer.Meta.fields + ('project_team',)
+        model = ProjectMember
+        read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('project_team',)
+
+
+class ProjectMemberSerializerCreate(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
         model = ProjectMember
         read_only_fields = TeamMemberSerializer.Meta.read_only_fields + ('project_team',)
 
@@ -84,6 +112,21 @@ class TeamSerializer(serializers.ModelSerializer):
         )
         model = Team
         read_only_fields = 'created_date', 'modified_date',
+
+    def validate(self, data):
+        team_members = self.context.get('request').data.pop('team_members_meta', [])
+        members = []
+        for team_member in team_members:
+            for k, v in team_member.items():
+                if k == 'user':
+                    try:
+                        v = User.objects.get(pk=v)
+                    except User.DoesNotExist:
+                        raise serializers.ValidationError({'user': ['{} - Object does not exist'.format(v), ]})
+                team_member[k] = v
+            members.append(team_member)
+        data['team_members'] = members
+        return data
 
     @transaction.atomic
     def create(self, validated_data):
@@ -136,6 +179,23 @@ class CoreTeamSerializer(TeamSerializer):
         fields = TeamSerializer.Meta.fields + ('core_members_meta', 'responsibilities')
         model = CoreTeam
 
+    def validate(self, data):
+        team_members = self.context.get('request').data.pop('core_members_meta', [])
+        members = []
+        for team_member in team_members:
+            team_member.pop('core_team', None)
+            team_member.pop('user_data', None)
+            for k, v in team_member.items():
+                if k == 'user':
+                    try:
+                        v = User.objects.get(pk=v)
+                    except User.DoesNotExist:
+                        raise serializers.ValidationError({'user': ['{} - Object does not exist'.format(v), ]})
+                team_member[k] = v
+            members.append(team_member)
+        data['core_members'] = members
+        return data
+
     @transaction.atomic
     def create(self, validated_data):
         core_members = validated_data.pop('core_members', [])
@@ -186,6 +246,23 @@ class ProjectTeamSerializer(TeamSerializer):
     class Meta:
         fields = TeamSerializer.Meta.fields + ('project_members_meta', 'is_active', 'external_url',)
         model = ProjectTeam
+
+    def validate(self, data):
+        team_members = self.context.get('request').data.pop('project_members_meta', [])
+        members = []
+        for team_member in team_members:
+            team_member.pop('project_team', None)
+            team_member.pop('user_data', None)
+            for k, v in team_member.items():
+                if k == 'user':
+                    try:
+                        v = User.objects.get(pk=v)
+                    except User.DoesNotExist:
+                        raise serializers.ValidationError({'user': ['{} - Object does not exist'.format(v), ]})
+                team_member[k] = v
+            members.append(team_member)
+        data['project_members'] = members
+        return data
 
     @ transaction.atomic
     def create(self, validated_data):

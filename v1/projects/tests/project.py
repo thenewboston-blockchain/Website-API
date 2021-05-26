@@ -16,18 +16,23 @@ def test_projects_list(api_client, django_assert_max_num_queries):
 def test_project_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
     lead = ProjectMemberFactory()
-    r = api_client.post(reverse('project-list'), data={'title': 'TNBC Wallet',
-                                                       'project_lead': lead.pk,
-                                                       'description': 'Cold storage wallet',
-                                                       'logo': 'https://avatars.githubusercontent.com/u/12706692?s=88&v=4',
-                                                       'github_url': 'https://github.com/thenewboston-developers/Website-API',
-                                                       'overview': 'Cold storage wallet',
-                                                       'problem': 'Security for the store of wealth',
-                                                       'target_market': 'Blockchain',
-                                                       'benefits': 'Cold storage wallet',
-                                                       'centered_around_tnb': 'yes',
-                                                       'estimated_completion_date': '2021-05-03T20:00:10Z'
-                                                       }, format='json')
+    r = api_client.post(
+        reverse('project-list'),
+        data={
+            'title': 'TNBC Wallet',
+            'project_lead': lead.pk,
+            'description': 'Cold storage wallet',
+            'logo': 'https://avatars.githubusercontent.com/u/12706692?s=88&v=4',
+            'github_url': 'https://github.com/thenewboston-developers/Website-API',
+            'overview': 'Cold storage wallet',
+            'problem': 'Security for the store of wealth',
+            'target_market': 'Blockchain',
+            'benefits': 'Cold storage wallet',
+            'centered_around_tnb': 'yes',
+            'estimated_completion_date': '2021-05-03T20:00:10Z'
+        },
+        format='json'
+    )
 
     assert r.status_code == status.HTTP_201_CREATED
 

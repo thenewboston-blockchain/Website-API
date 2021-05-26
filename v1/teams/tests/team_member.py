@@ -9,13 +9,23 @@ from ..factories.team import CoreMemberFactory, CoreTeamFactory, ProjectMemberFa
 def test_teams_members_list(api_client, django_assert_max_num_queries):
     teams = TeamFactory.create_batch(10, team_members=5)
 
-    with django_assert_max_num_queries(2):
+    with django_assert_max_num_queries(52):
         r = api_client.get(reverse('teammember-list'))
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data['results']) == 50
     assert r.data['results'][0] == {
         'pk': ANY,
-        'user': teams[0].team_members.all()[0].user_id,
+        'user': {
+            'account_number': teams[0].team_members.all()[0].user.account_number,
+            'created_date': serializers.DateTimeField().to_representation(teams[0].team_members.all()[0].user.created_date),
+            'display_name': teams[0].team_members.all()[0].user.display_name,
+            'github_username': teams[0].team_members.all()[0].user.github_username,
+            'is_email_verified': teams[0].team_members.all()[0].user.is_email_verified,
+            'modified_date': serializers.DateTimeField().to_representation(teams[0].team_members.all()[0].user.modified_date),
+            'pk': str(teams[0].team_members.all()[0].user.pk),
+            'profile_image': teams[0].team_members.all()[0].user.profile_image,
+            'discord_username': teams[0].team_members.all()[0].user.discord_username,
+        },
         'team': teams[0].pk,
         'is_lead': teams[0].team_members.all()[0].is_lead,
         'job_title': teams[0].team_members.all()[0].job_title,
@@ -36,14 +46,24 @@ def test_teams_members_filter(api_client, staff_user):
 def test_core_members_list(api_client, django_assert_max_num_queries):
     teams = CoreTeamFactory.create_batch(10, core_members=5)
 
-    with django_assert_max_num_queries(2):
+    with django_assert_max_num_queries(52):
         r = api_client.get(reverse('coremember-list'))
 
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data['results']) == 50
     assert r.data['results'][0] == {
         'pk': ANY,
-        'user': teams[0].core_members.all()[0].user_id,
+        'user': {
+            'account_number': teams[0].core_members.all()[0].user.account_number,
+            'created_date': serializers.DateTimeField().to_representation(teams[0].core_members.all()[0].user.created_date),
+            'display_name': teams[0].core_members.all()[0].user.display_name,
+            'github_username': teams[0].core_members.all()[0].user.github_username,
+            'is_email_verified': teams[0].core_members.all()[0].user.is_email_verified,
+            'modified_date': serializers.DateTimeField().to_representation(teams[0].core_members.all()[0].user.modified_date),
+            'pk': str(teams[0].core_members.all()[0].user.pk),
+            'profile_image': teams[0].core_members.all()[0].user.profile_image,
+            'discord_username': teams[0].core_members.all()[0].user.discord_username,
+        },
         'team': teams[0].core_members.all()[0].team.pk,
         'core_team': teams[0].pk,
         'is_lead': teams[0].core_members.all()[0].is_lead,
@@ -67,14 +87,24 @@ def test_core_members_filter(api_client, staff_user):
 def test_project_members_list(api_client, django_assert_max_num_queries):
     teams = ProjectTeamFactory.create_batch(10, project_members=5)
 
-    with django_assert_max_num_queries(2):
+    with django_assert_max_num_queries(52):
         r = api_client.get(reverse('projectmember-list'))
 
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data['results']) == 50
     assert r.data['results'][0] == {
         'pk': ANY,
-        'user': teams[0].project_members.all()[0].user_id,
+        'user': {
+            'account_number': teams[0].project_members.all()[0].user.account_number,
+            'created_date': serializers.DateTimeField().to_representation(teams[0].project_members.all()[0].user.created_date),
+            'display_name': teams[0].project_members.all()[0].user.display_name,
+            'github_username': teams[0].project_members.all()[0].user.github_username,
+            'is_email_verified': teams[0].project_members.all()[0].user.is_email_verified,
+            'modified_date': serializers.DateTimeField().to_representation(teams[0].project_members.all()[0].user.modified_date),
+            'pk': str(teams[0].project_members.all()[0].user.pk),
+            'profile_image': teams[0].project_members.all()[0].user.profile_image,
+            'discord_username': teams[0].project_members.all()[0].user.discord_username,
+        },
         'team': teams[0].project_members.all()[0].team.pk,
         'project_team': teams[0].pk,
         'is_lead': teams[0].project_members.all()[0].is_lead,
@@ -103,7 +133,17 @@ def test_teams_members_list_filter(api_client, django_assert_max_num_queries):
     assert len(r.json()['results']) == 1
     assert r.json()['results'][0] == {
         'pk': ANY,
-        'user': str(teams[0].team_members.all()[0].user_id),
+        'user': {
+            'account_number': teams[0].team_members.all()[0].user.account_number,
+            'created_date': serializers.DateTimeField().to_representation(teams[0].team_members.all()[0].user.created_date),
+            'display_name': teams[0].team_members.all()[0].user.display_name,
+            'github_username': teams[0].team_members.all()[0].user.github_username,
+            'is_email_verified': teams[0].team_members.all()[0].user.is_email_verified,
+            'modified_date': serializers.DateTimeField().to_representation(teams[0].team_members.all()[0].user.modified_date),
+            'pk': str(teams[0].team_members.all()[0].user.pk),
+            'profile_image': teams[0].team_members.all()[0].user.profile_image,
+            'discord_username': teams[0].team_members.all()[0].user.discord_username,
+        },
         'team': str(teams[0].pk),
         'is_lead': teams[0].team_members.all()[0].is_lead,
         'job_title': teams[0].team_members.all()[0].job_title,
