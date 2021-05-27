@@ -7,9 +7,10 @@ from .video import VideoSerializer
 from ..models.instructor import Instructor
 from ..models.playlist import Playlist
 from ..models.video import Video
+from ..serializers.instructor import InstructorSerializer
 
 
-class PlaylistSerializer(ModelSerializer):
+class PlaylistSerializerCreate(ModelSerializer):
     video_list = VideoSerializer(
         source='videos',
         allow_null=True,
@@ -28,7 +29,7 @@ class PlaylistSerializer(ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         videos = validated_data.pop('videos', [])
-        instance = super(PlaylistSerializer, self).create(validated_data)
+        instance = super(PlaylistSerializerCreate, self).create(validated_data)
 
         for video in videos:
             Video.objects.create(**video, playlist=instance)
@@ -69,6 +70,33 @@ class PlaylistSerializer(ModelSerializer):
             else:
                 data['published_at'] = published_at
         return data
+
+    def total_duration(self, obj):
+        videos = obj.videos.all()
+        total = 0
+        for video in videos:
+            total += video.duration_seconds
+        return total
+
+
+class PlaylistSerializer(ModelSerializer):
+    video_list = VideoSerializer(
+        source='videos',
+        allow_null=True,
+        many=True,
+        required=False
+    )
+    instructor = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField('total_duration')
+
+    class Meta:
+        fields = ('pk', 'title', 'description', 'published_at', 'instructor',
+                  'thumbnail', 'categories', 'playlist_type', 'video_list', 'duration', 'created_date', 'modified_date',)
+        model = Playlist
+        read_only_fields = 'created_date', 'modified_date'
+
+    def get_instructor(self, playlist):
+        return InstructorSerializer(playlist.instructor).data
 
     def total_duration(self, obj):
         videos = obj.videos.all()
