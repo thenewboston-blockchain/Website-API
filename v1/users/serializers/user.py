@@ -12,13 +12,13 @@ class UserSerializer(ModelSerializer):
         fields = (
             'account_number',
             'created_date',
+            'discord_username',
             'display_name',
             'github_username',
             'is_email_verified',
             'modified_date',
             'pk',
             'profile_image',
-            'discord_username',
         )
         model = User
         read_only_fields = (

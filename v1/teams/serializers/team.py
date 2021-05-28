@@ -15,7 +15,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     hence the need to use a different serializer for create in core/project members
     """
 
-    user = serializers.SerializerMethodField('get_user_data')
+    user = UserSerializer(read_only=True)
 
     class Meta:
         fields = (
@@ -23,19 +23,15 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             'is_lead',
             'job_title',
             'modified_date',
+            'pk',
             'team',
             'user',
-            'pk'
         )
         model = TeamMember
         read_only_fields = 'created_date', 'modified_date', 'team'
 
-    def get_user_data(self, member):
-        return UserSerializer(member.user).data
-
 
 class CoreMemberSerializer(TeamMemberSerializer):
-
     class Meta(TeamMemberSerializer.Meta):
         fields = TeamMemberSerializer.Meta.fields + ('core_team', 'hourly_rate', 'weekly_hourly_commitment')
         model = CoreMember
@@ -43,7 +39,6 @@ class CoreMemberSerializer(TeamMemberSerializer):
 
 
 class CoreMemberSerializerCreate(serializers.ModelSerializer):
-
     class Meta:
         fields = '__all__'
         model = CoreMember
@@ -264,7 +259,7 @@ class ProjectTeamSerializer(TeamSerializer):
         data['project_members'] = members
         return data
 
-    @ transaction.atomic
+    @transaction.atomic
     def create(self, validated_data):
         project_members = validated_data.pop('project_members', [])
         instance = super(ProjectTeamSerializer, self).create(validated_data)
@@ -275,14 +270,14 @@ class ProjectTeamSerializer(TeamSerializer):
                                          )
         return instance
 
-    @ transaction.atomic
+    @transaction.atomic
     def update(self, instance, validated_data):
         project_members = validated_data.pop('project_members', [])
         instance = super(ProjectTeamSerializer, self).update(instance, validated_data)
 
         ProjectMember.objects \
             .filter(project_team=instance) \
-            .exclude(user__in=[project_member['user'].pk for project_member in project_members])\
+            .exclude(user__in=[project_member['user'].pk for project_member in project_members]) \
             .delete()
 
         for project_member in project_members:

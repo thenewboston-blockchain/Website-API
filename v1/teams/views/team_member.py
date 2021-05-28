@@ -1,19 +1,31 @@
 from django.core.exceptions import ValidationError
-from rest_framework import mixins
-from rest_framework import status
+from rest_framework import mixins, status
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from ..models.team_member import CoreMember, ProjectMember, TeamMember
-from ..serializers.team import CoreMemberSerializer, CoreMemberSerializerCreate, ProjectMemberSerializer, ProjectMemberSerializerCreate, TeamMemberSerializer
-from ...third_party.rest_framework.permissions import IsStaffOrReadOnly, IsSuperUserOrReadOnly, IsSuperUserOrTeamLead, ReadOnly
+from ..serializers.team import (
+    CoreMemberSerializer,
+    CoreMemberSerializerCreate,
+    ProjectMemberSerializer,
+    ProjectMemberSerializerCreate,
+    TeamMemberSerializer
+)
+from ...third_party.rest_framework.permissions import (
+    IsStaffOrReadOnly,
+    IsSuperUserOrReadOnly,
+    IsSuperUserOrTeamLead,
+    ReadOnly
+)
 
 
-class TeamMemberViewSet(mixins.RetrieveModelMixin,
-                        mixins.ListModelMixin,
-                        GenericViewSet):
+class TeamMemberViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet
+):
     filterset_fields = ['user']
-    queryset = TeamMember.objects.order_by('created_date').all()
+    queryset = TeamMember.objects.select_related('user').order_by('created_date').all()
     serializer_class = TeamMemberSerializer
     permission_classes = [IsStaffOrReadOnly]
 
@@ -24,9 +36,15 @@ class TeamMemberViewSet(mixins.RetrieveModelMixin,
                 members = TeamMember.objects.filter(user=user).order_by('created_date')
                 page = self.paginate_queryset(members)
             except ValidationError:
-                return Response({'detail': '{} is not a valid UUID'.format(user)}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'detail': f'{user} is not a valid UUID'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             except TeamMember.DoesNotExist:
-                return Response({'detail': 'No TeamMember with User ID: {} was found'.format(user)}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {'detail': f'No TeamMember with User ID: {user} was found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
         else:
             page = self.paginate_queryset(self.queryset)
         serializer = self.serializer_class(page, context={'request': request}, many=True)
@@ -71,9 +89,15 @@ class CoreMemberViewSet(ModelViewSet):
                 members = CoreMember.objects.filter(user=user).order_by('created_date')
                 page = self.paginate_queryset(members)
             except ValidationError:
-                return Response({'detail': '{} is not a valid UUID'.format(user)}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'detail': f'{user} is not a valid UUID'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             except CoreMember.DoesNotExist:
-                return Response({'detail': 'No CoreMember with User ID: {} was found'.format(user)}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {'detail': f'No CoreMember with User ID: {user} was found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
         else:
             page = self.paginate_queryset(self.queryset)
         serializer = self.get_serializer_class()
@@ -119,9 +143,15 @@ class ProjectMemberViewSet(ModelViewSet):
                 members = ProjectMember.objects.filter(user=user)
                 page = self.paginate_queryset(members)
             except ValidationError:
-                return Response({'detail': '{} is not a valid UUID'.format(user)}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'detail': f'{user} is not a valid UUID'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             except ProjectMember.DoesNotExist:
-                return Response({'detail': 'No ProjectMember with User ID: {} was found'.format(user)}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {'detail': f'No ProjectMember with User ID: {user} was found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
         else:
             page = self.paginate_queryset(self.queryset)
         serializer = self.get_serializer_class()
