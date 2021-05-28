@@ -1,12 +1,11 @@
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
-from rest_framework import status
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 
-from ..models.category import PlaylistCategory
 from ..models.instructor import Instructor
 from ..models.playlist import Playlist
+from ..models.playlist_category import PlaylistCategory
 from ..serializers.playlist import PlaylistSerializer, PlaylistSerializerCreate
 from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
