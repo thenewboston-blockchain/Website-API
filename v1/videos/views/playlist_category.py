@@ -9,7 +9,7 @@ from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 class PlaylistCategoryViewSet(ModelViewSet):
     queryset = PlaylistCategory.objects \
-        .order_by('created_date') \
+        .order_by('name') \
         .all()
     serializer_class = PlaylistCategorySerializer
     permission_classes = [IsStaffOrReadOnly]
