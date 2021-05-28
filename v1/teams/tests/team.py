@@ -22,23 +22,23 @@ def test_teams_list(api_client, django_assert_max_num_queries):
         'created_date': serializers.DateTimeField().to_representation(teams[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(teams[0].modified_date),
         'team_members_meta': [{
+            'created_date': serializers.DateTimeField().to_representation(team_member.created_date),
+            'is_lead': team_member.is_lead,
+            'job_title': team_member.job_title,
+            'modified_date': serializers.DateTimeField().to_representation(team_member.modified_date),
             'pk': str(team_member.pk),
             'team': team_member.team_id,
             'user': {
                 'account_number': team_member.user.account_number,
                 'created_date': serializers.DateTimeField().to_representation(team_member.user.created_date),
+                'discord_username': team_member.user.discord_username,
                 'display_name': team_member.user.display_name,
                 'github_username': team_member.user.github_username,
                 'is_email_verified': team_member.user.is_email_verified,
                 'modified_date': serializers.DateTimeField().to_representation(team_member.user.modified_date),
                 'pk': str(team_member.user.pk),
                 'profile_image': team_member.user.profile_image,
-                'discord_username': team_member.user.discord_username,
             },
-            'is_lead': team_member.is_lead,
-            'job_title': team_member.job_title,
-            'created_date': serializers.DateTimeField().to_representation(team_member.created_date),
-            'modified_date': serializers.DateTimeField().to_representation(team_member.modified_date),
         } for team_member in teams[0].team_members.order_by('created_date').all()],
         'title': teams[0].title,
         'about': teams[0].about,
@@ -59,26 +59,26 @@ def test_core_teams_list(api_client, django_assert_max_num_queries):
         'created_date': serializers.DateTimeField().to_representation(teams[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(teams[0].modified_date),
         'core_members_meta': [{
+            'core_team': core_member.core_team_id,
+            'created_date': serializers.DateTimeField().to_representation(core_member.created_date),
+            'hourly_rate': core_member.hourly_rate,
+            'is_lead': core_member.is_lead,
+            'job_title': core_member.job_title,
+            'modified_date': serializers.DateTimeField().to_representation(core_member.modified_date),
             'pk': str(core_member.pk),
             'team': core_member.team_id,
-            'core_team': core_member.core_team_id,
             'user': {
                 'account_number': core_member.user.account_number,
                 'created_date': serializers.DateTimeField().to_representation(core_member.user.created_date),
+                'discord_username': core_member.user.discord_username,
                 'display_name': core_member.user.display_name,
                 'github_username': core_member.user.github_username,
                 'is_email_verified': core_member.user.is_email_verified,
                 'modified_date': serializers.DateTimeField().to_representation(core_member.user.modified_date),
                 'pk': str(core_member.user.pk),
                 'profile_image': core_member.user.profile_image,
-                'discord_username': core_member.user.discord_username,
             },
-            'is_lead': core_member.is_lead,
-            'job_title': core_member.job_title,
-            'hourly_rate': core_member.hourly_rate,
             'weekly_hourly_commitment': core_member.weekly_hourly_commitment,
-            'created_date': serializers.DateTimeField().to_representation(core_member.created_date),
-            'modified_date': serializers.DateTimeField().to_representation(core_member.modified_date),
         } for core_member in teams[0].core_members.order_by('created_date').all()],
         'team_members_meta': [],
         'title': teams[0].title,
@@ -102,24 +102,24 @@ def test_project_teams_list(api_client, django_assert_max_num_queries):
         'created_date': serializers.DateTimeField().to_representation(teams[0].created_date),
         'modified_date': serializers.DateTimeField().to_representation(teams[0].modified_date),
         'project_members_meta': [{
+            'created_date': serializers.DateTimeField().to_representation(project_member.created_date),
+            'is_lead': project_member.is_lead,
+            'job_title': project_member.job_title,
+            'modified_date': serializers.DateTimeField().to_representation(project_member.modified_date),
             'pk': str(project_member.pk),
-            'team': project_member.team_id,
             'project_team': project_member.project_team_id,
+            'team': project_member.team_id,
             'user': {
                 'account_number': project_member.user.account_number,
                 'created_date': serializers.DateTimeField().to_representation(project_member.user.created_date),
+                'discord_username': project_member.user.discord_username,
                 'display_name': project_member.user.display_name,
                 'github_username': project_member.user.github_username,
                 'is_email_verified': project_member.user.is_email_verified,
                 'modified_date': serializers.DateTimeField().to_representation(project_member.user.modified_date),
                 'pk': str(project_member.user.pk),
                 'profile_image': project_member.user.profile_image,
-                'discord_username': project_member.user.discord_username,
             },
-            'is_lead': project_member.is_lead,
-            'job_title': project_member.job_title,
-            'created_date': serializers.DateTimeField().to_representation(project_member.created_date),
-            'modified_date': serializers.DateTimeField().to_representation(project_member.modified_date),
         } for project_member in teams[0].project_members.order_by('created_date').all()],
         'team_members_meta': [],
         'title': teams[0].title,
@@ -143,14 +143,14 @@ def test_teams_members_empty_post(api_client, staff_user):
 
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
-        'pk': ANY,
+        'about': 'About Star team',
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'discord': r.data['discord'],
+        'github': 'https://github.com/thenewboston-developers',
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'pk': ANY,
         'team_members_meta': [],
         'title': 'Star team',
-        'about': 'About Star team',
-        'github': 'https://github.com/thenewboston-developers',
-        'discord': r.data['discord'],
     }
     assert Team.objects.get(pk=r.data['pk']).title == 'Star team'
 
@@ -161,22 +161,26 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
     users = UserFactory.create_batch(5)
 
     with freeze_time() as frozen_time, django_assert_max_num_queries(8):
-        r = api_client.post(reverse('team-list'), data={
-            'title': 'Star team',
-            'about': 'About Star team',
-            'team_members_meta': [
-                {
-                    'user': users[1].pk,
-                    'is_lead': True,
-                    'job_title': 'Back-End Developer'
-                },
-                {
-                    'user': users[3].pk,
-                    'is_lead': False,
-                    'job_title': 'Front-End Developer'
-                }
-            ],
-        }, format='json')
+        r = api_client.post(
+            reverse('team-list'),
+            data={
+                'about': 'About Star team',
+                'team_members_meta': [
+                    {
+                        'is_lead': True,
+                        'job_title': 'Back-End Developer',
+                        'user': users[1].pk,
+                    },
+                    {
+                        'is_lead': False,
+                        'job_title': 'Front-End Developer',
+                        'user': users[3].pk,
+                    }
+                ],
+                'title': 'Star team',
+            },
+            format='json'
+        )
 
     assert r.status_code == status.HTTP_201_CREATED
     assert r.data == {
@@ -190,13 +194,13 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 'user': {
                     'account_number': users[1].account_number,
                     'created_date': serializers.DateTimeField().to_representation(users[1].created_date),
+                    'discord_username': users[1].discord_username,
                     'display_name': users[1].display_name,
                     'github_username': users[1].github_username,
                     'is_email_verified': users[1].is_email_verified,
                     'modified_date': serializers.DateTimeField().to_representation(users[1].modified_date),
                     'pk': str(users[1].pk),
                     'profile_image': users[1].profile_image,
-                    'discord_username': users[1].discord_username,
                 },
                 'team': ANY,
                 'is_lead': True,
@@ -209,13 +213,13 @@ def test_teams_post(api_client, staff_user, django_assert_max_num_queries):
                 'user': {
                     'account_number': users[3].account_number,
                     'created_date': serializers.DateTimeField().to_representation(users[3].created_date),
+                    'discord_username': users[3].discord_username,
                     'display_name': users[3].display_name,
                     'github_username': users[3].github_username,
                     'is_email_verified': users[3].is_email_verified,
                     'modified_date': serializers.DateTimeField().to_representation(users[3].modified_date),
                     'pk': str(users[3].pk),
                     'profile_image': users[3].profile_image,
-                    'discord_username': users[3].discord_username,
                 },
                 'team': ANY,
                 'is_lead': False,

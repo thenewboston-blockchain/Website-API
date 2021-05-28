@@ -2,14 +2,14 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from ..models.category import PlaylistCategory
-from ..serializers.category import PlaylistCategorySerializer
+from ..models.playlist_category import PlaylistCategory
+from ..serializers.playlist_category import PlaylistCategorySerializer
 from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 
 class PlaylistCategoryViewSet(ModelViewSet):
-    queryset = PlaylistCategory.objects\
-        .order_by('created_date')\
+    queryset = PlaylistCategory.objects \
+        .order_by('name') \
         .all()
     serializer_class = PlaylistCategorySerializer
     permission_classes = [IsStaffOrReadOnly]

@@ -2,9 +2,9 @@ import factory
 from django.utils import timezone
 from factory.django import DjangoModelFactory
 
-from ..models.category import PlaylistCategory
 from ..models.instructor import Instructor
 from ..models.playlist import Playlist
+from ..models.playlist_category import PlaylistCategory
 from ..models.video import Video
 
 
