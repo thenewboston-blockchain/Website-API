@@ -52,6 +52,9 @@ class ProjectMember(TeamMember):
     class Meta:
         default_related_name = 'project_members'
 
+    def __str__(self):
+        return f'#{self.pk}: {self.user.display_name}'
+
     def validate_unique(self, exclude=None):
         q = ProjectMember.objects.filter(user=self.user, project_team=self.project_team)
         if self.pk is None:
