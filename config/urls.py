@@ -6,6 +6,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
+from v1.analytics.urls import router as analytics_router
 from v1.authentication.views.login import LoginView
 from v1.openings.urls import router as openings_router
 from v1.projects.urls import router as projects_router
@@ -54,6 +55,7 @@ router.registry.extend(repositories_router.registry)
 router.registry.extend(users_router.registry)
 router.registry.extend(videos_router.registry)
 router.registry.extend(projects_router.registry)
+router.registry.extend(analytics_router.registry)
 
 urlpatterns += router.urls
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
