@@ -7,14 +7,18 @@ from ..models.facebook import Facebook
 from ..models.instagram import Instagram
 from ..models.linkedin import LinkedIn
 from ..models.network import Network
+from ..models.other_social import OtherSocial
 from ..models.twitter import Twitter
+from ..models.website import Website
 from ..serializers.community import CommunitySerializer
 from ..serializers.economy import EconomySerializer
 from ..serializers.facebook import FacebookSerializer
 from ..serializers.instagram import InstagramSerializer
 from ..serializers.linkedin import LinkedInSerializer
 from ..serializers.network import NetworkSerializer
+from ..serializers.other_social import OtherSocialSerializer
 from ..serializers.twitter import TwitterSerializer
+from ..serializers.website import WebsiteSerializer
 
 
 class CommunityViewset(ListModelMixin, GenericViewSet):
@@ -50,3 +54,13 @@ class LinkedInViewset(ListModelMixin, GenericViewSet):
 class TwitterViewset(ListModelMixin, GenericViewSet):
     queryset = Twitter.objects.all().order_by('-week_ending')
     serializer_class = TwitterSerializer
+
+
+class OtherSocialViewset(ListModelMixin, GenericViewSet):
+    queryset = OtherSocial.objects.all().order_by('-week_ending')
+    serializer_class = OtherSocialSerializer
+
+
+class WebsiteViewset(ListModelMixin, GenericViewSet):
+    queryset = Website.objects.all().order_by('-week_ending')
+    serializer_class = WebsiteSerializer

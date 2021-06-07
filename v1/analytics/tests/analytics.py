@@ -7,7 +7,9 @@ from ..factories.facebook import FacebookFactory
 from ..factories.instagram import InstagramFactory
 from ..factories.linkedin import LinkedInFactory
 from ..factories.network import NetworkFactory
+from ..factories.other_social import OtherSocialFactory
 from ..factories.twitter import TwitterFactory
+from ..factories.website import WebsiteFactory
 
 
 def test_community_analytics_list(api_client, django_assert_max_num_queries):
@@ -62,5 +64,21 @@ def test_twitter_analytics_list(api_client, django_assert_max_num_queries):
     TwitterFactory.create_batch(5)
     with django_assert_max_num_queries(7):
         r = api_client.get(reverse('twitter-list'), {'limit': 0})
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 5
+
+
+def test_other_social_analytics_list(api_client, django_assert_max_num_queries):
+    OtherSocialFactory.create_batch(5)
+    with django_assert_max_num_queries(7):
+        r = api_client.get(reverse('othersocial-list'), {'limit': 0})
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 5
+
+
+def test_website_analytics_list(api_client, django_assert_max_num_queries):
+    WebsiteFactory.create_batch(5)
+    with django_assert_max_num_queries(7):
+        r = api_client.get(reverse('website-list'), {'limit': 0})
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 5
