@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'v1.repositories.apps.RepositoriesConfig',
     'v1.videos.apps.VideosConfig',
     'v1.projects.apps.ProjectsConfig',
+    'v1.analytics.apps.AnalyticsConfig'
 ]
 
 MIDDLEWARE = [
