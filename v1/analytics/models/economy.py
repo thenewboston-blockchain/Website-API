@@ -15,3 +15,6 @@ class Economy(CreatedModified):
     class Meta:
         ordering = ('week_ending',)
         verbose_name_plural = 'economy'
+
+    def __str__(self):
+        return f'#{self.pk}: {self.week_ending}'

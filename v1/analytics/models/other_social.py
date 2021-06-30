@@ -13,3 +13,6 @@ class OtherSocial(CreatedModified):
 
     class Meta:
         ordering = ('week_ending',)
+
+    def __str__(self):
+        return f'#{self.pk}: {self.week_ending}'
