@@ -17,3 +17,6 @@ class Twitter(CreatedModified):
     class Meta:
         ordering = ('week_ending',)
         verbose_name_plural = 'twitter'
+
+    def __str__(self):
+        return f'#{self.pk}: {self.week_ending}'

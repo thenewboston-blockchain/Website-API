@@ -13,3 +13,6 @@ class Network(CreatedModified):
     class Meta:
         ordering = ('week_ending',)
         verbose_name_plural = 'network'
+
+    def __str__(self):
+        return f'#{self.pk}: {self.week_ending}'
