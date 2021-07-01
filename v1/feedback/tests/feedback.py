@@ -1,9 +1,12 @@
+from unittest.mock import MagicMock, patch
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from ..factories.feedback import FeedbackFactory
 
 
+@patch('rest_framework.throttling.AnonRateThrottle.get_rate', MagicMock(return_value=None))
 def test_feedback_list(api_client, django_assert_max_num_queries):
     FeedbackFactory.create_batch(5)
     with django_assert_max_num_queries(7):
@@ -12,6 +15,7 @@ def test_feedback_list(api_client, django_assert_max_num_queries):
     assert len(r.data) == 5
 
 
+@patch('rest_framework.throttling.AnonRateThrottle.get_rate', MagicMock(return_value=None))
 def test_feedback_post(api_client):
     r = api_client.post(
         reverse('feedback-list'),
