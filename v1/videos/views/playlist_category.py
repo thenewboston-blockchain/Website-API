@@ -1,13 +1,13 @@
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
+from config.helpers.cache import CachedModelViewSet
 from ..models.playlist_category import PlaylistCategory
 from ..serializers.playlist_category import PlaylistCategorySerializer
 from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 
-class PlaylistCategoryViewSet(ModelViewSet):
+class PlaylistCategoryViewSet(CachedModelViewSet):
     queryset = PlaylistCategory.objects \
         .order_by('name') \
         .all()
