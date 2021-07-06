@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.cache import cache
 from django.db import models
 from thenewboston.models.created_modified import CreatedModified
 
@@ -21,3 +22,7 @@ class Opening(CreatedModified):
 
     class Meta:
         ordering = ('created_date',)
+
+    def save(self, *args, **kwargs):
+        cache.delete_pattern('views.decorators.cache.cache*')
+        return super(Opening, self).save(*args, **kwargs)

@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.cache import cache
 from django.db import models
 from thenewboston.models.created_modified import CreatedModified
 
@@ -13,3 +14,7 @@ class Instructor(CreatedModified):
 
     def __str__(self):
         return f'#{self.pk}: {self.name}'
+
+    def save(self, *args, **kwargs):
+        cache.delete_pattern('views.decorators.cache.cache*')
+        return super(Instructor, self).save(*args, **kwargs)
