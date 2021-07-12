@@ -1,11 +1,10 @@
-from rest_framework.viewsets import ModelViewSet
-
+from config.helpers.cache import CachedModelViewSet
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly, IsSuperUserOrReadOnly, IsSuperUserOrTeamLead, ReadOnly
 from ..models.team import CoreTeam, ProjectTeam, Team
 from ..serializers.team import CoreTeamSerializer, ProjectTeamSerializer, TeamSerializer
 
 
-class TeamViewSet(ModelViewSet):
+class TeamViewSet(CachedModelViewSet):
     queryset = Team.objects \
         .prefetch_related('team_members') \
         .order_by('created_date') \
@@ -14,7 +13,7 @@ class TeamViewSet(ModelViewSet):
     permission_classes = [IsStaffOrReadOnly]
 
 
-class CoreTeamViewSet(ModelViewSet):
+class CoreTeamViewSet(CachedModelViewSet):
     queryset = CoreTeam.objects \
         .prefetch_related('core_members') \
         .order_by('created_date') \
@@ -32,7 +31,7 @@ class CoreTeamViewSet(ModelViewSet):
         return [permission() for permission in permission_classes]
 
 
-class ProjectTeamViewSet(ModelViewSet):
+class ProjectTeamViewSet(CachedModelViewSet):
     queryset = ProjectTeam.objects \
         .prefetch_related('project_members') \
         .order_by('created_date') \

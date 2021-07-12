@@ -148,3 +148,6 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API for thenewboston.com site',
     'VERSION': '0.0.1',
 }
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+CACHE_TTL = 60 * 60  # Cache-Control - 1 hour

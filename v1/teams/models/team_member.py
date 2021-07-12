@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.cache import cache
 from django.db import models
 from rest_framework import serializers
 from thenewboston.models.created_modified import CreatedModified
@@ -18,6 +19,10 @@ class TeamMember(CreatedModified):
             ('team', 'user'),
         )
         ordering = ('created_date', 'job_title')
+
+    def save(self, *args, **kwargs):
+        cache.delete_pattern('views.decorators.cache.cache*')
+        return super(TeamMember, self).save(*args, **kwargs)
 
 
 class CoreMember(TeamMember):
@@ -43,6 +48,7 @@ class CoreMember(TeamMember):
 
     def save(self, *args, **kwargs):
         self.validate_unique()
+        cache.delete_pattern('views.decorators.cache.cache*')
         return super(CoreMember, self).save(*args, **kwargs)
 
 
@@ -67,4 +73,5 @@ class ProjectMember(TeamMember):
 
     def save(self, *args, **kwargs):
         self.validate_unique()
+        cache.delete_pattern('views.decorators.cache.cache*')
         return super(ProjectMember, self).save(*args, **kwargs)
