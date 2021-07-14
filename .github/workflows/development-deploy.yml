@@ -1,8 +1,8 @@
-name: Docker build
+name: Development Deploy
 
 on:
   push:
-    branches: [ test, development ]
+    branches: [ development ]
 
 jobs:
   build:
