@@ -32,9 +32,9 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-  deploy-to-dev:
+  deploy-to-production:
     runs-on: ubuntu-20.04
-    environment: dev
+    environment: prod
     needs:
       - build
     steps:
@@ -60,7 +60,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: backend-dev
+          container-name: backend-production
           image: ${{ steps.login-ecr.outputs.registry }}/backend:${{ github.sha }}
 
       - name: Deploy to Amazon ECS service
