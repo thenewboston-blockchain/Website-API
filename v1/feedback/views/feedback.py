@@ -1,12 +1,12 @@
 from rest_framework.throttling import AnonRateThrottle
-from rest_framework.viewsets import ModelViewSet
 
+from config.helpers.cache import CachedModelViewSet
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly, IsSuperUserOrReadOnly
 from ..models.feedback import Feedback
 from ..serializers.feedback import FeedbackSerializer
 
 
-class FeedbackViewSet(ModelViewSet):
+class FeedbackViewSet(CachedModelViewSet):
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
     permission_classes = [IsStaffOrReadOnly]

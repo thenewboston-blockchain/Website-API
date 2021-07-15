@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.cache import cache
 from django.db.models import CASCADE, CharField, ForeignKey, URLField, UUIDField
 from thenewboston.models.created_modified import CreatedModified
 
@@ -17,3 +18,7 @@ class Repository(CreatedModified):
 
     def __str__(self):
         return f'#{self.pk}: {self.url} ({self.display_name})'
+
+    def save(self, *args, **kwargs):
+        cache.delete_pattern('views.decorators.cache.cache*')
+        return super(Repository, self).save(*args, **kwargs)

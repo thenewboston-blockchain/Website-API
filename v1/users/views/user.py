@@ -7,9 +7,9 @@ from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from config.helpers.cache import CachedModelViewSet
 from ..serializers.user import SecurityLinkSerializer, UserSerializer, UserSerializerCreate, UserSerializerUpdate
 from ...third_party.rest_framework.permissions import AnonWrite, ReadOnly, SelfEdit, StaffDelete
 from ...utils.verification import send_account_email
@@ -17,7 +17,7 @@ from ...utils.verification import send_account_email
 User = get_user_model()
 
 
-class UserViewSet(ModelViewSet):
+class UserViewSet(CachedModelViewSet):
     queryset = User.objects.order_by('created_date').all()
     serializer_class = UserSerializer
 

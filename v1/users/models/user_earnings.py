@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import (
     CASCADE,
@@ -47,3 +48,7 @@ class UserEarnings(CreatedModified):
 
     def __str__(self):
         return f'#{self.pk}: {self.user.email}/{self.repository}/{self.time_period}'
+
+    def save(self, *args, **kwargs):
+        cache.delete_pattern('views.decorators.cache.cache*')
+        return super(UserEarnings, self).save(*args, **kwargs)

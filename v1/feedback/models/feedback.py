@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.cache import cache
 from django.db import models
 from thenewboston.models.created_modified import CreatedModified
 
@@ -12,3 +13,7 @@ class Feedback(CreatedModified):
 
     class Meta:
         verbose_name_plural = 'feedback'
+
+    def save(self, *args, **kwargs):
+        cache.delete_pattern('views.decorators.cache.cache*')
+        return super(Feedback, self).save(*args, **kwargs)

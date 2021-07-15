@@ -1,12 +1,10 @@
-from rest_framework.mixins import ListModelMixin
-from rest_framework.viewsets import GenericViewSet
-
+from config.helpers.cache import CachedGenericViewSet
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
 from ..models.user_earnings import UserEarnings
 from ..serializers.user_earnings import UserEarningsSerializer
 
 
-class UserEarningsViewSet(GenericViewSet, ListModelMixin):
+class UserEarningsViewSet(CachedGenericViewSet):
     filterset_fields = ['repository__display_name', 'time_period']
     ordering = ['-total_amount']
     ordering_fields = ['total_amount']

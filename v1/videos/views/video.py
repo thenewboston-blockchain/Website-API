@@ -1,14 +1,14 @@
 from django.core.exceptions import ValidationError
 from rest_framework import status
-from rest_framework import viewsets
 from rest_framework.response import Response
 
+from config.helpers.cache import CachedModelViewSet
 from ..models.video import Video
 from ..serializers.video import VideoSerializer
 from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 
-class VideoViewSet(viewsets.ModelViewSet):
+class VideoViewSet(CachedModelViewSet):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
     permission_classes = [IsStaffOrReadOnly]

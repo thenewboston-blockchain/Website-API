@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.cache import cache
 from django.db.models import BooleanField, CharField, URLField, UUIDField
 from thenewboston.constants.network import VERIFY_KEY_LENGTH
 from thenewboston.models.created_modified import CreatedModified
@@ -44,3 +45,7 @@ class User(CreatedModified, AbstractUser):
     @last_name.setter
     def last_name(self, val):
         pass
+
+    def save(self, *args, **kwargs):
+        cache.delete_pattern('views.decorators.cache.cache*')
+        return super(User, self).save(*args, **kwargs)

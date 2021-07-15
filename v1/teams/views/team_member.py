@@ -1,8 +1,8 @@
 from django.core.exceptions import ValidationError
 from rest_framework import mixins, status
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
+from config.helpers.cache import CachedGenericViewSet, CachedModelViewSet
 from ..models.team_member import CoreMember, ProjectMember, TeamMember
 from ..serializers.team import (
     CoreMemberSerializer,
@@ -21,8 +21,7 @@ from ...third_party.rest_framework.permissions import (
 
 class TeamMemberViewSet(
     mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    GenericViewSet
+    CachedGenericViewSet
 ):
     filterset_fields = ['user']
     queryset = TeamMember.objects.select_related('user').order_by('created_date').all()
@@ -51,7 +50,7 @@ class TeamMemberViewSet(
         return self.get_paginated_response(serializer.data)
 
 
-class CoreMemberViewSet(ModelViewSet):
+class CoreMemberViewSet(CachedModelViewSet):
     filterset_fields = ['user']
     queryset = CoreMember.objects.order_by('created_date').all()
 
@@ -105,7 +104,7 @@ class CoreMemberViewSet(ModelViewSet):
         return self.get_paginated_response(serializer.data)
 
 
-class ProjectMemberViewSet(ModelViewSet):
+class ProjectMemberViewSet(CachedModelViewSet):
     filterset_fields = ['user']
     queryset = ProjectMember.objects.order_by('created_date').all()
 
