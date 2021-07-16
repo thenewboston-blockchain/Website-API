@@ -68,4 +68,4 @@ jobs:
         with:
           task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
           service: backend-production
-          cluster: ProductionUpdate
+          cluster: Production
