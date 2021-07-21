@@ -68,7 +68,7 @@ class PlaylistViewSet(CachedModelViewSet):
                     )
                 except ValidationError:
                     return Response(
-                        {'detail': '{instructor} is not a valid instructor uuid'},
+                        {'detail': f'{instructor} is not a valid instructor uuid'},
                         status=status.HTTP_400_BAD_REQUEST
                     )
 

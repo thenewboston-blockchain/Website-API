@@ -1,84 +1,69 @@
-from rest_framework import status
+from unittest.mock import ANY
+
+from freezegun import freeze_time
+from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 
-from ..factories.community import CommunityFactory
-from ..factories.economy import EconomyFactory
-from ..factories.facebook import FacebookFactory
-from ..factories.instagram import InstagramFactory
-from ..factories.linkedin import LinkedInFactory
-from ..factories.network import NetworkFactory
-from ..factories.other_social import OtherSocialFactory
-from ..factories.twitter import TwitterFactory
-from ..factories.website import WebsiteFactory
+from ..factories.analytics import AnalyticsDataFactory, AnalyticsFactory
+from ..models.analytics import Analytics
 
 
-def test_community_analytics_list(api_client, django_assert_max_num_queries):
-    CommunityFactory.create_batch(5)
-    with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('community-list'), {'limit': 0})
+def test_analytics_list(api_client, django_assert_max_num_queries):
+    AnalyticsFactory.create_batch(5)
+    with django_assert_max_num_queries(35):
+        r = api_client.get(reverse('analytics-list'))
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
+    assert len(r.data) == 4
 
 
-def test_economy_analytics_list(api_client, django_assert_max_num_queries):
-    EconomyFactory.create_batch(5)
-    with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('economy-list'), {'limit': 0})
+def test_analytics_post(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+
+    with freeze_time() as frozen_time:
+        r = api_client.post(reverse('analytics-list'), data={
+            'title': 'Facebook likes',
+        }, format='json')
+
+    assert r.status_code == status.HTTP_201_CREATED
+    assert Analytics.objects.get(pk=r.data['pk']).title == 'Facebook likes'
+    assert r.data == {
+        'pk': ANY,
+        'created_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
+        'title': 'Facebook likes',
+        'data': []
+    }
+
+
+def test_analytics_patch(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+    analytics = AnalyticsFactory()
+    data = AnalyticsDataFactory()
+
+    with freeze_time():
+        r = api_client.patch(
+            reverse('analytics-detail', (analytics.pk,)),
+            data={
+                'title': 'Facebook followers',
+                'data': [data.pk]
+            },
+        )
+
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
+    assert Analytics.objects.get(pk=str(analytics.pk)).title == 'Facebook followers'
 
 
-def test_network_analytics_list(api_client, django_assert_max_num_queries):
-    NetworkFactory.create_batch(5)
-    with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('network-list'), {'limit': 0})
-    assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
+def test_analytics_delete(api_client, staff_user):
+    api_client.force_authenticate(staff_user)
+    analytics = AnalyticsFactory()
+    r = api_client.delete(reverse('analytics-detail', (analytics.pk,)))
+
+    assert r.status_code == status.HTTP_204_NO_CONTENT
+    assert r.data is None
+    assert Analytics.objects.filter(pk=str(analytics.pk)).first() is None
 
 
-def test_facebook_analytics_list(api_client, django_assert_max_num_queries):
-    FacebookFactory.create_batch(5)
-    with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('facebook-list'), {'limit': 0})
-    assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
+def test_analytics_anon_post(api_client):
+    r = api_client.post(reverse('analytics-list'), data={'title': 'title'}, format='json')
 
-
-def test_instagram_analytics_list(api_client, django_assert_max_num_queries):
-    InstagramFactory.create_batch(5)
-    with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('instagram-list'), {'limit': 0})
-    assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
-
-
-def test_linkedin_analytics_list(api_client, django_assert_max_num_queries):
-    LinkedInFactory.create_batch(5)
-    with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('linkedin-list'), {'limit': 0})
-    assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
-
-
-def test_twitter_analytics_list(api_client, django_assert_max_num_queries):
-    TwitterFactory.create_batch(5)
-    with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('twitter-list'), {'limit': 0})
-    assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
-
-
-def test_other_social_analytics_list(api_client, django_assert_max_num_queries):
-    OtherSocialFactory.create_batch(5)
-    with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('othersocial-list'), {'limit': 0})
-    assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
-
-
-def test_website_analytics_list(api_client, django_assert_max_num_queries):
-    WebsiteFactory.create_batch(5)
-    with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('website-list'), {'limit': 0})
-    assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
