@@ -1,66 +1,99 @@
-from rest_framework.mixins import ListModelMixin
-from rest_framework.viewsets import GenericViewSet
+from django.core.exceptions import ValidationError
+from django.db.models import Prefetch
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
-from ..models.community import Community
-from ..models.economy import Economy
-from ..models.facebook import Facebook
-from ..models.instagram import Instagram
-from ..models.linkedin import LinkedIn
-from ..models.network import Network
-from ..models.other_social import OtherSocial
-from ..models.twitter import Twitter
-from ..models.website import Website
-from ..serializers.community import CommunitySerializer
-from ..serializers.economy import EconomySerializer
-from ..serializers.facebook import FacebookSerializer
-from ..serializers.instagram import InstagramSerializer
-from ..serializers.linkedin import LinkedInSerializer
-from ..serializers.network import NetworkSerializer
-from ..serializers.other_social import OtherSocialSerializer
-from ..serializers.twitter import TwitterSerializer
-from ..serializers.website import WebsiteSerializer
+from config.helpers.cache import CachedModelViewSet
+from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
+from ..models.analytics import Analytics, AnalyticsCategory, AnalyticsData
+from ..serializers.analytics import AnalyticsCategorySerializer, AnalyticsCategorySerializerCreate,\
+    AnalyticsDataSerializer, AnalyticsSerializer
 
 
-class CommunityViewset(ListModelMixin, GenericViewSet):
-    queryset = Community.objects.all().order_by('-week_ending')
-    serializer_class = CommunitySerializer
+class AnalyticsCategoryViewSet(CachedModelViewSet):
+    queryset = AnalyticsCategory.objects \
+        .prefetch_related(Prefetch('analytics'),) \
+        .all()
+
+    serializer_class = AnalyticsCategorySerializer
+    permission_classes = [IsStaffOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrive':
+            return AnalyticsCategorySerializer
+        if self.action in ['create', 'partial_update', 'update']:
+            return AnalyticsCategorySerializerCreate
+        return AnalyticsCategorySerializer
+
+    def list(self, request):  # noqa: ignore=A003
+        if request.query_params.get('key'):
+            key = request.query_params.get('key')
+            try:
+                categories = AnalyticsCategory.objects.filter(
+                    key__iexact=key).prefetch_related(Prefetch('analytics'),).order_by('created_date')
+            except AnalyticsCategory.DoesNotExist:
+                return Response(
+                    {'detail': f'No AnalyticsCategory under key: {key} was found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            categories = self.filter_queryset(categories)
+            page = self.paginate_queryset(categories)
+            serializer = self.get_serializer_class()
+            serializer = serializer(page, context={'request': request}, many=True)
+        else:
+            page = self.paginate_queryset(self.queryset)
+            serializer = self.get_serializer_class()
+            serializer = serializer(page, context={'request': request}, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
-class EconomyViewset(ListModelMixin, GenericViewSet):
-    queryset = Economy.objects.all().order_by('-week_ending')
-    serializer_class = EconomySerializer
+class AnalyticsViewSet(CachedModelViewSet):
+    queryset = Analytics.objects \
+        .prefetch_related(Prefetch('data'),) \
+        .all()
+
+    serializer_class = AnalyticsSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 
-class NetworkViewset(ListModelMixin, GenericViewSet):
-    queryset = Network.objects.all().order_by('-week_ending')
-    serializer_class = NetworkSerializer
+class AnalyticsDataViewSet(ModelViewSet):
+    queryset = AnalyticsData.objects.select_related('analytics').order_by('date').all()
 
+    serializer_class = AnalyticsDataSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
-class FacebookViewset(ListModelMixin, GenericViewSet):
-    queryset = Facebook.objects.all().order_by('-week_ending')
-    serializer_class = FacebookSerializer
-
-
-class InstagramViewset(ListModelMixin, GenericViewSet):
-    queryset = Instagram.objects.all().order_by('-week_ending')
-    serializer_class = InstagramSerializer
-
-
-class LinkedInViewset(ListModelMixin, GenericViewSet):
-    queryset = LinkedIn.objects.all().order_by('-week_ending')
-    serializer_class = LinkedInSerializer
-
-
-class TwitterViewset(ListModelMixin, GenericViewSet):
-    queryset = Twitter.objects.all().order_by('-week_ending')
-    serializer_class = TwitterSerializer
-
-
-class OtherSocialViewset(ListModelMixin, GenericViewSet):
-    queryset = OtherSocial.objects.all().order_by('-week_ending')
-    serializer_class = OtherSocialSerializer
-
-
-class WebsiteViewset(ListModelMixin, GenericViewSet):
-    queryset = Website.objects.all().order_by('-week_ending')
-    serializer_class = WebsiteSerializer
+    def list(self, request):  # noqa: ignore=A003
+        analytics_id = request.query_params.get('analytics')
+        since = request.query_params.get('from', '1970-01-01')
+        until = request.query_params.get('to', '3030-12-30')
+        if analytics_id or since or until:
+            try:
+                if analytics_id:
+                    analytics_data = AnalyticsData.objects.filter(analytics__pk=analytics_id, date__gte=since, date__lte=until).select_related('analytics').order_by('date')
+                else:
+                    analytics_data = AnalyticsData.objects.filter(date__gte=since, date__lte=until).select_related('analytics').order_by('date')
+            except AnalyticsData.DoesNotExist:
+                return Response(
+                    {'detail': 'No AnalyticsData with given parameters was found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            except ValidationError as e:
+                if 'must be in YYYY-MM-DD HH:MM' in str(e):
+                    return Response(
+                        {'detail': 'Invalid date format, date must be in "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]" or "YYYY-MM-DD" '},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                return Response(
+                    {'detail': f'{analytics_id} is not a valid Analytics uuid'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            analytics_data = self.filter_queryset(analytics_data)
+            page = self.paginate_queryset(analytics_data)
+            serializer = self.get_serializer_class()
+            serializer = serializer(page, context={'request': request}, many=True)
+        else:
+            page = self.paginate_queryset(self.queryset)
+            serializer = self.get_serializer_class()
+            serializer = serializer(page, context={'request': request}, many=True)
+        return self.get_paginated_response(serializer.data)
