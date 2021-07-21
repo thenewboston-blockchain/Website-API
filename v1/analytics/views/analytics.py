@@ -79,9 +79,9 @@ class AnalyticsDataViewSet(ModelViewSet):
                     status=status.HTTP_404_NOT_FOUND
                 )
             except ValidationError as e:
-                if 'must be in YYYY-MM-DD HH:MM' in e.message:
+                if 'must be in YYYY-MM-DD HH:MM' in str(e):
                     return Response(
-                        {'detail': 'Invalid date fromat, date must be in "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]" or "YYYY-MM-DD" '},
+                        {'detail': 'Invalid date format, date must be in "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]" or "YYYY-MM-DD" '},
                         status=status.HTTP_400_BAD_REQUEST
                     )
                 return Response(
