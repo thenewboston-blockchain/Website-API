@@ -16,7 +16,7 @@ def test_milestone_post(api_client, staff_user):
     api_client.force_authenticate(staff_user)
     project = ProjectFactory()
     r = api_client.post(reverse('milestone-list'), data={'project': project.pk, 'number': 1, 'description': 'Complete mockups'}, format='json')
-    r.status_code = status.HTTP_201_CREATED
+    assert r.status_code == status.HTTP_201_CREATED
 
 
 def test_milestone_patch(api_client, staff_user):

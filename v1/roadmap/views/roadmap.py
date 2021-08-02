@@ -5,6 +5,6 @@ from ..serializers.roadmap import RoadmapSerializer
 
 
 class RoadmapViewSet(CachedModelViewSet):
-    queryset = Roadmap.objects.order_by('estimated_completion_date').all()
+    queryset = Roadmap.objects.select_related('team').order_by('estimated_completion_date').all()
     serializer_class = RoadmapSerializer
     permission_classes = [IsStaffOrReadOnly]
