@@ -32,7 +32,8 @@ INSTALLED_APPS = [
     'v1.videos.apps.VideosConfig',
     'v1.projects.apps.ProjectsConfig',
     'v1.analytics.apps.AnalyticsConfig',
-    'v1.feedback.apps.FeedbackConfig'
+    'v1.feedback.apps.FeedbackConfig',
+    'v1.roadmap.apps.RoadmapConfig'
 ]
 
 MIDDLEWARE = [
