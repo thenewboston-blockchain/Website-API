@@ -19,6 +19,7 @@ class ProjectFactory(DjangoModelFactory):
     benefits = factory.Faker('text')
     centered_around_tnb = factory.Faker('text')
     estimated_completion_date = factory.Faker('date_time', tzinfo=timezone.get_current_timezone())
+    is_featured = factory.Faker('pybool')
 
     class Meta:
         model = Project
