@@ -18,6 +18,7 @@ class Project(CreatedModified):
     benefits = models.TextField()
     centered_around_tnb = models.TextField()
     estimated_completion_date = models.DateTimeField()
+    is_featured = models.BooleanField(default=False)
 
     def __str__(self):
         return f'#{self.pk}: {self.title}'

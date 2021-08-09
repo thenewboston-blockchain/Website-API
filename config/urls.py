@@ -12,6 +12,7 @@ from v1.feedback.urls import router as feedback_router
 from v1.openings.urls import router as openings_router
 from v1.projects.urls import router as projects_router
 from v1.repositories.urls import router as repositories_router
+from v1.roadmap.urls import router as roadmap_router
 from v1.tasks.urls import router as tasks_router
 from v1.teams.urls import router as teams_router
 from v1.users.urls import router as users_router
@@ -58,6 +59,7 @@ router.registry.extend(videos_router.registry)
 router.registry.extend(projects_router.registry)
 router.registry.extend(analytics_router.registry)
 router.registry.extend(feedback_router.registry)
+router.registry.extend(roadmap_router.registry)
 
 urlpatterns += router.urls
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

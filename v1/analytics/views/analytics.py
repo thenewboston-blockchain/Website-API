@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 from config.helpers.cache import CachedModelViewSet
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
 from ..models.analytics import Analytics, AnalyticsCategory, AnalyticsData
-from ..serializers.analytics import AnalyticsCategorySerializer, AnalyticsCategorySerializerCreate,\
+from ..serializers.analytics import AnalyticsCategorySerializer,\
     AnalyticsDataSerializer, AnalyticsSerializer
 
 
@@ -18,13 +18,6 @@ class AnalyticsCategoryViewSet(CachedModelViewSet):
 
     serializer_class = AnalyticsCategorySerializer
     permission_classes = [IsStaffOrReadOnly]
-
-    def get_serializer_class(self):
-        if self.action == 'list' or self.action == 'retrive':
-            return AnalyticsCategorySerializer
-        if self.action in ['create', 'partial_update', 'update']:
-            return AnalyticsCategorySerializerCreate
-        return AnalyticsCategorySerializer
 
     def list(self, request):  # noqa: ignore=A003
         if request.query_params.get('key'):
@@ -39,12 +32,10 @@ class AnalyticsCategoryViewSet(CachedModelViewSet):
                 )
             categories = self.filter_queryset(categories)
             page = self.paginate_queryset(categories)
-            serializer = self.get_serializer_class()
-            serializer = serializer(page, context={'request': request}, many=True)
+            serializer = self.serializer_class(page, context={'request': request}, many=True)
         else:
             page = self.paginate_queryset(self.queryset)
-            serializer = self.get_serializer_class()
-            serializer = serializer(page, context={'request': request}, many=True)
+            serializer = self.serializer_class(page, context={'request': request}, many=True)
         return self.get_paginated_response(serializer.data)
 
 
@@ -55,6 +46,26 @@ class AnalyticsViewSet(CachedModelViewSet):
 
     serializer_class = AnalyticsSerializer
     permission_classes = [IsStaffOrReadOnly]
+
+    def list(self, request):  # noqa: ignore=A003
+        if request.query_params.get('category'):
+            key = request.query_params.get('category')
+            try:
+                category = AnalyticsCategory.objects.get(
+                    key__iexact=key)
+                analytics = category.analytics.all()
+            except AnalyticsCategory.DoesNotExist:
+                return Response(
+                    {'detail': f'No Analytics under category: {key} found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            analytics = self.filter_queryset(analytics)
+            page = self.paginate_queryset(analytics)
+            serializer = self.serializer_class(page, context={'request': request}, many=True)
+        else:
+            page = self.paginate_queryset(self.queryset)
+            serializer = self.serializer_class(page, context={'request': request}, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class AnalyticsDataViewSet(ModelViewSet):

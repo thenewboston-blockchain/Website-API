@@ -32,7 +32,8 @@ INSTALLED_APPS = [
     'v1.videos.apps.VideosConfig',
     'v1.projects.apps.ProjectsConfig',
     'v1.analytics.apps.AnalyticsConfig',
-    'v1.feedback.apps.FeedbackConfig'
+    'v1.feedback.apps.FeedbackConfig',
+    'v1.roadmap.apps.RoadmapConfig'
 ]
 
 MIDDLEWARE = [
@@ -151,3 +152,12 @@ SPECTACULAR_SETTINGS = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 CACHE_TTL = 60 * 60  # Cache-Control - 1 hour
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Security Headers
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_SECONDS = 3600
