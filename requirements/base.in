@@ -3,3 +3,5 @@ drf-spectacular==0.11.0
 fakeredis[lua]==1.4.4
 psycopg2==2.8.6
 thenewboston==0.0.32
+django-storages==1.11.1
+boto3==1.18.18

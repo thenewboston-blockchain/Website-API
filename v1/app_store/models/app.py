@@ -9,7 +9,7 @@ class App(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    logo = models.ImageField(upload_to='media/images/app_store')
+    logo = models.ImageField(upload_to='app_store')
     website = models.URLField()
     images = models.ManyToManyField('AppImage', blank=True, related_name='app_images')
 
@@ -24,7 +24,7 @@ class App(CreatedModified):
 class AppImage(CreatedModified):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     app = models.ForeignKey('App', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='media/images/app_store')
+    image = models.ImageField(upload_to='app_store')
 
     def __str__(self):
         return f'#{self.pk}: {self.app} - {self.image}'
