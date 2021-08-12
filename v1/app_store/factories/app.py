@@ -1,6 +1,5 @@
 import factory
-from django.core.files.base import ContentFile
-from factory.django import DjangoModelFactory
+from factory.django import DjangoModelFactory, ImageField
 
 from ..models.app import App, AppImage
 
@@ -8,13 +7,7 @@ from ..models.app import App, AppImage
 class AppFactory(DjangoModelFactory):
     name = factory.Faker('pystr', max_chars=255)
     description = factory.Faker('text')
-    logo = factory.LazyAttribute(
-        lambda _: ContentFile(
-            factory.django.ImageField()._make_data(
-                {'width': 200, 'height': 200}
-            ), 'example.jpg'
-        )
-    )
+    logo = ImageField(width=1024, height=768)
     website = factory.Faker('url')
 
     class Meta:
@@ -38,13 +31,7 @@ class AppFactory(DjangoModelFactory):
 
 class AppImageFactory(DjangoModelFactory):
     app = factory.SubFactory(AppFactory)
-    image = factory.LazyAttribute(
-        lambda _: ContentFile(
-            factory.django.ImageField()._make_data(
-                {'width': 200, 'height': 200}
-            ), 'example.jpg'
-        )
-    )
+    image = ImageField(width=1024, height=768)
 
     class Meta:
         model = AppImage
