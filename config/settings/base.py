@@ -33,7 +33,8 @@ INSTALLED_APPS = [
     'v1.projects.apps.ProjectsConfig',
     'v1.analytics.apps.AnalyticsConfig',
     'v1.feedback.apps.FeedbackConfig',
-    'v1.roadmap.apps.RoadmapConfig'
+    'v1.roadmap.apps.RoadmapConfig',
+    'v1.app_store.apps.AppStoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -161,3 +164,16 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_HSTS_SECONDS = 3600
+
+# S3 setup
+AWS_ACCESS_KEY_ID = os.environ.get('ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET')
+AWS_S3_REGION_NAME = os.environ.get('S3_REGION_NAME')
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERIFY = True
+env = os.getenv('ENVIRONMENT')
+if env not in ['local', 'postgres_local', 'test']:
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
