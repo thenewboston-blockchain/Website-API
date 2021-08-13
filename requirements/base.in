@@ -5,3 +5,4 @@ psycopg2==2.8.6
 thenewboston==0.0.32
 django-storages==1.11.1
 boto3==1.18.18
+Pillow==6.2.1
