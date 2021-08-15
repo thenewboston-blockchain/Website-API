@@ -9,8 +9,10 @@ COPY ./requirements/local.txt /requirements.txt
 
 RUN set -xe \
     && apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev libressl-dev libffi-dev make \
+    && apk add --virtual build-deps gcc python3-dev musl-dev libressl-dev libffi-dev make gcc python3-dev \
     && apk add postgresql-dev postgresql-client curl \
+    && apk add jpeg-dev zlib-dev libjpeg \
+    && pip install Pillow \
     && pip install --upgrade pip pip-tools \
     && pip install --no-cache-dir -r /requirements.txt \
     && if [ -f thenewboston.tar.gz ]; then pip install thenewboston.tar.gz; fi \

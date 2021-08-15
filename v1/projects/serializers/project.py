@@ -26,6 +26,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'project_lead_display_name',
             'target_market',
             'title',
+            'is_featured'
         )
         model = Project
         read_only_fields = 'created_date', 'modified_date', 'project_lead_display_name'
