@@ -9,7 +9,7 @@ COPY ./requirements/local.txt /requirements.txt
 
 RUN set -xe \
     && apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev libressl-dev libffi-dev make \
+    && apk add --virtual build-deps gcc python3-dev musl-dev libressl-dev libffi-dev libjpeg-dev zlib1g-dev make \
     && apk add postgresql-dev postgresql-client curl \
     && pip install --upgrade pip pip-tools \
     && pip install --no-cache-dir -r /requirements.txt \
