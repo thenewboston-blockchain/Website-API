@@ -7,6 +7,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from v1.analytics.urls import router as analytics_router
+from v1.app_store.urls import router as app_store_router
 from v1.authentication.views.login import LoginView
 from v1.feedback.urls import router as feedback_router
 from v1.openings.urls import router as openings_router
@@ -60,9 +61,9 @@ router.registry.extend(projects_router.registry)
 router.registry.extend(analytics_router.registry)
 router.registry.extend(feedback_router.registry)
 router.registry.extend(roadmap_router.registry)
+router.registry.extend(app_store_router.registry)
 
 urlpatterns += router.urls
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar
@@ -70,3 +71,5 @@ if settings.DEBUG:
     urlpatterns += [
         path('__debug__/', include(debug_toolbar.urls)),
     ]
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
