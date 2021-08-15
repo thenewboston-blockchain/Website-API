@@ -262,8 +262,6 @@ wheel==0.35.1
     # via thenewboston
 zope.interface==5.2.0
     # via twisted
-asgiref==3.4.1
-    # via django
 boto3==1.18.18
     # via -r requirements/base.in
 botocore==1.21.21

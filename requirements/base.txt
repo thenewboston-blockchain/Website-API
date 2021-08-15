@@ -266,8 +266,6 @@ zope.interface==5.2.0
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
 
-asgiref==3.4.1
-    # via django
 boto3==1.18.18
     # via -r requirements/base.in
 botocore==1.21.21
