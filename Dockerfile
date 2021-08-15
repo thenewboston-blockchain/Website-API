@@ -8,10 +8,9 @@ ENV PYTHONUNBUFFERED 1
 COPY ./requirements/local.txt /requirements.txt
 
 RUN set -xe \
-    && apt-get update && apt-get install -y \
-    libjpeg-dev zlib1g-dev \
     && apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev libressl-dev libffi-dev make \
+    && apk add --virtual build-deps gcc python3-dev musl-dev libressl-dev libffi-dev zlib libjpeg-turbo-dev \
+    libpng-dev freetype-dev lcms2-dev libwebp-dev harfbuzz-dev fribidi-dev tcl-dev tk-dev make \
     && apk add postgresql-dev postgresql-client curl \
     && pip install --upgrade pip pip-tools \
     && pip install --no-cache-dir -r /requirements.txt \
