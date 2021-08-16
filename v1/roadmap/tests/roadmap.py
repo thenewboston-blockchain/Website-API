@@ -8,9 +8,19 @@ from ...teams.factories.team import CoreTeamFactory
 def test_roadmap_list(api_client, django_assert_max_num_queries):
     RoadmapFactory.create_batch(5)
     with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('roadmap-list'), {'limit': 0})
+        r = api_client.get(reverse('roadmap-list'))
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
+    assert len(r.data) == 4
+
+
+def test_roadmap_filter_by_team(api_client, django_assert_max_num_queries):
+    RoadmapFactory.create_batch(3)
+    team = CoreTeamFactory()
+    RoadmapFactory.create_batch(2, team=team)
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('roadmap-list') + f'?team={team.title}')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.data) == 4
 
 
 def test_roadmap_post(api_client, staff_user):
