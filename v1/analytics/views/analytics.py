@@ -2,7 +2,6 @@ from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
 from config.helpers.cache import CachedModelViewSet
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
@@ -68,7 +67,7 @@ class AnalyticsViewSet(CachedModelViewSet):
         return self.get_paginated_response(serializer.data)
 
 
-class AnalyticsDataViewSet(ModelViewSet):
+class AnalyticsDataViewSet(CachedModelViewSet):
     queryset = AnalyticsData.objects.select_related('analytics').order_by('date').all()
 
     serializer_class = AnalyticsDataSerializer

@@ -8,9 +8,25 @@ from ...teams.factories.team import ProjectMemberFactory
 def test_projects_list(api_client, django_assert_max_num_queries):
     ProjectFactory.create_batch(5)
     with django_assert_max_num_queries(7):
-        r = api_client.get(reverse('project-list'), {'limit': 0})
+        r = api_client.get(reverse('project-list'))
     assert r.status_code == status.HTTP_200_OK
-    assert len(r.data) == 5
+    assert len(r.data) == 4
+
+
+def test_project_filter_by_featured(api_client, django_assert_max_num_queries):
+    ProjectFactory.create_batch(3, is_featured=False)
+    ProjectFactory.create_batch(2, is_featured=True)
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('project-list') + '?is_featured=True')
+    assert r.status_code == status.HTTP_200_OK
+    assert len(r.json()['results']) == 2
+
+
+def test_project_filter_by_featured_nonboolean(api_client, django_assert_max_num_queries):
+    ProjectFactory.create_batch(3)
+    with django_assert_max_num_queries(10):
+        r = api_client.get(reverse('project-list') + '?is_featured=first')
+    assert r.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_project_post(api_client, staff_user):
