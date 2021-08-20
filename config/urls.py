@@ -16,6 +16,7 @@ from v1.repositories.urls import router as repositories_router
 from v1.roadmap.urls import router as roadmap_router
 from v1.tasks.urls import router as tasks_router
 from v1.teams.urls import router as teams_router
+from v1.trusted_banks.urls import router as trusted_banks_router
 from v1.users.urls import router as users_router
 from v1.users.views.user import UserViewSet
 from v1.videos.urls import router as videos_router
@@ -62,6 +63,7 @@ router.registry.extend(analytics_router.registry)
 router.registry.extend(feedback_router.registry)
 router.registry.extend(roadmap_router.registry)
 router.registry.extend(app_store_router.registry)
+router.registry.extend(trusted_banks_router.registry)
 
 urlpatterns += router.urls
 
