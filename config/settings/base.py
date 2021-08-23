@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'v1.feedback.apps.FeedbackConfig',
     'v1.roadmap.apps.RoadmapConfig',
     'v1.app_store.apps.AppStoreConfig',
+    'v1.trusted_banks.apps.TrustedBanksConfig',
 ]
 
 MIDDLEWARE = [
