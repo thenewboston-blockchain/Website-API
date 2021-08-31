@@ -12,6 +12,7 @@ class App(CreatedModified):
     logo = models.ImageField(upload_to='app_store')
     website = models.URLField()
     images = models.ManyToManyField('AppImage', blank=True, related_name='app_images')
+    tagline = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f'#{self.pk}: {self.name}'
