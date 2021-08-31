@@ -9,6 +9,7 @@ class AppFactory(DjangoModelFactory):
     description = factory.Faker('text')
     logo = ImageField(width=1024, height=768)
     website = factory.Faker('url')
+    tagline = factory.Faker('pystr', max_chars=255)
 
     class Meta:
         model = App
