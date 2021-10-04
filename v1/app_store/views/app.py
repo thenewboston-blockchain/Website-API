@@ -2,8 +2,8 @@ from django.db.models import Prefetch
 
 from config.helpers.cache import CachedModelViewSet
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
-from ..models.app import App, AppImage
-from ..serializers.app import AppImageSerializer, AppSerializer, AppSerializerCreate
+from ..models.app import App, AppImage, Category
+from ..serializers.app import AppImageSerializer, AppSerializer, AppSerializerCreate, CategorySerializer
 
 
 class AppViewSet(CachedModelViewSet):
@@ -24,4 +24,10 @@ class AppViewSet(CachedModelViewSet):
 class AppImageViewSet(CachedModelViewSet):
     queryset = AppImage.objects.all()
     serializer_class = AppImageSerializer
+    permission_classes = [IsStaffOrReadOnly]
+
+
+class CategoryViewSet(CachedModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
     permission_classes = [IsStaffOrReadOnly]
