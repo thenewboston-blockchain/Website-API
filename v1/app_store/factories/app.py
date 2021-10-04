@@ -1,7 +1,14 @@
 import factory
 from factory.django import DjangoModelFactory, ImageField
 
-from ..models.app import App, AppImage
+from ..models.app import App, AppImage, Category
+
+
+class CategoryFactory(DjangoModelFactory):
+    name = factory.Faker('pystr', max_chars=255)
+
+    class Meta:
+        model = Category
 
 
 class AppFactory(DjangoModelFactory):
@@ -10,6 +17,7 @@ class AppFactory(DjangoModelFactory):
     logo = ImageField(width=1024, height=768)
     website = factory.Faker('url')
     tagline = factory.Faker('pystr', max_chars=255)
+    category = factory.SubFactory(CategoryFactory)
 
     class Meta:
         model = App

@@ -13,6 +13,7 @@ class App(CreatedModified):
     website = models.URLField()
     images = models.ManyToManyField('AppImage', blank=True, related_name='app_images')
     tagline = models.CharField(max_length=255, blank=True, null=True)
+    category = models.ForeignKey('Category', null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f'#{self.pk}: {self.name}'
@@ -33,3 +34,19 @@ class AppImage(CreatedModified):
     def save(self, *args, **kwargs):
         cache.delete_pattern('views.decorators.cache.cache*')
         return super(AppImage, self).save(*args, **kwargs)
+
+
+class Category(CreatedModified):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    name = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name_plural = 'categories'
+        ordering = ('created_date',)
+
+    def __str__(self):
+        return f'#{self.pk}: {self.name}'
+
+    def save(self, *args, **kwargs):
+        cache.delete_pattern('views.decorators.cache.cache*')
+        return super(Category, self).save(*args, **kwargs)
