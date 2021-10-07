@@ -32,6 +32,9 @@ def test_opening_list(api_client, django_assert_max_num_queries):
         'skills': [s.pk for s in openings[0].skills.all()],
         'team': openings[0].team_id,
         'title': openings[0].title,
+        'visible': openings[0].visible,
+        'application_form': openings[0].application_form,
+        'category': openings[0].category
     }
 
 
@@ -54,6 +57,9 @@ def test_opening_post(api_client, staff_user):
                 'skills': [skills[2].pk, skills[4].pk],
                 'team': team.pk,
                 'title': 'Opening title',
+                'visible': True,
+                'application_form': 'form_77',
+                'category': 'engineering'
             },
             format='json'
         )
@@ -72,6 +78,9 @@ def test_opening_post(api_client, staff_user):
         'skills': [skills[2].pk, skills[4].pk],
         'team': team.pk,
         'title': 'Opening title',
+        'visible': True,
+        'application_form': 'form_77',
+        'category': 'engineering'
     }
 
     assert Opening.objects.get(pk=r.data['pk']).title == 'Opening title'
@@ -108,6 +117,9 @@ def test_opening_patch(api_client, staff_user):
                 ],
                 'team': team.pk,
                 'title': 'Updated title',
+                'visible': True,
+                'application_form': 'form_77',
+                'category': 'engineering'
             },
             format='json'
         )
@@ -134,6 +146,9 @@ def test_opening_patch(api_client, staff_user):
         ],
         'team': team.pk,
         'title': 'Updated title',
+        'visible': True,
+        'application_form': 'form_77',
+        'category': 'engineering'
     }
 
     assert Opening.objects.get(pk=str(opening.pk)).title == 'Updated title'

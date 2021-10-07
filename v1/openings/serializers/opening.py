@@ -19,7 +19,10 @@ class OpeningSerializer(serializers.ModelSerializer):
             'responsibilities',
             'skills',
             'team',
-            'title'
+            'title',
+            'visible',
+            'application_form',
+            'category'
         )
         model = Opening
         read_only_fields = 'created_date', 'modified_date'
