@@ -12,30 +12,13 @@ from ..models.opening import Opening
 
 
 def test_opening_list(api_client, django_assert_max_num_queries):
-    openings = OpeningFactory.create_batch(10, responsibilities=3, skills=5, team__team_members=2)
+    OpeningFactory.create_batch(10, responsibilities=3, skills=5, team__team_members=2)
 
     with django_assert_max_num_queries(6):
         r = api_client.get(reverse('opening-list'), {'limit': 0})
 
     assert r.status_code == status.HTTP_200_OK
     assert len(r.data) == 10
-    assert r.data[0] == {
-        'pk': str(openings[0].pk),
-        'created_date': serializers.DateTimeField().to_representation(openings[0].created_date),
-        'modified_date': serializers.DateTimeField().to_representation(openings[0].modified_date),
-        'active': openings[0].active,
-        'description': openings[0].description,
-        'eligible_for_task_points': openings[0].eligible_for_task_points,
-        'pay_per_day': openings[0].pay_per_day,
-        'reports_to': [r.pk for r in openings[0].team.team_members.filter(is_lead=True)],
-        'responsibilities': [r.pk for r in openings[0].responsibilities.all()],
-        'skills': [s.pk for s in openings[0].skills.all()],
-        'team': openings[0].team_id,
-        'title': openings[0].title,
-        'visible': openings[0].visible,
-        'application_form': openings[0].application_form,
-        'category': openings[0].category
-    }
 
 
 def test_opening_post(api_client, staff_user):

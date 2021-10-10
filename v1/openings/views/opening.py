@@ -4,7 +4,7 @@ from config.helpers.cache import CachedModelViewSet
 from v1.teams.models.team_member import TeamMember
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
 from ..models.opening import Opening
-from ..serializers.opening import OpeningSerializer
+from ..serializers.opening import OpeningSerializer, OpeningSerializerCreate
 
 
 class OpeningViewSet(CachedModelViewSet):
@@ -16,3 +16,10 @@ class OpeningViewSet(CachedModelViewSet):
 
     serializer_class = OpeningSerializer
     permission_classes = [IsStaffOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrive':
+            return OpeningSerializer
+        if self.action in ['create', 'partial_update', 'update']:
+            return OpeningSerializerCreate
+        return OpeningSerializer
