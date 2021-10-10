@@ -1,6 +1,7 @@
 import uuid
 
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.db import models
 from thenewboston.models.created_modified import CreatedModified
 
@@ -21,6 +22,10 @@ class App(CreatedModified):
     def save(self, *args, **kwargs):
         cache.delete_pattern('views.decorators.cache.cache*')
         return super(App, self).save(*args, **kwargs)
+
+    def clean(self):
+        if self.category is None:
+            raise ValidationError({'category': ['This field is required.', ]})
 
 
 class AppImage(CreatedModified):
