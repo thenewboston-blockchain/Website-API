@@ -2,7 +2,6 @@ from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from config.helpers.cache import CachedModelViewSet
 from ..models.instructor import Instructor
@@ -12,7 +11,7 @@ from ..serializers.playlist import PlaylistSerializer, PlaylistSerializerCreate
 from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 
-class PlaylistViewSet(ModelViewSet):
+class PlaylistViewSet(CachedModelViewSet):
     queryset = Playlist.objects \
         .select_related('instructor') \
         .order_by('title') \
@@ -27,15 +26,27 @@ class PlaylistViewSet(ModelViewSet):
         return PlaylistSerializer
 
     def list(self, request):  # noqa: ignore=A003
-        if request.query_params.get('category') or request.query_params.get('instructor'):
+        if request.query_params.get('category') or request.query_params.get('instructor') or request.query_params.get('is_featured'):
             category = request.query_params.get('category')
             instructor = request.query_params.get('instructor')
+            featured = request.query_params.get('is_featured')
+            if featured and featured not in ['True', 'False', 'true', 'false']:
+                return Response(
+                    {'detail': 'Please provide a boolean value: True,False/true,false'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-            if category and not instructor:
+            arguments = {}
+            for k, v in request.query_params.items():
+                if v and k in ['instructor', 'is_featured']:
+                    arguments[k] = v if k != 'is_featured' else featured.title()
+
+            if category:
                 try:
                     category = PlaylistCategory.objects.get(name__iexact=category)
                     playlists = Playlist.objects.filter(
-                        categories__pk=category.pk
+                        categories__pk=category.pk,
+                        **arguments
                     ).select_related(
                         'instructor'
                     ).prefetch_related(
@@ -46,24 +57,17 @@ class PlaylistViewSet(ModelViewSet):
                         {'detail': f'No playlist under category: {category} was found'},
                         status=status.HTTP_404_NOT_FOUND
                     )
-            elif instructor and not category:
+                except ValidationError:
+                    return Response(
+                        {'detail': f'{instructor} is not a valid instructor uuid'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            else:
                 try:
-                    playlists = Playlist.objects.filter(instructor__pk=instructor).order_by('created_date')
+                    playlists = Playlist.objects.filter(**arguments).order_by('created_date')
                 except Instructor.DoesNotExist:
                     return Response(
                         {'detail': f'No playlist under instructor: {instructor} was found'},
-                        status=status.HTTP_404_NOT_FOUND
-                    )
-            elif category and instructor:
-                try:
-                    category = PlaylistCategory.objects.get(name__iexact=category)
-                    playlists = Playlist.objects.filter(
-                        categories__pk=category.pk,
-                        instructor__pk=instructor
-                    ).order_by('created_date')
-                except PlaylistCategory.DoesNotExist:
-                    return Response(
-                        {'detail': f'No playlist under category: {category} was found'},
                         status=status.HTTP_404_NOT_FOUND
                     )
                 except ValidationError:

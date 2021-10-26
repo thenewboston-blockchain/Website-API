@@ -86,6 +86,7 @@ def test_playlist_post(api_client, staff_user):
         'playlist_type': 'youtube',
         'instructor': instructor.pk,
         'duration': 350,
+        'is_featured': False,
         'video_list': [{
             'created_date': serializers.DateTimeField().to_representation(frozen_time()),
             'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
@@ -132,6 +133,7 @@ def test_empty_videolist_post(api_client, staff_user):
         'instructor': instructor.pk,
         'video_list': [],
         'duration': 0,
+        'is_featured': False,
     }
 
 
