@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from config.helpers.cache import CachedModelViewSet
 from ..models.instructor import Instructor
@@ -11,10 +12,9 @@ from ..serializers.playlist import PlaylistSerializer, PlaylistSerializerCreate
 from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 
-class PlaylistViewSet(CachedModelViewSet):
+class PlaylistViewSet(ModelViewSet):
     queryset = Playlist.objects \
         .select_related('instructor') \
-        .prefetch_related(Prefetch('videos')) \
         .order_by('title') \
         .all()
     permission_classes = [IsStaffOrReadOnly]
