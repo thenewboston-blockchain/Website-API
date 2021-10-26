@@ -24,6 +24,7 @@ class PlaylistFactory(DjangoModelFactory):
     instructor = factory.SubFactory(InstructorFactory)
     thumbnail = factory.Faker('pystr', max_chars=250)
     playlist_type = factory.Faker('pystr', max_chars=11)
+    is_featured = factory.Faker('pybool')
 
     class Meta:
         model = Playlist

@@ -18,6 +18,7 @@ class Playlist(CreatedModified):
     thumbnail = models.CharField(max_length=250)
     categories = models.ManyToManyField('videos.PlaylistCategory')
     playlist_type = models.CharField(max_length=15, choices=PLAYLIST_TYPE)
+    is_featured = models.BooleanField(default=False)
 
     class Meta:
         ordering = ('published_at',)
