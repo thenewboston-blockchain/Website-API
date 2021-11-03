@@ -22,7 +22,7 @@ class PlaylistSerializerCreate(ModelSerializer):
 
     class Meta:
         fields = ('pk', 'title', 'description', 'published_at', 'instructor',
-                  'thumbnail', 'categories', 'playlist_type', 'video_list', 'duration', 'created_date', 'modified_date',)
+                  'thumbnail', 'categories', 'playlist_type', 'video_list', 'duration', 'is_featured', 'created_date', 'modified_date',)
         model = Playlist
         read_only_fields = 'created_date', 'modified_date'
 
@@ -91,9 +91,20 @@ class PlaylistSerializer(ModelSerializer):
 
     class Meta:
         fields = ('pk', 'title', 'description', 'published_at', 'instructor',
-                  'thumbnail', 'categories', 'playlist_type', 'video_list', 'duration', 'created_date', 'modified_date',)
+                  'thumbnail', 'categories', 'playlist_type', 'video_list', 'duration', 'is_featured', 'created_date', 'modified_date',)
         model = Playlist
         read_only_fields = 'created_date', 'modified_date'
+
+    def to_representation(self, obj):
+        # get the original representation
+        playlist = super(PlaylistSerializer, self).to_representation(obj)
+        include_videos = self.context.get('request').query_params.get('include_videos')
+        if include_videos:
+            if include_videos not in ['True', 'False', 'true', 'false']:
+                raise serializers.ValidationError({'detail': 'Please provide a boolean value: True,False/true,false'})
+            if include_videos in ['False', 'false']:
+                playlist.pop('video_list')
+        return playlist
 
     def get_instructor(self, playlist):
         return InstructorSerializer(playlist.instructor).data
