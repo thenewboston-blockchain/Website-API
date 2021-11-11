@@ -8,7 +8,7 @@ from ..models.app import App, AppImage, Category
 class AppSerializer(ModelSerializer):
 
     class Meta:
-        fields = ('pk', 'name', 'description', 'logo', 'website', 'images', 'tagline', 'category',
+        fields = ('pk', 'name', 'description', 'logo', 'website', 'images', 'tagline', 'category', 'slug',
                   'created_date', 'modified_date')
         model = App
         read_only_fields = ('created_date', 'modified_date',)
@@ -18,7 +18,7 @@ class AppSerializer(ModelSerializer):
 class AppSerializerCreate(ModelSerializer):
 
     class Meta:
-        fields = ('pk', 'name', 'description', 'logo', 'website', 'images', 'tagline', 'category',
+        fields = ('pk', 'name', 'description', 'logo', 'website', 'images', 'tagline', 'category', 'slug',
                   'created_date', 'modified_date')
         model = App
         read_only_fields = ('created_date', 'modified_date',)
