@@ -1,3 +1,5 @@
+from django.db.models import Prefetch
+
 from config.helpers.cache import CachedModelViewSet
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly, IsSuperUserOrReadOnly, IsSuperUserOrTeamLead, ReadOnly
 from ..models.team import CoreTeam, ProjectTeam, Team
@@ -6,7 +8,7 @@ from ..serializers.team import CoreTeamSerializer, ProjectTeamSerializer, TeamSe
 
 class TeamViewSet(CachedModelViewSet):
     queryset = Team.objects \
-        .prefetch_related('team_members') \
+        .prefetch_related(Prefetch('team_members', to_attr='team_members_list')) \
         .order_by('created_date') \
         .all()
     serializer_class = TeamSerializer
@@ -15,7 +17,7 @@ class TeamViewSet(CachedModelViewSet):
 
 class CoreTeamViewSet(CachedModelViewSet):
     queryset = CoreTeam.objects \
-        .prefetch_related('core_members') \
+        .prefetch_related(Prefetch('core_members', to_attr='core_members_list')) \
         .order_by('created_date') \
         .all()
     serializer_class = CoreTeamSerializer
@@ -34,6 +36,7 @@ class CoreTeamViewSet(CachedModelViewSet):
 class ProjectTeamViewSet(CachedModelViewSet):
     queryset = ProjectTeam.objects \
         .prefetch_related('project_members') \
+        .prefetch_related(Prefetch('project_members', to_attr='project_members_list')) \
         .order_by('created_date') \
         .all()
     serializer_class = ProjectTeamSerializer

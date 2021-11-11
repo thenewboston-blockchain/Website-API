@@ -12,9 +12,8 @@ from ..serializers.analytics import AnalyticsCategorySerializer,\
 
 class AnalyticsCategoryViewSet(CachedModelViewSet):
     queryset = AnalyticsCategory.objects \
-        .prefetch_related(Prefetch('analytics'),) \
+        .prefetch_related(Prefetch('analytics', to_attr='analytics_category_list'))\
         .all()
-
     serializer_class = AnalyticsCategorySerializer
     permission_classes = [IsStaffOrReadOnly]
 
@@ -40,7 +39,7 @@ class AnalyticsCategoryViewSet(CachedModelViewSet):
 
 class AnalyticsViewSet(CachedModelViewSet):
     queryset = Analytics.objects \
-        .prefetch_related(Prefetch('data'),) \
+        .prefetch_related(Prefetch('data', to_attr='analytics_list')) \
         .all()
 
     serializer_class = AnalyticsSerializer

@@ -52,7 +52,7 @@ class TeamMemberViewSet(
 
 class CoreMemberViewSet(CachedModelViewSet):
     filterset_fields = ['user']
-    queryset = CoreMember.objects.order_by('created_date').all()
+    queryset = CoreMember.objects.select_related('user').order_by('created_date').all()
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrive':
@@ -106,7 +106,7 @@ class CoreMemberViewSet(CachedModelViewSet):
 
 class ProjectMemberViewSet(CachedModelViewSet):
     filterset_fields = ['user']
-    queryset = ProjectMember.objects.order_by('created_date').all()
+    queryset = ProjectMember.objects.select_related('user').order_by('created_date').all()
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrive':
