@@ -9,8 +9,7 @@ from ..serializers.team import CoreTeamSerializer, ProjectTeamSerializer, TeamSe
 class TeamViewSet(CachedModelViewSet):
     queryset = Team.objects \
         .prefetch_related(Prefetch('team_members')) \
-        .order_by('created_date') \
-        .all()
+        .order_by('created_date')
     serializer_class = TeamSerializer
     permission_classes = [IsStaffOrReadOnly]
 
@@ -18,8 +17,7 @@ class TeamViewSet(CachedModelViewSet):
 class CoreTeamViewSet(CachedModelViewSet):
     queryset = CoreTeam.objects \
         .prefetch_related(Prefetch('core_members')) \
-        .order_by('created_date') \
-        .all()
+        .order_by('created_date')
     serializer_class = CoreTeamSerializer
 
     def get_permissions(self):
@@ -35,10 +33,8 @@ class CoreTeamViewSet(CachedModelViewSet):
 
 class ProjectTeamViewSet(CachedModelViewSet):
     queryset = ProjectTeam.objects \
-        .prefetch_related('project_members') \
         .prefetch_related(Prefetch('project_members')) \
-        .order_by('created_date') \
-        .all()
+        .order_by('created_date')
     serializer_class = ProjectTeamSerializer
 
     def get_permissions(self):
