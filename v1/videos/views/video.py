@@ -9,7 +9,7 @@ from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 
 
 class VideoViewSet(CachedModelViewSet):
-    queryset = Video.objects.all()
+    queryset = Video.objects.select_related('playlist')
     serializer_class = VideoSerializer
     permission_classes = [IsStaffOrReadOnly]
 
@@ -17,7 +17,7 @@ class VideoViewSet(CachedModelViewSet):
         if request.query_params.get('playlist'):
             playlist = request.query_params.get('playlist')
             try:
-                videos = Video.objects.filter(playlist__uuid=playlist).order_by('created_date')
+                videos = Video.objects.filter(playlist__uuid=playlist).select_related('playlist').order_by('created_date')
                 videos = self.filter_queryset(videos)
                 page = self.paginate_queryset(videos)
                 serializer = self.get_serializer(page, context={'request': request}, many=True)
@@ -25,8 +25,8 @@ class VideoViewSet(CachedModelViewSet):
                 return Response({'detail': '{} is not a valid playlist uuid'.format(playlist)}, status=status.HTTP_400_BAD_REQUEST)
         else:
             queryset = Video.objects\
-                .order_by('created_date')\
-                .all()
+                .order_by('created_date') \
+                .select_related('playlist')
             queryset = self.filter_queryset(queryset)
             page = self.paginate_queryset(queryset)
             if not queryset:

@@ -24,7 +24,7 @@ class TeamMemberViewSet(
     CachedGenericViewSet
 ):
     filterset_fields = ['user']
-    queryset = TeamMember.objects.select_related('user').order_by('created_date').all()
+    queryset = TeamMember.objects.select_related('user').order_by('created_date')
     serializer_class = TeamMemberSerializer
     permission_classes = [IsStaffOrReadOnly]
 
@@ -32,7 +32,7 @@ class TeamMemberViewSet(
         user = request.query_params.get('user')
         if user:
             try:
-                members = TeamMember.objects.filter(user=user).order_by('created_date')
+                members = TeamMember.objects.filter(user=user).select_related('user').order_by('created_date')
                 page = self.paginate_queryset(members)
             except ValidationError:
                 return Response(
@@ -52,7 +52,7 @@ class TeamMemberViewSet(
 
 class CoreMemberViewSet(CachedModelViewSet):
     filterset_fields = ['user']
-    queryset = CoreMember.objects.order_by('created_date').all()
+    queryset = CoreMember.objects.select_related('user').order_by('created_date')
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrive':
@@ -85,7 +85,7 @@ class CoreMemberViewSet(CachedModelViewSet):
         user = request.query_params.get('user')
         if user:
             try:
-                members = CoreMember.objects.filter(user=user).order_by('created_date')
+                members = CoreMember.objects.filter(user=user).select_related('user').order_by('created_date')
                 page = self.paginate_queryset(members)
             except ValidationError:
                 return Response(
@@ -106,7 +106,7 @@ class CoreMemberViewSet(CachedModelViewSet):
 
 class ProjectMemberViewSet(CachedModelViewSet):
     filterset_fields = ['user']
-    queryset = ProjectMember.objects.order_by('created_date').all()
+    queryset = ProjectMember.objects.select_related('user').order_by('created_date')
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrive':
@@ -139,7 +139,7 @@ class ProjectMemberViewSet(CachedModelViewSet):
         user = request.query_params.get('user')
         if user:
             try:
-                members = ProjectMember.objects.filter(user=user)
+                members = ProjectMember.objects.filter(user=user).select_related('user')
                 page = self.paginate_queryset(members)
             except ValidationError:
                 return Response(

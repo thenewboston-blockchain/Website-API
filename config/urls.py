@@ -6,7 +6,6 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from v1.analytics.urls import router as analytics_router
 from v1.app_store.urls import router as app_store_router
 from v1.authentication.views.login import LoginView
 from v1.feedback.urls import router as feedback_router
@@ -59,7 +58,6 @@ router.registry.extend(repositories_router.registry)
 router.registry.extend(users_router.registry)
 router.registry.extend(videos_router.registry)
 router.registry.extend(projects_router.registry)
-router.registry.extend(analytics_router.registry)
 router.registry.extend(feedback_router.registry)
 router.registry.extend(roadmap_router.registry)
 router.registry.extend(app_store_router.registry)
