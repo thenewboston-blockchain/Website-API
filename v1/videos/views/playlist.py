@@ -14,8 +14,10 @@ from ...third_party.rest_framework.permissions import IsStaffOrReadOnly
 class PlaylistViewSet(CachedModelViewSet):
     queryset = Playlist.objects \
         .select_related('instructor') \
-        .order_by('title') \
-        .all()
+        .prefetch_related(
+            Prefetch('videos')
+        )\
+        .order_by('title')
     permission_classes = [IsStaffOrReadOnly]
 
     def get_serializer_class(self):
@@ -64,7 +66,11 @@ class PlaylistViewSet(CachedModelViewSet):
                     )
             else:
                 try:
-                    playlists = Playlist.objects.filter(**arguments).order_by('created_date')
+                    playlists = Playlist.objects.filter(**arguments).select_related(
+                        'instructor'
+                    ).prefetch_related(
+                        Prefetch('videos')
+                    ).order_by('created_date')
                 except Instructor.DoesNotExist:
                     return Response(
                         {'detail': f'No playlist under instructor: {instructor} was found'},
@@ -85,8 +91,7 @@ class PlaylistViewSet(CachedModelViewSet):
             queryset = Playlist.objects \
                 .select_related('instructor') \
                 .prefetch_related(Prefetch('videos')) \
-                .order_by('created_date') \
-                .all()
+                .order_by('created_date')
             page = self.paginate_queryset(queryset)
             if not queryset:
                 return Response({'detail': 'No playlists found'}, status=status.HTTP_404_NOT_FOUND)
