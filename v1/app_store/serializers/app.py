@@ -11,6 +11,7 @@ class AppSerializer(ModelSerializer):
         fields = ('pk', 'name', 'description', 'logo', 'website', 'images', 'tagline', 'category', 'slug',
                   'created_date', 'modified_date')
         model = App
+        lookup_field = 'slug'
         read_only_fields = ('created_date', 'modified_date',)
         depth = 1
 

@@ -1,4 +1,6 @@
 from django.db.models import Prefetch
+from rest_framework import status
+from rest_framework.response import Response
 
 from config.helpers.cache import CachedModelViewSet
 from v1.third_party.rest_framework.permissions import IsStaffOrReadOnly
@@ -12,6 +14,22 @@ class AppViewSet(CachedModelViewSet):
         .all()
     serializer_class = AppSerializer
     permission_classes = [IsStaffOrReadOnly]
+    lookup_field = 'slug'
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
+        except App.MultipleObjectsReturned:
+            instances = App.objects.filter(slug=kwargs['slug'])
+            if instances:
+                serializer = self.get_serializer(instances[0])
+            else:
+                return Response(
+                    {'detail': 'Not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        return Response(serializer.data)
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrive':
