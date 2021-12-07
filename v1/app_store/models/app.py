@@ -20,9 +20,17 @@ class App(CreatedModified):
     def __str__(self):
         return f'#{self.pk}: {self.name}'
 
+    def validate_unique(self, *args, **kwargs):
+        super(App, self).validate_unique(*args, **kwargs)
+        qs = App.objects.filter(slug=self.slug)
+        if qs.filter(name=self.name).exists():
+            raise ValidationError({'slug': ['App with similar slug already exists.']}
+                                  )
+
     def save(self, *args, **kwargs):
+        self.validate_unique()
         cache.delete_pattern('views.decorators.cache.cache*')
-        return super(App, self).save(*args, **kwargs)
+        super(App, self).save(*args, **kwargs)
 
     def clean(self):
         if self.category is None:

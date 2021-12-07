@@ -36,6 +36,10 @@ class AppSerializerCreate(ModelSerializer):
         except Category.DoesNotExist:
             raise serializers.ValidationError({'category': ['Category not found', ]})
         except ValidationError:
+            qs = App.objects.filter(slug=data['slug'])
+            if qs.filter(name=data['name']).exists():
+                raise serializers.ValidationError({'slug': ['App with similar slug already exists.']}
+                                                  )
             raise serializers.ValidationError({'category': ['{} is not a valid UUID.'.format(category_id), ]})
 
 
