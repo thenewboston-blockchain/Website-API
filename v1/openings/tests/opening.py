@@ -38,7 +38,6 @@ def test_opening_post(api_client, staff_user):
                 'skills': [skills[2].pk, skills[4].pk],
                 'team': team.pk,
                 'title': 'Opening title',
-                'visible': True,
                 'application_form': 'form_77',
                 'category': 'engineering'
             },
@@ -57,7 +56,6 @@ def test_opening_post(api_client, staff_user):
         'skills': [skills[2].pk, skills[4].pk],
         'team': team.pk,
         'title': 'Opening title',
-        'visible': True,
         'application_form': 'form_77',
         'category': 'engineering'
     }
@@ -94,7 +92,6 @@ def test_opening_patch(api_client, staff_user):
                 ],
                 'team': team.pk,
                 'title': 'Updated title',
-                'visible': True,
                 'application_form': 'form_77',
                 'category': 'engineering'
             },
@@ -121,7 +118,6 @@ def test_opening_patch(api_client, staff_user):
         ],
         'team': team.pk,
         'title': 'Updated title',
-        'visible': True,
         'application_form': 'form_77',
         'category': 'engineering'
     }

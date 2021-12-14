@@ -18,7 +18,6 @@ class OpeningSerializer(serializers.ModelSerializer):
             'skills',
             'team',
             'title',
-            'visible',
             'application_form',
             'category'
         )
@@ -46,7 +45,6 @@ class OpeningSerializerCreate(serializers.ModelSerializer):
             'skills',
             'team',
             'title',
-            'visible',
             'application_form',
             'category'
         )

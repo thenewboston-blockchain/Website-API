@@ -12,7 +12,6 @@ class OpeningFactory(DjangoModelFactory):
     description = factory.Faker('text', max_nb_chars=1024)
     team = factory.SubFactory(TeamFactory)
     title = factory.Faker('pystr', max_chars=250)
-    visible = factory.Faker('pybool')
     application_form = factory.Faker('pystr', max_chars=255)
     category = factory.Faker('pystr', max_chars=255)
 
