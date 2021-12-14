@@ -11,16 +11,13 @@ class OpeningSerializer(serializers.ModelSerializer):
             'active',
             'created_date',
             'description',
-            'eligible_for_task_points',
             'modified_date',
-            'pay_per_day',
             'pk',
             'reports_to',
             'responsibilities',
             'skills',
             'team',
             'title',
-            'visible',
             'application_form',
             'category'
         )
@@ -41,16 +38,13 @@ class OpeningSerializerCreate(serializers.ModelSerializer):
             'active',
             'created_date',
             'description',
-            'eligible_for_task_points',
             'modified_date',
-            'pay_per_day',
             'pk',
             'reports_to',
             'responsibilities',
             'skills',
             'team',
             'title',
-            'visible',
             'application_form',
             'category'
         )

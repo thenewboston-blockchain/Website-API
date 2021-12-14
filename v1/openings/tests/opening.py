@@ -34,13 +34,10 @@ def test_opening_post(api_client, staff_user):
             data={
                 'active': True,
                 'description': 'Cool opening',
-                'eligible_for_task_points': True,
-                'pay_per_day': 9001,
                 'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
                 'skills': [skills[2].pk, skills[4].pk],
                 'team': team.pk,
                 'title': 'Opening title',
-                'visible': True,
                 'application_form': 'form_77',
                 'category': 'engineering'
             },
@@ -53,15 +50,12 @@ def test_opening_post(api_client, staff_user):
         'active': True,
         'created_date': serializers.DateTimeField().to_representation(frozen_time()),
         'description': 'Cool opening',
-        'eligible_for_task_points': True,
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
-        'pay_per_day': 9001,
         'reports_to': [r.pk for r in team.team_members.filter(is_lead=True)],
         'responsibilities': [responsibilities[0].pk, responsibilities[3].pk],
         'skills': [skills[2].pk, skills[4].pk],
         'team': team.pk,
         'title': 'Opening title',
-        'visible': True,
         'application_form': 'form_77',
         'category': 'engineering'
     }
@@ -86,8 +80,6 @@ def test_opening_patch(api_client, staff_user):
             data={
                 'active': True,
                 'description': 'Even Cooler opening',
-                'eligible_for_task_points': True,
-                'pay_per_day': 10001,
                 'responsibilities': [
                     responsibilities[0].pk,
                     responsibilities[1].pk,
@@ -100,7 +92,6 @@ def test_opening_patch(api_client, staff_user):
                 ],
                 'team': team.pk,
                 'title': 'Updated title',
-                'visible': True,
                 'application_form': 'form_77',
                 'category': 'engineering'
             },
@@ -114,8 +105,6 @@ def test_opening_patch(api_client, staff_user):
         'modified_date': serializers.DateTimeField().to_representation(frozen_time()),
         'active': True,
         'description': 'Even Cooler opening',
-        'eligible_for_task_points': True,
-        'pay_per_day': 10001,
         'reports_to': [r.pk for r in team.team_members.filter(is_lead=True)],
         'responsibilities': [
             responsibilities[0].pk,
@@ -129,7 +118,6 @@ def test_opening_patch(api_client, staff_user):
         ],
         'team': team.pk,
         'title': 'Updated title',
-        'visible': True,
         'application_form': 'form_77',
         'category': 'engineering'
     }

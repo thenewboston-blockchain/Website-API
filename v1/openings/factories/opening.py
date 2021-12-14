@@ -10,11 +10,8 @@ from ..models.opening import Opening
 class OpeningFactory(DjangoModelFactory):
     active = factory.Faker('pybool')
     description = factory.Faker('text', max_nb_chars=1024)
-    eligible_for_task_points = factory.Faker('pybool')
-    pay_per_day = factory.Faker('pyint')
     team = factory.SubFactory(TeamFactory)
     title = factory.Faker('pystr', max_chars=250)
-    visible = factory.Faker('pybool')
     application_form = factory.Faker('pystr', max_chars=255)
     category = factory.Faker('pystr', max_chars=255)
 

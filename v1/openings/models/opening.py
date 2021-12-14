@@ -13,10 +13,7 @@ class Opening(CreatedModified):
 
     active = models.BooleanField(default=True, db_index=True)
     description = models.TextField()
-    eligible_for_task_points = models.BooleanField(default=False, db_index=True)
-    pay_per_day = models.PositiveIntegerField()
     title = models.CharField(max_length=250)
-    visible = models.BooleanField(default=True)
     application_form = models.CharField(max_length=255)
     category = models.CharField(max_length=255)
 
