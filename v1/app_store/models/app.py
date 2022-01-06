@@ -16,6 +16,7 @@ class App(CreatedModified):
     tagline = models.CharField(max_length=255, blank=True, null=True)
     category = models.ForeignKey('Category', null=True, blank=True, on_delete=models.SET_NULL)
     slug = models.CharField(max_length=255)
+    page_hits = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f'#{self.pk}: {self.name}'
