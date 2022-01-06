@@ -22,11 +22,11 @@ class App(CreatedModified):
         return f'#{self.pk}: {self.name}'
 
     def validate_unique(self, *args, **kwargs):
-        super(App, self).validate_unique(*args, **kwargs)
         qs = App.objects.filter(slug=self.slug)
-        if qs.filter(name=self.name).exists():
-            raise ValidationError({'slug': ['App with similar slug already exists.']}
-                                  )
+        if self.pk:
+            qs = qs.exclude(pk=self.pk)
+        if qs.count() > 0:
+            raise ValidationError({'slug': ['App with similar slug already exists.']})
 
     def save(self, *args, **kwargs):
         self.validate_unique()
