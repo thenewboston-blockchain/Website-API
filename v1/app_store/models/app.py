@@ -16,16 +16,17 @@ class App(CreatedModified):
     tagline = models.CharField(max_length=255, blank=True, null=True)
     category = models.ForeignKey('Category', null=True, blank=True, on_delete=models.SET_NULL)
     slug = models.CharField(max_length=255)
+    page_hits = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f'#{self.pk}: {self.name}'
 
     def validate_unique(self, *args, **kwargs):
-        super(App, self).validate_unique(*args, **kwargs)
         qs = App.objects.filter(slug=self.slug)
-        if qs.filter(name=self.name).exists():
-            raise ValidationError({'slug': ['App with similar slug already exists.']}
-                                  )
+        if self.pk:
+            qs = qs.exclude(pk=self.pk)
+        if qs.count() > 0:
+            raise ValidationError({'slug': ['App with similar slug already exists.']})
 
     def save(self, *args, **kwargs):
         self.validate_unique()

@@ -1,6 +1,6 @@
-from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
+from rest_framework.validators import UniqueValidator
 
 from ..models.app import App, AppImage, Category
 
@@ -8,7 +8,7 @@ from ..models.app import App, AppImage, Category
 class AppSerializer(ModelSerializer):
 
     class Meta:
-        fields = ('pk', 'name', 'description', 'logo', 'website', 'images', 'tagline', 'category', 'slug',
+        fields = ('pk', 'name', 'description', 'logo', 'website', 'images', 'tagline', 'category', 'slug', 'page_hits',
                   'created_date', 'modified_date')
         model = App
         lookup_field = 'slug'
@@ -17,30 +17,15 @@ class AppSerializer(ModelSerializer):
 
 
 class AppSerializerCreate(ModelSerializer):
+    slug = serializers.CharField(
+        validators=[UniqueValidator(queryset=App.objects.all())]
+    )
 
     class Meta:
-        fields = ('pk', 'name', 'description', 'logo', 'website', 'images', 'tagline', 'category', 'slug',
+        fields = ('pk', 'name', 'description', 'logo', 'website', 'images', 'tagline', 'category', 'slug', 'page_hits',
                   'created_date', 'modified_date')
         model = App
         read_only_fields = ('created_date', 'modified_date',)
-
-    def create(self, data):
-        try:
-
-            category_id = self.context.get('request').data.get('category')
-            if not category_id:
-                raise serializers.ValidationError({'category': ['This field is required.']})
-            category = Category.objects.get(pk=category_id)
-            data['category'] = category
-            return super().create(data)
-        except Category.DoesNotExist:
-            raise serializers.ValidationError({'category': ['Category not found', ]})
-        except ValidationError:
-            qs = App.objects.filter(slug=data['slug'])
-            if qs.filter(name=data['name']).exists():
-                raise serializers.ValidationError({'slug': ['App with similar slug already exists.']}
-                                                  )
-            raise serializers.ValidationError({'category': ['{} is not a valid UUID.'.format(category_id), ]})
 
 
 class AppImageSerializer(ModelSerializer):
